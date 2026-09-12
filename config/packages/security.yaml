@@ -42,7 +42,9 @@ security:
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 7 jours
-                secure: true
+                # 'auto' : cookie marqué secure uniquement en HTTPS.
+                # Nécessaire pour que « rester connecté » fonctionne aussi en local (http://).
+                secure: 'auto'
                 httponly: true
                 samesite: lax
 
