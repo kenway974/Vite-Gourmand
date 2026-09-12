@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Connexion</h1>
+
+    <form method="post">
+        {% if error %}
+            <p class="erreur" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</p>
+        {% endif %}
+
+        <p>
+            <label for="inputEmail">Adresse e-mail</label>
+            <input type="email" value="{{ last_username }}" name="email" id="inputEmail"
+                   autocomplete="email" required autofocus>
+        </p>
+
+        <p>
+            <label for="inputPassword">Mot de passe</label>
+            <input type="password" name="password" id="inputPassword"
+                   autocomplete="current-password" required>
+        </p>
+
+        {# Protection CSRF : le pare-feu vérifie ce jeton (enable_csrf: true). #}
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <p>
+            <label>
+                <input type="checkbox" name="_remember_me"> Rester connecté
+            </label>
+        </p>
+
+        <button type="submit">Se connecter</button>
+    </form>
+
+    <p>Pas encore de compte ? <a href="{{ path('app_register') }}">Créer un compte</a></p>
+{% endblock %}
