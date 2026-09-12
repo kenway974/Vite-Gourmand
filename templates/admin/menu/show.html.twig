@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ menu.titre }} — Administration{% endblock %}
+
+{% block body %}
+    <h1>{{ menu.titre }}</h1>
+
+    <dl>
+        <dt>Description</dt>
+        <dd>{{ menu.description|nl2br }}</dd>
+
+        <dt>Thème</dt>
+        <dd>{{ menu.theme.libelle }}</dd>
+
+        <dt>Régime</dt>
+        <dd>{{ menu.regime.libelle }}</dd>
+
+        <dt>Prix à partir de</dt>
+        <dd>{{ menu.prixMin }} €</dd>
+
+        <dt>Nombre minimum de personnes</dt>
+        <dd>{{ menu.nbMinPersonnes }}</dd>
+
+        <dt>Délai de commande</dt>
+        <dd>{{ menu.delaiCommandeJours }} jour(s)</dd>
+
+        <dt>Stock</dt>
+        <dd>{{ menu.stock }}</dd>
+
+        <dt>Précautions</dt>
+        <dd>{{ menu.precautions ?: 'Aucune' }}</dd>
+
+        <dt>Plats</dt>
+        <dd>
+            {% if menu.plats is empty %}
+                Aucun plat rattaché
+            {% else %}
+                {{ menu.plats|map(p => p.nom)|join(', ') }}
+            {% endif %}
+        </dd>
+    </dl>
+
+    <p>
+        <a href="{{ path('app_admin_menu_edit', {id: menu.id}) }}">Modifier</a>
+        · <a href="{{ path('app_admin_menu_index') }}">Retour à la liste</a>
+    </p>
+{% endblock %}
