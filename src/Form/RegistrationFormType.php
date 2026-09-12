@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Utilisateur;
+use App\Security\PolitiqueMotDePasse;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -13,9 +14,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Regex;
 
 class RegistrationFormType extends AbstractType
 {
@@ -53,24 +51,13 @@ class RegistrationFormType extends AbstractType
                 'first_options' => [
                     'label' => 'Mot de passe',
                     'attr' => ['autocomplete' => 'new-password'],
-                    'help' => '12 caractères minimum, dont une majuscule, une minuscule, un chiffre et un caractère spécial.',
+                    'help' => PolitiqueMotDePasse::DESCRIPTION,
                 ],
                 'second_options' => [
                     'label' => 'Confirmer le mot de passe',
                     'attr' => ['autocomplete' => 'new-password'],
                 ],
-                'constraints' => [
-                    new NotBlank(message: 'Merci de saisir un mot de passe.'),
-                    new Length(
-                        min: 12,
-                        max: 4096, // borne haute : évite une attaque par déni de service sur le hachage
-                        minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
-                    ),
-                    new Regex(
-                        pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).+$/',
-                        message: 'Le mot de passe doit contenir une majuscule, une minuscule, un chiffre et un caractère spécial.',
-                    ),
-                ],
+                'constraints' => PolitiqueMotDePasse::contraintes(),
             ])
             ->add('agreeTerms', CheckboxType::class, [
                 'label' => "J'accepte les conditions générales de vente.",
