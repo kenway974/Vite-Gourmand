@@ -160,15 +160,11 @@ class AuthentificationTest extends WebTestCase
     public function testLaDeconnexionTermineLaSession(): void
     {
         $this->creerUtilisateur('deco@example.com', actif: true);
+        $this->connecter('deco@example.com');
 
-        $this->client->request('GET', '/connexion');
-        $this->client->submitForm('Se connecter', [
-            'email' => 'deco@example.com',
-            'password' => self::MOT_DE_PASSE_VALIDE,
-        ]);
-        $this->client->followRedirect();
-
-        $this->client->request('GET', '/deconnexion');
+        // On suit le lien réellement affiché, qui porte le jeton CSRF.
+        $crawler = $this->client->request('GET', '/mon-compte');
+        $this->client->click($crawler->selectLink('Déconnexion')->link());
         self::assertResponseRedirects('/');
 
         // Une fois déconnecté, la page protégée renvoie vers la connexion.
@@ -178,6 +174,61 @@ class AuthentificationTest extends WebTestCase
             '/connexion',
             $this->client->getResponse()->headers->get('Location') ?? ''
         );
+    }
+
+    public function testLaDeconnexionSansJetonCsrfEstRefusee(): void
+    {
+        $this->creerUtilisateur('csrf@example.com', actif: true);
+        $this->connecter('csrf@example.com');
+
+        // Ce que tenterait un site tiers : appeler l'URL sans jeton.
+        $this->client->request('GET', '/deconnexion');
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+
+        // La session est intacte : l'utilisateur est toujours connecté.
+        $this->client->request('GET', '/mon-compte');
+        self::assertResponseIsSuccessful();
+    }
+
+    public function testLaConnexionEstBrideeApresCinqEchecs(): void
+    {
+        $this->creerUtilisateur('brute@example.com', actif: true);
+
+        // 5 tentatives ratées : c'est le plafond autorisé.
+        for ($i = 0; $i < 5; ++$i) {
+            $this->client->request('GET', '/connexion');
+            $this->client->submitForm('Se connecter', [
+                'email' => 'brute@example.com',
+                'password' => 'MauvaisMotDePasse1!',
+            ]);
+        }
+
+        // 6e tentative, cette fois avec le BON mot de passe : elle doit
+        // quand même échouer, sinon le bridage ne sert à rien.
+        $this->client->request('GET', '/connexion');
+        $this->client->submitForm('Se connecter', [
+            'email' => 'brute@example.com',
+            'password' => self::MOT_DE_PASSE_VALIDE,
+        ]);
+
+        self::assertResponseRedirects('/connexion');
+
+        $this->client->request('GET', '/mon-compte');
+        self::assertResponseRedirects();
+        self::assertStringContainsString(
+            '/connexion',
+            $this->client->getResponse()->headers->get('Location') ?? ''
+        );
+    }
+
+    private function connecter(string $email): void
+    {
+        $this->client->request('GET', '/connexion');
+        $this->client->submitForm('Se connecter', [
+            'email' => $email,
+            'password' => self::MOT_DE_PASSE_VALIDE,
+        ]);
+        $this->client->followRedirect();
     }
 
     private function creerUtilisateur(string $email, bool $actif): Utilisateur
