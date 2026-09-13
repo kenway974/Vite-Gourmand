@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Administration</h1>
+
+    <ul>
+        <li><strong>{{ nbMenus }}</strong> menu(s)</li>
+        <li><strong>{{ nbPlats }}</strong> plat(s)</li>
+        <li><strong>{{ nbUtilisateurs }}</strong> utilisateur(s)</li>
+        <li><strong>{{ nbCommandes }}</strong> commande(s)</li>
+    </ul>
+
+    <p><a href="{{ path('app_admin_menu_index') }}">Gérer les menus</a></p>
+{% endblock %}

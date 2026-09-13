@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
 class Menu
@@ -17,35 +18,49 @@ class Menu
     private ?int $id = null;
 
     #[ORM\Column(length: 150)]
+    #[Assert\NotBlank(message: 'Merci de saisir un titre.')]
+    #[Assert\Length(max: 150, maxMessage: 'Le titre ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $titre = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'Merci de saisir une description.')]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'menus')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Merci de choisir un thème.')]
     private ?Theme $theme = null;
 
     #[ORM\ManyToOne(inversedBy: 'menus')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Merci de choisir un régime.')]
     private ?Regime $regime = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: 'Merci d\'indiquer un nombre minimum de personnes.')]
+    #[Assert\Positive(message: 'Le nombre minimum de personnes doit être supérieur à zéro.')]
     private ?int $nbMinPersonnes = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 6, scale: 2)]
+    #[Assert\NotNull(message: 'Merci d\'indiquer un prix.')]
+    #[Assert\Positive(message: 'Le prix doit être supérieur à zéro.')]
     private ?string $prixMin = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: 'Merci d\'indiquer un délai de commande.')]
+    #[Assert\PositiveOrZero(message: 'Le délai de commande ne peut pas être négatif.')]
     private ?int $delaiCommandeJours = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $precautions = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: 'Merci d\'indiquer un stock.')]
+    #[Assert\PositiveOrZero(message: 'Le stock ne peut pas être négatif.')]
     private ?int $stock = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $image = null;
 
     /**
