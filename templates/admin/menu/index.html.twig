@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Menus — Administration{% endblock %}
+
+{% block body %}
+    <h1>Menus</h1>
+
+    <p><a href="{{ path('app_admin_menu_new') }}">Créer un menu</a></p>
+
+    {% if menus is empty %}
+        <p>Aucun menu pour le moment.</p>
+    {% else %}
+        <table>
+            <caption>Liste des menus ({{ menus|length }})</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Titre</th>
+                    <th scope="col">Thème</th>
+                    <th scope="col">Régime</th>
+                    <th scope="col">À partir de</th>
+                    <th scope="col">Min. pers.</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for menu in menus %}
+                    <tr>
+                        <th scope="row"><a href="{{ path('app_admin_menu_show', {id: menu.id}) }}">{{ menu.titre }}</a></th>
+                        <td>{{ menu.theme.libelle }}</td>
+                        <td>{{ menu.regime.libelle }}</td>
+                        <td>{{ menu.prixMin }} €</td>
+                        <td>{{ menu.nbMinPersonnes }}</td>
+                        <td>{{ menu.stock }}</td>
+                        <td>
+                            <a href="{{ path('app_admin_menu_edit', {id: menu.id}) }}">Modifier</a>
+
+                            <form method="post"
+                                  action="{{ path('app_admin_menu_delete', {id: menu.id}) }}"
+                                  onsubmit="return confirm('Supprimer définitivement le menu « {{ menu.titre|e('js') }} » ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('supprimer-menu-' ~ menu.id) }}">
+                                <button type="submit">Supprimer<span class="sr-only"> le menu {{ menu.titre }}</span></button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

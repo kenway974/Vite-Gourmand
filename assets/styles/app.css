@@ -1,3 +1,35 @@
 body {
     background-color: skyblue;
 }
+
+/*
+ * Accessibilité (RGAA).
+ * .sr-only : texte réservé aux lecteurs d'écran, retiré de l'affichage sans
+ * être masqué au sens de display:none, qui le rendrait aussi invisible pour eux.
+ */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Le lien d'évitement reste hors écran jusqu'à ce qu'il reçoive le focus. */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+}
+
+.skip-link:focus {
+    left: 0;
+    z-index: 100;
+    padding: 8px 16px;
+    background: #fff;
+    color: #000;
+}
