@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un allergène — Administration{% endblock %}
+
+{% block body %}
+    <h1>Ajouter un allergène</h1>
+
+    {{ include('admin/allergene/_form.html.twig', {bouton: 'Enregistrer'}) }}
+{% endblock %}

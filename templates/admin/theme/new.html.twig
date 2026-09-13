@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un thème — Administration{% endblock %}
+
+{% block body %}
+    <h1>Ajouter un thème</h1>
+
+    {{ include('admin/theme/_form.html.twig', {bouton: 'Enregistrer'}) }}
+{% endblock %}

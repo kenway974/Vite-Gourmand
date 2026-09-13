@@ -1,0 +1,12 @@
+{{ form_errors(form) }}
+
+{{ form_start(form) }}
+    {{ form_row(form.nom) }}
+    {{ form_row(form.type) }}
+    {{ form_row(form.description) }}
+    {{ form_row(form.image) }}
+    {{ form_row(form.ingredients) }}
+    <button type="submit">{{ bouton }}</button>
+{{ form_end(form) }}
+
+<p><a href="{{ path('app_admin_plat_index') }}">Retour à la liste</a></p>

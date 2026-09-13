@@ -1,0 +1,8 @@
+{{ form_errors(form) }}
+
+{{ form_start(form) }}
+    {{ form_row(form.libelle) }}
+    <button type="submit">{{ bouton }}</button>
+{{ form_end(form) }}
+
+<p><a href="{{ path('app_admin_allergene_index') }}">Retour à la liste</a></p>

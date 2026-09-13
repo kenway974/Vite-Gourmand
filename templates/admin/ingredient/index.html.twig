@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ingrédients — Administration{% endblock %}
+
+{% block body %}
+    <h1>Ingrédients</h1>
+
+    <p><a href="{{ path('app_admin_ingredient_new') }}">Ajouter un ingrédient</a></p>
+
+    {% if elements is empty %}
+        <p>Aucun ingrédient pour le moment.</p>
+    {% else %}
+        <table>
+            <caption>Liste des ingrédients ({{ elements|length }})</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Allergènes</th>
+                    <th scope="col">Plats</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for element in elements %}
+                    <tr>
+                        <th scope="row">{{ element.nom }}</th>
+                        <td>{{ element.allergenes|length }}</td>
+                        <td>{{ element.plats|length }}</td>
+                        <td>
+                            <a href="{{ path('app_admin_ingredient_edit', {id: element.id}) }}">Modifier</a>
+
+                            <form method="post"
+                                  action="{{ path('app_admin_ingredient_delete', {id: element.id}) }}"
+                                  onsubmit="return confirm('Supprimer définitivement « {{ element.nom|e('js') }} » ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('supprimer-ingredient-' ~ element.id) }}">
+                                <button type="submit">Supprimer<span class="sr-only"> ingrédient {{ element.nom }}</span></button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <p><a href="{{ path('app_admin') }}">Retour à l'administration</a></p>
+{% endblock %}
