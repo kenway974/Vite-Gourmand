@@ -22,7 +22,7 @@ class IngredientController extends AbstractController
     public function index(IngredientRepository $depot): Response
     {
         return $this->render('admin/ingredient/index.html.twig', [
-            'elements' => $depot->findBy([], ['nom' => 'ASC']),
+            'elements' => $depot->findPourAdministration(),
         ]);
     }
 

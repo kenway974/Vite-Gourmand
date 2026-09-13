@@ -20,10 +20,11 @@
                 </tr>
             </thead>
             <tbody>
-                {% for element in elements %}
+                {% for ligne in elements %}
+                    {% set element = ligne.entite %}
                     <tr>
                         <th scope="row">{{ element.libelle }}</th>
-                        <td>{{ element.ingredients|length }}</td>
+                        <td>{{ ligne.nbIngredients }}</td>
                         <td>
                             <a href="{{ path('app_admin_allergene_edit', {id: element.id}) }}">Modifier</a>
 

@@ -22,7 +22,7 @@ class PlatController extends AbstractController
     public function index(PlatRepository $depot): Response
     {
         return $this->render('admin/plat/index.html.twig', [
-            'elements' => $depot->findBy([], ['nom' => 'ASC']),
+            'elements' => $depot->findPourAdministration(),
         ]);
     }
 

@@ -22,7 +22,7 @@ class ThemeController extends AbstractController
     public function index(ThemeRepository $depot): Response
     {
         return $this->render('admin/theme/index.html.twig', [
-            'elements' => $depot->findBy([], ['libelle' => 'ASC']),
+            'elements' => $depot->findPourAdministration(),
         ]);
     }
 

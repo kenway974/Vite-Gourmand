@@ -23,7 +23,7 @@ class MenuController extends AbstractController
     public function index(MenuRepository $menus): Response
     {
         return $this->render('admin/menu/index.html.twig', [
-            'menus' => $menus->findBy([], ['titre' => 'ASC']),
+            'menus' => $menus->findPourAdministration(),
         ]);
     }
 

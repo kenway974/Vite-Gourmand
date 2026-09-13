@@ -22,7 +22,7 @@ class AllergeneController extends AbstractController
     public function index(AllergeneRepository $depot): Response
     {
         return $this->render('admin/allergene/index.html.twig', [
-            'elements' => $depot->findBy([], ['libelle' => 'ASC']),
+            'elements' => $depot->findPourAdministration(),
         ]);
     }
 

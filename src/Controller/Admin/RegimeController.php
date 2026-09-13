@@ -22,7 +22,7 @@ class RegimeController extends AbstractController
     public function index(RegimeRepository $depot): Response
     {
         return $this->render('admin/regime/index.html.twig', [
-            'elements' => $depot->findBy([], ['libelle' => 'ASC']),
+            'elements' => $depot->findPourAdministration(),
         ]);
     }
 

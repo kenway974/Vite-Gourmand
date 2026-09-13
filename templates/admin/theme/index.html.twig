@@ -21,11 +21,12 @@
                 </tr>
             </thead>
             <tbody>
-                {% for element in elements %}
+                {% for ligne in elements %}
+                    {% set element = ligne.entite %}
                     <tr>
                         <th scope="row">{{ element.libelle }}</th>
                         <td>{{ element.description|default("—") }}</td>
-                        <td>{{ element.menus|length }}</td>
+                        <td>{{ ligne.nbMenus }}</td>
                         <td>
                             <a href="{{ path('app_admin_theme_edit', {id: element.id}) }}">Modifier</a>
 
