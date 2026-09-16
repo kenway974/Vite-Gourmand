@@ -37,7 +37,11 @@ class CatalogueController extends AbstractController
             // passé. Un identifiant inconnu vaut « pas de filtre ».
             'theme' => ($idTheme = $request->query->getInt('theme')) > 0 ? $themes->find($idTheme) : null,
             'regime' => ($idRegime = $request->query->getInt('regime')) > 0 ? $regimes->find($idRegime) : null,
-            'nbPersonnes' => $request->query->getInt('convives') ?: null,
+            // Hors palier, le filtre est ignoré : la valeur vient de l'URL et
+            // n'a pas à atteindre la requête telle quelle.
+            'nbPersonnes' => \in_array($convives = $request->query->getInt('convives'), MenuRepository::PALIERS_CONVIVES, true)
+                ? $convives
+                : null,
             'seulementCommandables' => $request->query->getBoolean('commandables'),
         ];
 
@@ -53,6 +57,7 @@ class CatalogueController extends AbstractController
             'themes' => $themes->findBy([], ['libelle' => 'ASC']),
             'regimes' => $regimes->findBy([], ['libelle' => 'ASC']),
             'tris' => MenuRepository::TRIS,
+            'paliers' => MenuRepository::PALIERS_CONVIVES,
             'filtres' => $filtres,
             'page' => $page,
             'nbPages' => max(1, (int) ceil($total / self::PAR_PAGE)),

@@ -83,8 +83,8 @@
                 <li>
                     <p>
                         <strong>{{ un_avis.note }} / 5</strong> —
-                        {{ un_avis.utilisateur.prenom }},
-                        le {{ un_avis.dateCreation|date('d/m/Y') }}
+                        {{ un_avis.utilisateur.prenom }}
+                        {%- if un_avis.contexte %} · {{ un_avis.contexte }}{% endif %}
                     </p>
                     <p>{{ un_avis.commentaire }}</p>
                 </li>
