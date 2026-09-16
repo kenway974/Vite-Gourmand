@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commander {{ menu.titre }} — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Commander « {{ menu.titre }} »</h1>
+
+    <dl>
+        <dt>Prix</dt>
+        <dd>{{ exemplePrix.prixUnitaire }} € par personne</dd>
+
+        <dt>À partir de</dt>
+        <dd>{{ menu.nbMinPersonnes }} convives</dd>
+
+        <dt>Remise</dt>
+        <dd>10 % dès {{ exemplePrix.seuilRemise }} convives</dd>
+
+        <dt>Délai de préparation</dt>
+        <dd>{{ menu.delaiCommandeJours }} jour(s)</dd>
+    </dl>
+
+    <p>Le prix comprend la livraison, le dressage et la reprise du matériel dans Bordeaux intra-muros.</p>
+
+    {{ form_errors(form) }}
+
+    {{ form_start(form) }}
+        {{ form_row(form.datePrestation) }}
+        {{ form_row(form.heureLivraison) }}
+        {{ form_row(form.lieuLivraison) }}
+        {{ form_row(form.nbPersonnes) }}
+        {{ form_row(form.pretMateriel) }}
+
+        <button type="submit">Envoyer ma demande</button>
+    {{ form_end(form) }}
+{% endblock %}

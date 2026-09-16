@@ -67,6 +67,8 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/employe, roles: ROLE_EMPLOYE }
         - { path: ^/mon-compte, roles: ROLE_USER }
+        - { path: ^/commander, roles: ROLE_USER }
+        - { path: ^/commande/, roles: ROLE_USER }
 
 when@test:
     security:

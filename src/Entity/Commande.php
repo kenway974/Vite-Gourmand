@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use App\Service\DetailPrix;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 class Commande
@@ -58,15 +59,20 @@ class Commande
     private ?\DateTime $dateCommande = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotNull(message: 'Merci de choisir une date de prestation.')]
     private ?\DateTime $datePrestation = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     private ?\DateTime $heureLivraison = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Merci d\'indiquer un lieu de livraison.')]
+    #[Assert\Length(max: 255)]
     private ?string $lieuLivraison = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: 'Merci d\'indiquer le nombre de convives.')]
+    #[Assert\Positive(message: 'Le nombre de convives doit être supérieur à zéro.')]
     private ?int $nbPersonnes = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 8, scale: 2)]
@@ -334,5 +340,58 @@ class Commande
     public function estAnnulableParLeClient(): bool
     {
         return \in_array($this->statut, [self::EN_ATTENTE, self::CONFIRMEE], true);
+    }
+
+    /**
+     * Vérifie que la commande est réalisable pour le menu choisi.
+     *
+     * Ces règles vivent sur l'entité plutôt que dans un contrôleur : elles
+     * valent quel que soit le chemin emprunté pour créer la commande, qu'il
+     * s'agisse du site, d'une commande console ou d'une future API.
+     */
+    #[Assert\Callback]
+    public function validerFaisabilite(ExecutionContextInterface $context): void
+    {
+        if (null === $this->menu) {
+            return;
+        }
+
+        $minimum = $this->menu->getNbMinPersonnes();
+
+        if (null !== $this->nbPersonnes && null !== $minimum && $this->nbPersonnes < $minimum) {
+            $context->buildViolation('Ce menu se commande à partir de {{ minimum }} convives.')
+                ->setParameter('{{ minimum }}', (string) $minimum)
+                ->atPath('nbPersonnes')
+                ->addViolation();
+        }
+
+        if (null !== $this->datePrestation) {
+            $delai = $this->menu->getDelaiCommandeJours() ?? 0;
+            $premiereDate = (new \DateTime('today'))->modify(sprintf('+%d days', $delai));
+
+            // Le délai n'est pas négociable : les approvisionnements sont
+            // engagés auprès des producteurs dès la confirmation.
+            if ($this->datePrestation < $premiereDate) {
+                $context->buildViolation(
+                    'Ce menu demande {{ delai }} jours de préparation : la première date possible est le {{ date }}.'
+                )
+                    ->setParameter('{{ delai }}', (string) $delai)
+                    ->setParameter('{{ date }}', $premiereDate->format('d/m/Y'))
+                    ->atPath('datePrestation')
+                    ->addViolation();
+            }
+
+            if (!$this->menu->estDansSaPeriode($this->datePrestation)) {
+                $context->buildViolation('Ce menu n\'est pas proposé à cette date.')
+                    ->atPath('datePrestation')
+                    ->addViolation();
+            }
+        }
+
+        if (($this->menu->getStock() ?? 0) <= 0) {
+            $context->buildViolation('Ce menu n\'est plus disponible à la commande.')
+                ->atPath('menu')
+                ->addViolation();
+        }
     }
 }
