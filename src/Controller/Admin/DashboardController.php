@@ -11,6 +11,7 @@ use App\Entity\Plat;
 use App\Entity\Regime;
 use App\Entity\Theme;
 use App\Entity\Utilisateur;
+use App\Entity\ZoneLivraison;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,6 +42,7 @@ class DashboardController extends AbstractController
             'nbUtilisateurs' => $em->getRepository(Utilisateur::class)->count([]),
             'nbCommandes' => $em->getRepository(Commande::class)->count([]),
             'nbHoraires' => $em->getRepository(Horaire::class)->count([]),
+            'nbZones' => $em->getRepository(ZoneLivraison::class)->count([]),
         ]);
     }
 }

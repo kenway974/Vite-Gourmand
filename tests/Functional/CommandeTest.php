@@ -8,6 +8,7 @@ use App\Entity\Regime;
 use App\Entity\SuiviCommande;
 use App\Entity\Theme;
 use App\Entity\Utilisateur;
+use App\Entity\ZoneLivraison;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -44,6 +45,9 @@ class CommandeTest extends WebTestCase
         $this->em->flush();
         $this->themeId = $theme->getId();
         $this->regimeId = $regime->getId();
+
+        // Sans zone desservie, aucune commande ne peut aboutir.
+        $this->zone('33000', 'Bordeaux', '0.00');
     }
 
     // --- Accès ------------------------------------------------------------
@@ -200,15 +204,29 @@ class CommandeTest extends WebTestCase
 
     // --- Fixtures ---------------------------------------------------------
 
-    private function soumettre(Menu $menu, int $convives, int $dans): void
+    private function soumettre(Menu $menu, int $convives, int $dans, string $codePostal = '33000'): void
     {
         $this->client->request('GET', '/commander/'.$menu->getId());
         $this->client->submitForm('Envoyer ma demande', [
             'commande[datePrestation]' => (new \DateTime(sprintf('+%d days', $dans)))->format('Y-m-d'),
             'commande[heureLivraison]' => '12:00',
-            'commande[lieuLivraison]' => '24 rue Notre-Dame, 33000 Bordeaux',
+            'commande[lieuLivraison]' => '24 rue Notre-Dame, Bordeaux',
+            'commande[codePostalLivraison]' => $codePostal,
             'commande[nbPersonnes]' => (string) $convives,
         ]);
+    }
+
+    private function zone(string $codePostal, string $commune, string $frais): ZoneLivraison
+    {
+        $z = (new ZoneLivraison())
+            ->setCodePostal($codePostal)
+            ->setCommune($commune)
+            ->setFrais($frais);
+
+        $this->em->persist($z);
+        $this->em->flush();
+
+        return $z;
     }
 
     private function client(string $email): Utilisateur

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Commande;
 use App\Entity\Menu;
+use App\Repository\ZoneLivraisonRepository;
 use App\Entity\SuiviCommande;
 use App\Entity\Utilisateur;
 use App\Form\CommandeType;
@@ -27,6 +28,7 @@ class CommandeController extends AbstractController
         Menu $menu,
         EntityManagerInterface $em,
         CalculateurPrix $calculateur,
+        ZoneLivraisonRepository $zones,
     ): Response {
         $minimum = $menu->getNbMinPersonnes() ?? 1;
         $delai = $menu->getDelaiCommandeJours() ?? 0;
@@ -44,6 +46,7 @@ class CommandeController extends AbstractController
                 $minimum,
                 $minimum + CalculateurPrix::CONVIVES_AU_DELA_DU_MINIMUM,
             ),
+            'aide_zones' => $this->aideZones($zones),
         ]);
 
         $form->handleRequest($request);
@@ -58,7 +61,13 @@ class CommandeController extends AbstractController
 
             // Effectif, total et remise posés ensemble : le total ne peut pas
             // être enregistré sans la remise qui l'explique.
-            $commande->appliquerPrix($calculateur->calculer($menu, $commande->getNbPersonnes()));
+            // La zone est relue ici et non reprise du formulaire : le prix
+            // facturé doit venir de la base, pas d'un champ envoyé par le client.
+            $commande->appliquerPrix($calculateur->calculer(
+                $menu,
+                $commande->getNbPersonnes(),
+                $zones->findParCodePostal($commande->getCodePostalLivraison()),
+            ));
 
             // Le catalogue exprime un nombre de prestations disponibles.
             $menu->setStock(max(0, ($menu->getStock() ?? 0) - 1));
@@ -76,7 +85,25 @@ class CommandeController extends AbstractController
             'menu' => $menu,
             'form' => $form,
             'exemplePrix' => $calculateur->calculer($menu, $minimum),
+            'zones' => $zones->findToutes(),
         ]);
+    }
+
+    /**
+     * Résume les communes desservies pour l'aide du champ code postal.
+     */
+    private function aideZones(ZoneLivraisonRepository $zones): string
+    {
+        $comprises = array_filter($zones->findToutes(), fn ($zone) => $zone->livraisonComprise());
+
+        if ([] === $comprises) {
+            return 'Consultez la liste des communes desservies ci-dessous.';
+        }
+
+        return sprintf(
+            'Livraison comprise pour : %s. Un supplément s\'applique ailleurs.',
+            implode(', ', array_map(fn ($zone) => $zone->getCodePostal(), $comprises)),
+        );
     }
 
     #[Route('/commande/{id}/confirmation', name: 'app_commande_confirmation', requirements: ['id' => '\d+'], methods: ['GET'])]

@@ -3,16 +3,20 @@
 namespace App\Service;
 
 use App\Entity\Menu;
+use App\Entity\ZoneLivraison;
 
 /**
  * Calcul du prix d'une commande.
  *
- * Deux règles, relevées dans les maquettes (voir docs/regles-metier.md) :
+ * Trois règles, relevées dans les maquettes (voir docs/regles-metier.md) :
  *
  *  1. Menu::prixMin est un prix PAR PERSONNE, pas un montant plancher.
  *  2. Une remise de 10 % s'applique dès que le nombre de convives atteint
  *     le minimum du menu majoré de cinq. Le seuil est donc relatif au menu :
  *     un menu à 6 convives minimum donne droit à la remise dès 11.
+ *  3. La livraison est comprise dans Bordeaux intra-muros. Ailleurs, elle
+ *     dépend de la zone desservie : le supplément s'ajoute APRÈS la remise,
+ *     qui porte sur les prestations, pas sur le transport.
  *
  * Les montants sont calculés en centimes entiers. Les nombres à virgule
  * flottante accumulent des erreurs d'arrondi qui n'ont pas leur place dans un
@@ -26,7 +30,7 @@ final class CalculateurPrix
     /** Nombre de convives au-delà du minimum du menu déclenchant la remise. */
     public const CONVIVES_AU_DELA_DU_MINIMUM = 5;
 
-    public function calculer(Menu $menu, int $nbPersonnes): DetailPrix
+    public function calculer(Menu $menu, int $nbPersonnes, ?ZoneLivraison $zone = null): DetailPrix
     {
         $minimum = $menu->getNbMinPersonnes() ?? 0;
 
@@ -48,13 +52,19 @@ final class CalculateurPrix
         $taux = $remiseAcquise ? self::TAUX_REMISE : 0.0;
         $remise = $remiseAcquise ? (int) round($brut * self::TAUX_REMISE) : 0;
 
+        // Zone absente : la livraison est traitée comme comprise. Le refus
+        // d'une adresse non desservie relève de la validation de la commande,
+        // pas du calcul du prix.
+        $livraison = self::enCentimes((string) ($zone?->getFrais() ?? '0.00'));
+
         return new DetailPrix(
             prixUnitaire: self::enDecimal($unitaire),
             nbPersonnes: $nbPersonnes,
             montantBrut: self::enDecimal($brut),
             tauxRemise: $taux,
             montantRemise: self::enDecimal($remise),
-            montantTotal: self::enDecimal($brut - $remise),
+            fraisLivraison: self::enDecimal($livraison),
+            montantTotal: self::enDecimal($brut - $remise + $livraison),
             seuilRemise: $seuil,
             convivesManquantsPourRemise: max(0, $seuil - $nbPersonnes),
         );

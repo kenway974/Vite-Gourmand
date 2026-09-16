@@ -8,10 +8,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use App\Service\DetailPrix;
 use Doctrine\ORM\Mapping as ORM;
+use App\Validator\ZoneDesservie;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
+#[ZoneDesservie]
 class Commande
 {
     /**
@@ -107,6 +109,20 @@ class Commande
 
     #[ORM\Column]
     private ?bool $pretMateriel = null;
+
+    /**
+     * Code postal de livraison, saisi à part de l'adresse : c'est lui qui
+     * détermine la zone desservie et le supplément éventuel. L'extraire de
+     * lieuLivraison par expression régulière serait fragile.
+     */
+    #[ORM\Column(length: 5, nullable: true)]
+    #[Assert\NotBlank(message: 'Le code postal de livraison est obligatoire.')]
+    #[Assert\Regex(pattern: '/^\d{5}$/', message: 'Un code postal français compte cinq chiffres.')]
+    private ?string $codePostalLivraison = null;
+
+    /** Supplément de livraison retenu au moment de la commande. */
+    #[ORM\Column(type: Types::DECIMAL, precision: 6, scale: 2, options: ['default' => '0.00'])]
+    private string $fraisLivraison = '0.00';
 
     /**
      * Date effective de restitution. Null tant que le matériel n'est pas
@@ -347,6 +363,7 @@ class Commande
         $this->nbPersonnes = $detail->nbPersonnes;
         $this->prixTotal = $detail->montantTotal;
         $this->montantRemise = $detail->montantRemise;
+        $this->fraisLivraison = $detail->fraisLivraison;
         $this->tauxRemise = sprintf('%.2f', $detail->tauxRemise * 100);
 
         return $this;
@@ -366,6 +383,23 @@ class Commande
     public function estAnnulableParLeClient(): bool
     {
         return \in_array($this->statut, [self::EN_ATTENTE, self::CONFIRMEE], true);
+    }
+
+    public function getCodePostalLivraison(): ?string
+    {
+        return $this->codePostalLivraison;
+    }
+
+    public function setCodePostalLivraison(?string $codePostalLivraison): static
+    {
+        $this->codePostalLivraison = $codePostalLivraison;
+
+        return $this;
+    }
+
+    public function getFraisLivraison(): string
+    {
+        return $this->fraisLivraison;
     }
 
     public function getDateRestitutionMateriel(): ?\DateTime

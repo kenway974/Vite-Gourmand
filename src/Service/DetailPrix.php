@@ -20,6 +20,7 @@ final readonly class DetailPrix
         public string $montantBrut,
         public float $tauxRemise,
         public string $montantRemise,
+        public string $fraisLivraison,
         public string $montantTotal,
         public int $seuilRemise,
         public int $convivesManquantsPourRemise,
@@ -29,5 +30,10 @@ final readonly class DetailPrix
     public function beneficieDeLaRemise(): bool
     {
         return $this->tauxRemise > 0.0;
+    }
+
+    public function livraisonComprise(): bool
+    {
+        return 0.0 === (float) $this->fraisLivraison;
     }
 }

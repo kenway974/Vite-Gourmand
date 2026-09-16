@@ -27,9 +27,41 @@
         {{ form_row(form.datePrestation) }}
         {{ form_row(form.heureLivraison) }}
         {{ form_row(form.lieuLivraison) }}
+        {{ form_row(form.codePostalLivraison) }}
         {{ form_row(form.nbPersonnes) }}
         {{ form_row(form.pretMateriel) }}
 
         <button type="submit">Envoyer ma demande</button>
     {{ form_end(form) }}
+
+    <h2>Communes desservies</h2>
+
+    {% if zones is empty %}
+        <p>Aucune zone de livraison n'est définie pour le moment.</p>
+    {% else %}
+        <table>
+            <caption>Zones de livraison et suppléments</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Commune</th>
+                    <th scope="col">Code postal</th>
+                    <th scope="col">Livraison</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for zone in zones %}
+                    <tr>
+                        <th scope="row">{{ zone.commune }}</th>
+                        <td>{{ zone.codePostal }}</td>
+                        <td>{{ zone.livraisonComprise ? 'Comprise' : zone.frais ~ ' €' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p>
+            Votre commune n'apparaît pas ?
+            <a href="{{ path('app_contact') }}">Écrivez-nous</a> pour un devis.
+        </p>
+    {% endif %}
 {% endblock %}

@@ -35,7 +35,11 @@ class CommandeType extends AbstractType
             ])
             ->add('lieuLivraison', TextType::class, [
                 'label' => 'Adresse de livraison',
-                'help' => 'Livraison incluse dans Bordeaux intra-muros.',
+            ])
+            ->add('codePostalLivraison', TextType::class, [
+                'label' => 'Code postal de livraison',
+                'help' => $options['aide_zones'],
+                'attr' => ['inputmode' => 'numeric', 'maxlength' => 5, 'autocomplete' => 'postal-code'],
             ])
             ->add('nbPersonnes', IntegerType::class, [
                 'label' => 'Nombre de convives',
@@ -55,9 +59,11 @@ class CommandeType extends AbstractType
             'data_class' => Commande::class,
             'aide_delai' => '',
             'aide_convives' => '',
+            'aide_zones' => '',
         ]);
 
         $resolver->setAllowedTypes('aide_delai', 'string');
         $resolver->setAllowedTypes('aide_convives', 'string');
+        $resolver->setAllowedTypes('aide_zones', 'string');
     }
 }

@@ -14,6 +14,7 @@ use App\Entity\Regime;
 use App\Entity\SuiviCommande;
 use App\Entity\Theme;
 use App\Entity\Utilisateur;
+use App\Entity\ZoneLivraison;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Service\CalculateurPrix;
@@ -69,7 +70,8 @@ class AppFixtures extends Fixture
         $utilisateurs = $this->chargerUtilisateurs($manager);
 
         $this->chargerHoraires($manager);
-        $commandes = $this->chargerCommandes($manager, $utilisateurs, $menus);
+        $zones = $this->chargerZones($manager);
+        $commandes = $this->chargerCommandes($manager, $utilisateurs, $menus, $zones);
         $this->chargerAvis($manager, $commandes);
         $this->chargerContacts($manager);
 
@@ -490,7 +492,7 @@ class AppFixtures extends Fixture
             'employe' => ['employe@vite-gourmand.fr', 'Marie', 'Lasserre', ['ROLE_EMPLOYE'], '05 56 23 45 67', "8 rue Sainte-Catherine, 33000 Bordeaux", true],
             'client1' => ['sophie.brunet@example.fr', 'Sophie', 'Brunet', [], '06 12 34 56 78', "24 rue Notre-Dame, 33000 Bordeaux", true],
             'client2' => ['david.marchand@example.fr', 'David', 'Marchand', [], '06 23 45 67 89', "5 avenue de la Libération, 33700 Mérignac", true],
-            'client3' => ['laetitia.fontaine@example.fr', 'Laëtitia', 'Fontaine', [], null, "17 allée des Vignes, 33330 Saint-Émilion", true],
+            'client3' => ['laetitia.fontaine@example.fr', 'Laëtitia', 'Fontaine', [], null, "17 allée des Vignes, 33400 Talence", true],
             'inactif' => ['compte.desactive@example.fr', 'Jean', 'Duviella', [], null, null, false],
         ];
 
@@ -545,16 +547,65 @@ class AppFixtures extends Fixture
     }
 
     /**
-     * @param array<string, Utilisateur> $utilisateurs
-     * @param array<string, Menu>        $menus
+     * Communes desservies.
+     *
+     * Bordeaux et ses codes postaux internes sont livrés sans supplément,
+     * conformément aux maquettes. La première couronne est desservie avec un
+     * supplément que le traiteur reste libre de modifier depuis
+     * l'administration : les maquettes n'en fixent aucun.
+     *
+     * @return array<string, ZoneLivraison>
+     */
+    private function chargerZones(ObjectManager $manager): array
+    {
+        $definitions = [
+            // code postal, commune, supplément
+            ['33000', 'Bordeaux', '0.00'],
+            ['33100', 'Bordeaux (Bastide)', '0.00'],
+            ['33200', 'Bordeaux (Caudéran)', '0.00'],
+            ['33300', 'Bordeaux (Chartrons)', '0.00'],
+            ['33800', 'Bordeaux (Saint-Jean)', '0.00'],
+            ['33110', 'Le Bouscat', '25.00'],
+            ['33130', 'Bègles', '25.00'],
+            ['33150', 'Cenon', '25.00'],
+            ['33170', 'Gradignan', '35.00'],
+            ['33270', 'Floirac', '25.00'],
+            ['33310', 'Lormont', '25.00'],
+            ['33400', 'Talence', '25.00'],
+            ['33600', 'Pessac', '35.00'],
+            ['33700', 'Mérignac', '35.00'],
+        ];
+
+        $zones = [];
+
+        foreach ($definitions as [$code, $commune, $frais]) {
+            $zone = (new ZoneLivraison())
+                ->setCodePostal($code)
+                ->setCommune($commune)
+                ->setFrais($frais);
+
+            $manager->persist($zone);
+            $zones[$code] = $zone;
+        }
+
+        return $zones;
+    }
+
+    /**
+     * @param array<string, Utilisateur>    $utilisateurs
+     * @param array<string, Menu>           $menus
+     * @param array<string, ZoneLivraison>  $zones
      *
      * @return array<string, Commande>
      */
-    private function chargerCommandes(ObjectManager $manager, array $utilisateurs, array $menus): array
+    private function chargerCommandes(ObjectManager $manager, array $utilisateurs, array $menus, array $zones): array
     {
         // Le prix n'est plus écrit ici : il est calculé par CalculateurPrix, ce
         // qui garantit que le jeu de données respecte les règles de tarification
         // au lieu de les contredire.
+        //
+        // Le code postal est extrait du lieu de livraison : il détermine la
+        // zone desservie et le supplément éventuel.
         //
         // client, menu, jours écoulés depuis la commande, jours avant prestation,
         // heure, lieu, nb personnes, statut, prêt de matériel
@@ -562,8 +613,8 @@ class AppFixtures extends Fixture
             'livree1' => ['client1', 'bistrot-bordelais', -30, -22, '12:00', "24 rue Notre-Dame, 33000 Bordeaux", 10, Commande::LIVREE, true],
             'livree2' => ['client2', 'grand-sud-ouest', -20, -14, '19:30', "5 avenue de la Libération, 33700 Mérignac", 8, Commande::LIVREE, false],
             'livree3' => ['client1', 'brunch-bordelais', -15, -9, '11:30', "24 rue Notre-Dame, 33000 Bordeaux", 6, Commande::LIVREE, true],
-            'livree4' => ['client3', 'table-sans-gluten', -12, -5, '12:00', "17 allée des Vignes, 33330 Saint-Émilion", 6, Commande::LIVREE, false],
-            'preparation' => ['client3', 'buffet-anniversaire', -6, 2, '11:00', "17 allée des Vignes, 33330 Saint-Émilion", 25, Commande::EN_PREPARATION, true],
+            'livree4' => ['client3', 'table-sans-gluten', -12, -5, '12:00', "17 allée des Vignes, 33400 Talence", 6, Commande::LIVREE, false],
+            'preparation' => ['client3', 'buffet-anniversaire', -6, 2, '11:00', "17 allée des Vignes, 33400 Talence", 25, Commande::EN_PREPARATION, true],
             'confirmee' => ['client2', 'bassin-arcachon', -3, 6, '19:00', "5 avenue de la Libération, 33700 Mérignac", 12, Commande::CONFIRMEE, false],
             'attente' => ['client3', 'buffet-mariage', -1, 25, '18:00', "Château Pape Clément, 33600 Pessac", 60, Commande::EN_ATTENTE, true],
             'annulee' => ['client1', 'cocktail-girondin', -10, -2, '18:30', "24 rue Notre-Dame, 33000 Bordeaux", 20, Commande::ANNULEE, false],
@@ -582,8 +633,17 @@ class AppFixtures extends Fixture
                 ->setStatut($statut)
                 ->setPretMateriel($materiel);
 
-            // Effectif, total et remise sont posés d'un seul geste.
-            $commande->appliquerPrix($this->calculateurPrix->calculer($menus[$menu], $nbPersonnes));
+            preg_match('/\b(\d{5})\b/', $lieu, $trouve);
+            $commande->setCodePostalLivraison($trouve[1]);
+
+            // Effectif, total, remise et frais de livraison sont posés d'un
+            // seul geste, par le calculateur : le jeu de données ne peut pas
+            // contredire les règles de tarification.
+            $commande->appliquerPrix($this->calculateurPrix->calculer(
+                $menus[$menu],
+                $nbPersonnes,
+                $zones[$trouve[1]] ?? null,
+            ));
 
             $manager->persist($commande);
             $commandes[$cle] = $commande;

@@ -106,6 +106,24 @@ class CommandeRepository extends ServiceEntityRepository
     }
 
     /**
+     * Commandes encore à honorer vers un code postal donné.
+     *
+     * Sert à prévenir avant de retirer une zone de livraison : livrée ou
+     * annulée, une commande n'attend plus rien.
+     */
+    public function compterEnCoursPour(string $codePostal): int
+    {
+        return (int) $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->andWhere('c.codePostalLivraison = :code')
+            ->andWhere('c.statut NOT IN (:termines)')
+            ->setParameter('code', $codePostal)
+            ->setParameter('termines', Commande::STATUTS_FINAUX)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * Matériel prêté et pas encore revenu, du plus ancien au plus récent :
      * les commandes les plus en retard arrivent en tête.
      *

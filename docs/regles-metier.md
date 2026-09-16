@@ -31,7 +31,23 @@ Pour un menu à 6 convives minimum, la remise s'applique à partir de 11.
 > rayon de Bordeaux intra-muros. »
 
 Aucun frais de livraison à ajouter **dans la zone**. Hors zone, la maquette ne
-dit rien : à trancher.
+dit rien.
+
+Tranché ainsi : les zones sont des **données**, pas un barème écrit en dur.
+`ZoneLivraison` associe un code postal, une commune et un supplément, que le
+traiteur gère depuis `/admin/zones`. Un code postal absent de la table n'est
+pas desservi — la commande est refusée et le client renvoyé vers le
+formulaire de contact pour un devis. Refuser vaut mieux que facturer un tarif
+que personne n'a fixé.
+
+Le supplément s'ajoute **après** la remise : celle-ci porte sur les
+prestations, pas sur le transport. Pour un menu à 40 € et 15 convives livré
+à Mérignac (35 €) : 600 − 60 + 35 = **575 €**, et non 571,50 €.
+
+Le code postal est saisi à part de l'adresse (`Commande::codePostalLivraison`) :
+l'extraire de `lieuLivraison` par expression régulière serait fragile. Le
+supplément retenu est recopié sur la commande, de sorte qu'un changement de
+tarif ne réécrive pas les commandes passées.
 
 ## 4. Indemnité de 600 € sur le matériel non restitué
 
@@ -143,7 +159,9 @@ Confirme la saisonnalité ajoutée sur la branche `saisonnalite-menus` :
 4. ~~**`Horaire::jour`** est une chaîne sans ordre.~~ Comblé : colonne `ordre`,
    renseignée par `setJour()`, plus un marqueur `ferme` pour les jours sans
    service.
-5. **Pas de zone de livraison**, alors que le prix en dépend.
+5. ~~**Pas de zone de livraison**, alors que le prix en dépend.~~ Comblé :
+   entité `ZoneLivraison`, `Commande::codePostalLivraison` et
+   `Commande::fraisLivraison`, contrainte `ZoneDesservie`.
 6. **`Commande::statut`** et **`Avis::statutValidation`** sont des chaînes
    libres : une faute de frappe crée un statut fantôme.
 

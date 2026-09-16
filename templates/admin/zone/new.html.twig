@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une commune — Administration{% endblock %}
+
+{% block body %}
+    <h1>Ajouter une commune</h1>
+
+    {{ include('admin/zone/_form.html.twig', {bouton: 'Enregistrer'}) }}
+{% endblock %}
