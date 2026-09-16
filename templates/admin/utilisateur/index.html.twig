@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Utilisateurs — Administration{% endblock %}
+
+{% block body %}
+    <h1>Utilisateurs</h1>
+
+    <form method="get" action="{{ path('app_admin_utilisateur_index') }}">
+        <label for="recherche">Rechercher un compte</label>
+        <input type="search" name="recherche" id="recherche" value="{{ recherche }}" placeholder="Nom, prénom ou e-mail">
+        <button type="submit">Rechercher</button>
+    </form>
+
+    {% if lignes is empty %}
+        <p>Aucun compte{% if recherche %} ne correspond à « {{ recherche }} »{% endif %}.</p>
+    {% else %}
+        <table>
+            <caption>Comptes ({{ lignes|length }})</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Nom</th>
+                    <th scope="col">E-mail</th>
+                    <th scope="col">Commandes</th>
+                    <th scope="col">État</th>
+                    <th scope="col">Rôle</th>
+                    <th scope="col">Activation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ligne in lignes %}
+                    {% set u = ligne.entite %}
+                    <tr>
+                        <th scope="row">{{ u.prenom }} {{ u.nom }}</th>
+                        <td>{{ u.userIdentifier }}</td>
+                        <td>{{ ligne.nbCommandes }}</td>
+                        <td>{{ u.actif ? 'Actif' : 'Désactivé' }}</td>
+                        <td>
+                            <form method="post" action="{{ path('app_admin_utilisateur_role', {id: u.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('role-utilisateur-' ~ u.id) }}">
+                                <label for="role-{{ u.id }}" class="sr-only">Rôle de {{ u.userIdentifier }}</label>
+                                <select name="role" id="role-{{ u.id }}">
+                                    {% for libelle, valeur in roles %}
+                                        <option value="{{ valeur }}" {% if valeur in u.roles or (valeur == '' and u.roles == ['ROLE_USER']) %}selected{% endif %}>{{ libelle }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit">Appliquer</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="post" action="{{ path('app_admin_utilisateur_activation', {id: u.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('activation-utilisateur-' ~ u.id) }}">
+                                <button type="submit">{{ u.actif ? 'Désactiver' : 'Réactiver' }}<span class="sr-only"> le compte {{ u.userIdentifier }}</span></button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <p><a href="{{ path('app_admin') }}">Retour à l'administration</a></p>
+{% endblock %}
