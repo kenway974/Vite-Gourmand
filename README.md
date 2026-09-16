@@ -22,7 +22,10 @@ Projet ECF — Titre professionnel Développeur Web et Web Mobile.
 ```bash
 composer install
 
-# Créer la base et l'utilisateur côté MySQL
+# Option 1 — le conteneur fourni (MySQL 8, collation déjà réglée)
+docker compose up -d
+
+# Option 2 — un MySQL déjà installé
 mysql -u root -p -e "CREATE DATABASE vite_gourmand CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 
 # Renseigner ses identifiants sans toucher au fichier versionné
@@ -43,7 +46,8 @@ php -r 'echo "APP_SECRET=" . bin2hex(random_bytes(16)) . PHP_EOL;' >> .env.local
 
 ### Collation
 
-La base doit être en `utf8mb4_unicode_ci`. C'est elle qui rend la recherche du
+La base doit être en `utf8mb4_unicode_ci` — c'est le réglage du conteneur
+`compose.yaml`. C'est elle qui rend la recherche du
 catalogue insensible à la casse **et aux accents** : `MenuRepository::findCatalogue()`
 s'appuie dessus plutôt que sur un `LOWER()`, qui ne sait pas abaisser un « Ô ».
 
