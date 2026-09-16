@@ -8,10 +8,36 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use App\Service\DetailPrix;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 class Commande
 {
+    /**
+     * Statuts possibles d'une commande, dans leur ordre de progression.
+     *
+     * La colonne est une chaîne libre : sans ces constantes, rien n'empêche
+     * une faute de frappe de créer un statut fantôme qu'aucun filtre ne
+     * retrouvera.
+     */
+    public const EN_ATTENTE = 'en attente';
+    public const CONFIRMEE = 'confirmée';
+    public const EN_PREPARATION = 'en préparation';
+    public const LIVREE = 'livrée';
+    public const ANNULEE = 'annulée';
+
+    /** @var list<string> */
+    public const STATUTS = [
+        self::EN_ATTENTE,
+        self::CONFIRMEE,
+        self::EN_PREPARATION,
+        self::LIVREE,
+        self::ANNULEE,
+    ];
+
+    /** Statuts après lesquels plus rien ne bouge. */
+    public const STATUTS_FINAUX = [self::LIVREE, self::ANNULEE];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -60,6 +86,7 @@ class Commande
     private string $montantRemise = '0.00';
 
     #[ORM\Column(length: 30)]
+    #[Assert\Choice(choices: self::STATUTS, message: 'Statut de commande inconnu.')]
     private ?string $statut = null;
 
     #[ORM\Column]
@@ -291,5 +318,21 @@ class Commande
         $this->tauxRemise = sprintf('%.2f', $detail->tauxRemise * 100);
 
         return $this;
+    }
+
+    public function estTerminee(): bool
+    {
+        return \in_array($this->statut, self::STATUTS_FINAUX, true);
+    }
+
+    /**
+     * Le client peut-il encore annuler ?
+     *
+     * Une commande déjà en préparation ne s'annule plus en libre-service :
+     * les achats sont engagés.
+     */
+    public function estAnnulableParLeClient(): bool
+    {
+        return \in_array($this->statut, [self::EN_ATTENTE, self::CONFIRMEE], true);
     }
 }

@@ -5,10 +5,18 @@ namespace App\Entity;
 use App\Repository\AvisRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AvisRepository::class)]
 class Avis
 {
+    public const EN_ATTENTE = 'en attente';
+    public const VALIDE = 'validé';
+    public const REFUSE = 'refusé';
+
+    /** @var list<string> */
+    public const STATUTS = [self::EN_ATTENTE, self::VALIDE, self::REFUSE];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -23,12 +31,15 @@ class Avis
     private ?Utilisateur $utilisateur = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: 'Merci de donner une note.')]
+    #[Assert\Range(min: 1, max: 5, notInRangeMessage: 'La note doit être comprise entre {{ min }} et {{ max }}.')]
     private ?int $note = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $commentaire = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\Choice(choices: self::STATUTS, message: 'Statut de validation inconnu.')]
     private ?string $statutValidation = null;
 
     #[ORM\Column]
@@ -109,5 +120,15 @@ class Avis
         $this->dateCreation = $dateCreation;
 
         return $this;
+    }
+
+    public function estPublie(): bool
+    {
+        return self::VALIDE === $this->statutValidation;
+    }
+
+    public function attendModeration(): bool
+    {
+        return self::EN_ATTENTE === $this->statutValidation;
     }
 }

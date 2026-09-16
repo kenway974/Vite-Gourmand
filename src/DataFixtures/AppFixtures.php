@@ -554,14 +554,14 @@ class AppFixtures extends Fixture
         // client, menu, jours écoulés depuis la commande, jours avant prestation,
         // heure, lieu, nb personnes, statut, prêt de matériel
         $definitions = [
-            'livree1' => ['client1', 'bistrot-bordelais', -30, -22, '12:00', "24 rue Notre-Dame, 33000 Bordeaux", 10, 'livrée', true],
-            'livree2' => ['client2', 'grand-sud-ouest', -20, -14, '19:30', "5 avenue de la Libération, 33700 Mérignac", 8, 'livrée', false],
-            'livree3' => ['client1', 'brunch-bordelais', -15, -9, '11:30', "24 rue Notre-Dame, 33000 Bordeaux", 6, 'livrée', false],
-            'livree4' => ['client3', 'table-sans-gluten', -12, -5, '12:00', "17 allée des Vignes, 33330 Saint-Émilion", 6, 'livrée', false],
-            'preparation' => ['client3', 'buffet-anniversaire', -6, 2, '11:00', "17 allée des Vignes, 33330 Saint-Émilion", 25, 'en préparation', true],
-            'confirmee' => ['client2', 'bassin-arcachon', -3, 6, '19:00', "5 avenue de la Libération, 33700 Mérignac", 12, 'confirmée', false],
-            'attente' => ['client3', 'buffet-mariage', -1, 25, '18:00', "Château Pape Clément, 33600 Pessac", 60, 'en attente', true],
-            'annulee' => ['client1', 'cocktail-girondin', -10, -2, '18:30', "24 rue Notre-Dame, 33000 Bordeaux", 20, 'annulée', false],
+            'livree1' => ['client1', 'bistrot-bordelais', -30, -22, '12:00', "24 rue Notre-Dame, 33000 Bordeaux", 10, Commande::LIVREE, true],
+            'livree2' => ['client2', 'grand-sud-ouest', -20, -14, '19:30', "5 avenue de la Libération, 33700 Mérignac", 8, Commande::LIVREE, false],
+            'livree3' => ['client1', 'brunch-bordelais', -15, -9, '11:30', "24 rue Notre-Dame, 33000 Bordeaux", 6, Commande::LIVREE, false],
+            'livree4' => ['client3', 'table-sans-gluten', -12, -5, '12:00', "17 allée des Vignes, 33330 Saint-Émilion", 6, Commande::LIVREE, false],
+            'preparation' => ['client3', 'buffet-anniversaire', -6, 2, '11:00', "17 allée des Vignes, 33330 Saint-Émilion", 25, Commande::EN_PREPARATION, true],
+            'confirmee' => ['client2', 'bassin-arcachon', -3, 6, '19:00', "5 avenue de la Libération, 33700 Mérignac", 12, Commande::CONFIRMEE, false],
+            'attente' => ['client3', 'buffet-mariage', -1, 25, '18:00', "Château Pape Clément, 33600 Pessac", 60, Commande::EN_ATTENTE, true],
+            'annulee' => ['client1', 'cocktail-girondin', -10, -2, '18:30', "24 rue Notre-Dame, 33000 Bordeaux", 20, Commande::ANNULEE, false],
         ];
 
         $commandes = [];
@@ -595,11 +595,11 @@ class AppFixtures extends Fixture
     private function chargerSuivi(ObjectManager $manager, Commande $commande, string $statutFinal, int $joursCommande): void
     {
         $parcours = match ($statutFinal) {
-            'livrée' => ['en attente', 'confirmée', 'en préparation', 'livrée'],
-            'en préparation' => ['en attente', 'confirmée', 'en préparation'],
-            'confirmée' => ['en attente', 'confirmée'],
-            'annulée' => ['en attente', 'confirmée', 'annulée'],
-            default => ['en attente'],
+            Commande::LIVREE => [Commande::EN_ATTENTE, Commande::CONFIRMEE, Commande::EN_PREPARATION, Commande::LIVREE],
+            Commande::EN_PREPARATION => [Commande::EN_ATTENTE, Commande::CONFIRMEE, Commande::EN_PREPARATION],
+            Commande::CONFIRMEE => [Commande::EN_ATTENTE, Commande::CONFIRMEE],
+            Commande::ANNULEE => [Commande::EN_ATTENTE, Commande::CONFIRMEE, Commande::ANNULEE],
+            default => [Commande::EN_ATTENTE],
         };
 
         foreach ($parcours as $index => $statut) {
@@ -609,7 +609,7 @@ class AppFixtures extends Fixture
                 ->setDateModification(new \DateTime(sprintf('%+d days', $joursCommande + $index)))
                 ->setModeContact($index === 0 ? 'site web' : 'email');
 
-            if ('annulée' === $statut) {
+            if (Commande::ANNULEE === $statut) {
                 $suivi->setMotif("Annulation à la demande du client, plus de 48 h avant la prestation.");
             }
 
@@ -625,10 +625,10 @@ class AppFixtures extends Fixture
         //
         // commande, note, commentaire, statut de validation, jours écoulés
         $definitions = [
-            ['livree1', 5, "Entrecôte parfaitement cuite et la sauce bordelaise était à tomber. Livraison pile à l\'heure, on recommandera.", 'validé', -20],
-            ['livree2', 4, "Très bon confit, peau bien croustillante. Un peu juste sur les haricots pour huit personnes.", 'validé', -12],
-            ['livree3', 5, "Enfin un traiteur qui soigne le végétarien. Le tourin était une vraie surprise, et les canelés impeccables.", 'validé', -7],
-            ['livree4', 3, "Bon dans l\'ensemble, mais les pruneaux à l\'armagnac sont arrivés écrasés.", 'en attente', -2],
+            ['livree1', 5, "Entrecôte parfaitement cuite et la sauce bordelaise était à tomber. Livraison pile à l\'heure, on recommandera.", Avis::VALIDE, -20],
+            ['livree2', 4, "Très bon confit, peau bien croustillante. Un peu juste sur les haricots pour huit personnes.", Avis::VALIDE, -12],
+            ['livree3', 5, "Enfin un traiteur qui soigne le végétarien. Le tourin était une vraie surprise, et les canelés impeccables.", Avis::VALIDE, -7],
+            ['livree4', 3, "Bon dans l\'ensemble, mais les pruneaux à l\'armagnac sont arrivés écrasés.", Avis::EN_ATTENTE, -2],
         ];
 
         foreach ($definitions as [$cleCommande, $note, $commentaire, $statut, $jours]) {
