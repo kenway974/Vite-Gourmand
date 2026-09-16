@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ menu.titre }} — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <p><a href="{{ path('app_catalogue') }}">Retour aux menus</a></p>
+
+    <h1>{{ menu.titre }}</h1>
+
+    <p>{{ menu.theme.libelle }} — {{ menu.regime.libelle }}</p>
+    <p>{{ menu.description }}</p>
+
+    <h2>Tarif</h2>
+    <p>
+        <strong>{{ menu.prixMin }} € par personne</strong>, à partir de
+        {{ menu.nbMinPersonnes }} convives, à commander au moins
+        {{ menu.delaiCommandeJours }} jour(s) à l'avance.
+    </p>
+    <p>
+        Une remise de 10 % s'applique à partir de
+        {{ menu.nbMinPersonnes + 5 }} convives.
+    </p>
+
+    {% if menu.dateDebut or menu.dateFin %}
+        <p>
+            Proposé
+            {% if menu.dateDebut %}du {{ menu.dateDebut|date('d/m/Y') }}{% endif %}
+            {% if menu.dateFin %}au {{ menu.dateFin|date('d/m/Y') }}{% endif %}.
+        </p>
+    {% endif %}
+
+    {{ include('catalogue/_disponibilite.html.twig') }}
+
+    <h2>Composition</h2>
+    {% if menu.plats is empty %}
+        <p>La composition de ce menu sera précisée prochainement.</p>
+    {% else %}
+        <ul>
+            {% for plat in menu.plats %}
+                <li>
+                    <strong>{{ plat.nom }}</strong>
+                    {% if plat.description %} — {{ plat.description }}{% endif %}
+                    {% if plat.ingredients is not empty %}
+                        <br>
+                        <span>Ingrédients : {{ plat.ingredients|map(i => i.nom)|join(', ') }}</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h2>Allergènes</h2>
+    {% if allergenes is empty %}
+        <p>Aucun des 14 allergènes à déclaration obligatoire n'a été relevé dans ce menu.</p>
+    {% else %}
+        {# Liste déduite des ingrédients, jamais saisie à la main. #}
+        <ul>
+            {% for allergene in allergenes %}
+                <li>{{ allergene.libelle }}</li>
+            {% endfor %}
+        </ul>
+        <p>
+            Ces informations sont données à titre indicatif. En cas d'allergie,
+            signalez-la lors de la commande.
+        </p>
+    {% endif %}
+
+    {% if menu.precautions %}
+        <h2>Bon à savoir</h2>
+        <p>{{ menu.precautions }}</p>
+    {% endif %}
+
+    <h2>Avis</h2>
+    {% if note %}
+        <p>{{ note.moyenne }} / 5 sur {{ note.nombre }} avis publié(s).</p>
+    {% endif %}
+
+    {% if avis is empty %}
+        <p>Ce menu n'a pas encore reçu d'avis.</p>
+    {% else %}
+        <ul>
+            {% for un_avis in avis %}
+                <li>
+                    <p>
+                        <strong>{{ un_avis.note }} / 5</strong> —
+                        {{ un_avis.utilisateur.prenom }},
+                        le {{ un_avis.dateCreation|date('d/m/Y') }}
+                    </p>
+                    <p>{{ un_avis.commentaire }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

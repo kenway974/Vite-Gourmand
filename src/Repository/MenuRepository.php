@@ -2,9 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Avis;
 use App\Entity\Menu;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use App\Entity\Theme;
 use App\Entity\Regime;
@@ -14,6 +16,17 @@ use App\Entity\Regime;
  */
 class MenuRepository extends ServiceEntityRepository
 {
+    /**
+     * Ordres de tri acceptés par le catalogue, libellés compris. La clé est
+     * ce qui circule dans l'URL ; toute autre valeur retombe sur le titre.
+     */
+    public const TRIS = [
+        'titre' => 'Ordre alphabétique',
+        'prix-croissant' => 'Prix croissant',
+        'prix-decroissant' => 'Prix décroissant',
+        'note' => 'Les mieux notés',
+    ];
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Menu::class);
@@ -74,7 +87,7 @@ class MenuRepository extends ServiceEntityRepository
      * Seules des relations ToOne sont jointes (thème, régime) : une jointure
      * sur une collection multiplierait les lignes et fausserait LIMIT/OFFSET.
      *
-     * @param array{theme?: ?Theme, regime?: ?Regime, prixMax?: ?string, nbPersonnes?: ?int, seulementCommandables?: bool} $filtres
+     * @param array{theme?: ?Theme, regime?: ?Regime, prixMax?: ?string, nbPersonnes?: ?int, recherche?: ?string, tri?: ?string, seulementCommandables?: bool} $filtres
      *
      * @return Paginator<Menu>
      */
@@ -90,8 +103,7 @@ class MenuRepository extends ServiceEntityRepository
             // savoir au visiteur qu'on le propose. Sa commandabilité est
             // signalée à l'affichage par Menu::disponibilite().
             ->andWhere('m.dateFin IS NULL OR m.dateFin >= :aujourdhui')
-            ->setParameter('aujourdhui', new \DateTime('today'))
-            ->orderBy('m.titre', 'ASC');
+            ->setParameter('aujourdhui', new \DateTime('today'));
 
         if (!empty($filtres['seulementCommandables'])) {
             $qb->andWhere('m.stock > 0')
@@ -116,11 +128,59 @@ class MenuRepository extends ServiceEntityRepository
                ->setParameter('nbPersonnes', $filtres['nbPersonnes']);
         }
 
+        if (!empty($filtres['recherche'])) {
+            // LIKE sur deux colonnes : suffisant pour un catalogue de cette
+            // taille, un index plein texte ne se justifierait qu'à partir de
+            // plusieurs milliers de menus.
+            //
+            // Pas de LOWER() : l'insensibilité à la casse vient de la
+            // collation de la table (utf8mb4_unicode_ci en MySQL), qui traite
+            // aussi les accents. LOWER() n'y ajouterait rien, et ne sait de
+            // toute façon pas abaisser « Ô » sans ICU.
+            //
+            // Les jokers SQL saisis par le visiteur sont neutralisés, sans quoi
+            // « % » à lui seul ramènerait tout le catalogue.
+            $motif = '%'.addcslashes(trim((string) $filtres['recherche']), '%_\\').'%';
+
+            $qb->andWhere('m.titre LIKE :recherche OR m.description LIKE :recherche')
+               ->setParameter('recherche', $motif);
+        }
+
+        $this->trier($qb, $filtres['tri'] ?? null);
+
         $page = max(1, $page);
 
         $qb->setFirstResult(($page - 1) * $parPage)->setMaxResults($parPage);
 
         return new Paginator($qb->getQuery(), fetchJoinCollection: false);
+    }
+
+    /**
+     * Applique l'ordre demandé, en retombant sur le titre si la valeur reçue
+     * n'est pas reconnue : le tri vient de l'URL, il n'est pas digne de
+     * confiance et ne doit jamais atterrir tel quel dans du DQL.
+     */
+    private function trier(QueryBuilder $qb, ?string $tri): void
+    {
+        match ($tri) {
+            'prix-croissant' => $qb->orderBy('m.prixMin', 'ASC'),
+            'prix-decroissant' => $qb->orderBy('m.prixMin', 'DESC'),
+            // La note moyenne n'est pas une colonne : elle est recalculée par
+            // une sous-requête corrélée, déclarée HIDDEN pour pouvoir servir
+            // de critère de tri sans polluer le résultat hydraté.
+            'note' => $qb
+                ->addSelect(
+                    '(SELECT AVG(av.note) FROM App\\Entity\\Avis av'
+                    .' JOIN av.commande cav'
+                    .' WHERE cav.menu = m AND av.statutValidation = :avisValide) AS HIDDEN noteMoyenne'
+                )
+                ->setParameter('avisValide', Avis::VALIDE)
+                // Un menu sans avis a une moyenne nulle : il passe après les
+                // menus notés plutôt que devant, d'où le tri secondaire.
+                ->orderBy('noteMoyenne', 'DESC')
+                ->addOrderBy('m.titre', 'ASC'),
+            default => $qb->orderBy('m.titre', 'ASC'),
+        };
     }
 
     /**

@@ -1,0 +1,15 @@
+{# Un menu reste affiché hors saison ou en rupture : c'est ce qui fait savoir
+   au visiteur qu'on le propose. Seule la commandabilité change. #}
+{% set etat = menu.disponibilite %}
+
+{% if etat == 'disponible' %}
+    <p><a href="{{ path('app_commande_nouvelle', {id: menu.id}) }}">Commander ce menu</a></p>
+{% elseif etat == 'bientot' %}
+    <p role="status">
+        Bientôt disponible{% if menu.dateDebut %}, à partir du {{ menu.dateDebut|date('d/m/Y') }}{% endif %}.
+    </p>
+{% elseif etat == 'epuise' %}
+    <p role="status">Momentanément épuisé.</p>
+{% else %}
+    <p role="status">Ce menu n'est plus proposé.</p>
+{% endif %}
