@@ -29,6 +29,9 @@
                     {% if app.user %}
                         <li><a href="{{ path('app_compte') }}">Mon compte</a></li>
                         <li><a href="{{ path('app_client_commandes') }}">Mes commandes</a></li>
+                        {% if is_granted('ROLE_EMPLOYE') %}
+                            <li><a href="{{ path('app_employe') }}">Espace employé</a></li>
+                        {% endif %}
                         {% if is_granted('ROLE_ADMIN') %}
                             <li><a href="{{ path('app_admin') }}">Administration</a></li>
                         {% endif %}

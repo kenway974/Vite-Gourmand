@@ -84,4 +84,47 @@ class CommandeRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * Commandes pour le suivi interne, filtrables par statut.
+     *
+     * @return Commande[]
+     */
+    public function findPourSuivi(?string $statut = null): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->addSelect('u', 'm')
+            ->join('c.utilisateur', 'u')
+            ->join('c.menu', 'm')
+            ->orderBy('c.datePrestation', 'ASC');
+
+        if (null !== $statut && '' !== $statut) {
+            $qb->andWhere('c.statut = :statut')->setParameter('statut', $statut);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Feuille de route d'une journée : ce qu'il y a à préparer et à livrer.
+     *
+     * Triée par heure de livraison, et débarrassée des commandes annulées :
+     * c'est la liste que la cuisine lit le matin.
+     *
+     * @return Commande[]
+     */
+    public function findAPreparerPour(\DateTimeInterface $jour): array
+    {
+        return $this->createQueryBuilder('c')
+            ->addSelect('u', 'm')
+            ->join('c.utilisateur', 'u')
+            ->join('c.menu', 'm')
+            ->andWhere('c.datePrestation = :jour')
+            ->andWhere('c.statut != :annulee')
+            ->setParameter('jour', $jour->format('Y-m-d'))
+            ->setParameter('annulee', Commande::ANNULEE)
+            ->orderBy('c.heureLivraison', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
