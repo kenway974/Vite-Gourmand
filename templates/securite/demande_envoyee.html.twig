@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demande envoyée — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Demande envoyée</h1>
+
+    {# Formulation volontairement conditionnelle : confirmer l'existence du
+       compte transformerait cette page en annuaire. #}
+    <p>
+        Si un compte existe avec cette adresse, un lien de réinitialisation
+        vient de lui être envoyé. Il est valable
+        {{ constant('App\\Security\\ReinitialisationMotDePasse::VALIDITE_MINUTES') }} minutes.
+    </p>
+
+    <p>Pensez à regarder dans vos courriers indésirables.</p>
+
+    <p><a href="{{ path('app_login') }}">Retour à la connexion</a></p>
+{% endblock %}
