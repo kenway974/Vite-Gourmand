@@ -348,6 +348,53 @@ class CatalogueTest extends WebTestCase
         self::assertSelectorTextContains('body', 'Momentanément épuisé');
     }
 
+    // --- Notation globale -------------------------------------------------
+
+    public function testLAccueilAfficheLaMoyenneTousMenusConfondus(): void
+    {
+        $premier = $this->menu('Buffet bordelais');
+        $second = $this->menu('Banquet de mariage');
+
+        $this->avis($premier, 5);
+        $this->avis($second, 4);
+        $this->avis($second, 1, 'En attente.', Avis::EN_ATTENTE);
+
+        $crawler = $this->client->request('GET', '/');
+        $texte = $crawler->filter('body')->text();
+
+        // (5 + 4) / 2 = 4,5. L'avis en modération ne compte pas : « vérifiés ».
+        self::assertStringContainsString('4,5 sur 5', $texte);
+        self::assertStringContainsString('2 avis vérifiés', $texte);
+    }
+
+    public function testLAccueilNAnnonceRienSansAvisPublie(): void
+    {
+        $menu = $this->menu('Buffet bordelais');
+        $this->avis($menu, 5, 'En attente.', Avis::EN_ATTENTE);
+
+        $crawler = $this->client->request('GET', '/');
+
+        self::assertResponseIsSuccessful();
+        self::assertStringNotContainsString('sur 5', $crawler->filter('body')->text());
+    }
+
+    public function testLaMoyenneGlobaleDiffereDeCelleDuMenu(): void
+    {
+        $premier = $this->menu('Buffet bordelais');
+        $second = $this->menu('Banquet de mariage');
+
+        $this->avis($premier, 5);
+        $this->avis($second, 1);
+
+        // Deux agrégats distincts : 3,0 en global, 5 sur la fiche du premier menu.
+        // La moyenne globale garde toujours une décimale, comme « 4,8 sur 5 ».
+        self::assertStringContainsString('3,0 sur 5', $this->client->request('GET', '/')->filter('body')->text());
+        self::assertStringContainsString(
+            '5 / 5 sur 1 avis',
+            $this->client->request('GET', '/menus/'.$premier->getId())->filter('body')->text(),
+        );
+    }
+
     // --- Coût en requêtes -------------------------------------------------
 
     public function testLeCatalogueNeDeclenchePasUneRequeteParMenu(): void
