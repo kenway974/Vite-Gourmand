@@ -45,7 +45,7 @@ INSERT INTO `allergene` (`id`, `libelle`) VALUES
   (13, 'Lupin'),
   (14, 'Mollusques');
 
--- ingredient (38 lignes)
+-- ingredient (46 lignes)
 INSERT INTO `ingredient` (`id`, `nom`, `image`) VALUES
   (1, 'Farine de blé', NULL),
   (2, 'Pain de campagne', NULL),
@@ -84,9 +84,17 @@ INSERT INTO `ingredient` (`id`, `nom`, `image`) VALUES
   (35, 'Rhum ambré', NULL),
   (36, 'Moutarde', NULL),
   (37, 'Céleri branche', NULL),
-  (38, 'Vinaigre de vin', NULL);
+  (38, 'Vinaigre de vin', NULL),
+  (39, 'Chapon fermier', NULL),
+  (40, 'Gigot d\'agneau', NULL),
+  (41, 'Saumon fumé', NULL),
+  (42, 'Noix de Saint-Jacques', NULL),
+  (43, 'Chocolat noir', NULL),
+  (44, 'Citron', NULL),
+  (45, 'Aneth', NULL),
+  (46, 'Marron', NULL);
 
--- ingredient_allergene (16 lignes)
+-- ingredient_allergene (19 lignes)
 INSERT INTO `ingredient_allergene` (`ingredient_id`, `allergene_id`) VALUES
   (1, 1),
   (2, 1),
@@ -103,15 +111,22 @@ INSERT INTO `ingredient_allergene` (`ingredient_id`, `allergene_id`) VALUES
   (35, 12),
   (36, 10),
   (37, 9),
-  (38, 12);
+  (38, 12),
+  (41, 4),
+  (42, 14),
+  (43, 6);
 
--- theme (5 lignes)
+-- theme (9 lignes)
 INSERT INTO `theme` (`id`, `libelle`, `description`) VALUES
   (1, 'Bistrot bordelais', 'Les classiques des tables de la ville, sans chichi.'),
   (2, 'Terroir du Sud-Ouest', 'Canard, cèpes et produits de la région.'),
   (3, 'Buffet festif', 'Formules généreuses pour mariages, anniversaires et grandes tablées.'),
   (4, 'Cocktail dînatoire', 'Bouchées et pièces salées à partager debout.'),
-  (5, 'Brunch', 'Formule du week-end, sucrée et salée.');
+  (5, 'Brunch', 'Formule du week-end, sucrée et salée.'),
+  (6, 'Noël', 'Menus de fête, à commander tôt : les quantités sont limitées.'),
+  (7, 'Réveillon du Nouvel An', 'Formules festives pour la nuit du 31 décembre.'),
+  (8, 'Pâques', 'Agneau, asperges et chocolat, autour du week-end pascal.'),
+  (9, 'Saint-Valentin', 'Formules pour deux, à retirer ou à livrer.');
 
 -- regime (4 lignes)
 INSERT INTO `regime` (`id`, `libelle`, `description`) VALUES
@@ -120,7 +135,7 @@ INSERT INTO `regime` (`id`, `libelle`, `description`) VALUES
   (3, 'Sans porc', 'Aucune préparation à base de porc.'),
   (4, 'Sans gluten', 'Adapté aux intolérants au gluten.');
 
--- plat (20 lignes)
+-- plat (26 lignes)
 INSERT INTO `plat` (`id`, `nom`, `type`, `description`, `image`) VALUES
   (1, 'Huîtres du Bassin d\'Arcachon', 'Entrée', 'Servies nature, avec pain de seigle et beurre demi-sel.', NULL),
   (2, 'Grenier médocain', 'Entrée', 'Charcuterie girondine traditionnelle, tranchée fin et servie froide.', NULL),
@@ -141,9 +156,15 @@ INSERT INTO `plat` (`id`, `nom`, `type`, `description`, `image`) VALUES
   (17, 'Macarons de Saint-Émilion', 'Dessert', 'La recette des Ursulines, à l\\\'amande douce.', NULL),
   (18, 'Dunes blanches', 'Dessert', 'Petits choux garnis de crème fouettée, spécialité du Cap Ferret.', NULL),
   (19, 'Gâteau basque', 'Dessert', 'Pâte sablée et crème pâtissière à la vanille.', NULL),
-  (20, 'Pruneaux à l\'armagnac', 'Dessert', 'Pruneaux d\\\'Agen macérés, servis avec une glace vanille.', NULL);
+  (20, 'Pruneaux à l\'armagnac', 'Dessert', 'Pruneaux d\\\'Agen macérés, servis avec une glace vanille.', NULL),
+  (21, 'Saumon fumé et blinis', 'Entrée', 'Saumon fumé, blinis tièdes et crème citronnée à l\\\'aneth.', NULL),
+  (22, 'Noix de Saint-Jacques poêlées', 'Entrée', 'Saisies au beurre, réduction d\\\'échalote à la crème.', NULL),
+  (23, 'Chapon farci aux cèpes', 'Plat', 'Chapon fermier farci aux cèpes et aux marrons.', NULL),
+  (24, 'Gigot d\'agneau pascal', 'Plat', 'Gigot rôti sept heures, ail et thym.', NULL),
+  (25, 'Bûche de Noël', 'Dessert', 'Biscuit roulé, ganache au chocolat noir.', NULL),
+  (26, 'Moelleux au chocolat', 'Dessert', 'Cœur coulant, chocolat noir de couverture.', NULL);
 
--- plat_ingredient (92 lignes)
+-- plat_ingredient (123 lignes)
 INSERT INTO `plat_ingredient` (`plat_id`, `ingredient_id`) VALUES
   (1, 22),
   (1, 2),
@@ -236,35 +257,97 @@ INSERT INTO `plat_ingredient` (`plat_id`, `ingredient_id`) VALUES
   (20, 12),
   (20, 6),
   (20, 33),
-  (20, 34);
+  (20, 34),
+  (21, 41),
+  (21, 1),
+  (21, 6),
+  (21, 44),
+  (21, 45),
+  (21, 3),
+  (22, 42),
+  (22, 5),
+  (22, 7),
+  (22, 6),
+  (23, 39),
+  (23, 24),
+  (23, 46),
+  (23, 2),
+  (23, 5),
+  (23, 10),
+  (24, 40),
+  (24, 8),
+  (24, 10),
+  (24, 5),
+  (25, 1),
+  (25, 3),
+  (25, 33),
+  (25, 43),
+  (25, 6),
+  (25, 5),
+  (26, 43),
+  (26, 3),
+  (26, 5),
+  (26, 33),
+  (26, 1);
 
--- menu (10 lignes)
+-- menu (24 lignes)
 INSERT INTO `menu` (`id`, `titre`, `description`, `nb_min_personnes`, `prix_min`, `delai_commande_jours`, `precautions`, `stock`, `image`, `theme_id`, `regime_id`) VALUES
-  (1, 'Bistrot Bordelais', 'Formule « Bistrot Bordelais », composée de 5 préparations : Grenier médocain, Entrecôte à la bordelaise, Cèpes à la bordelaise, Pommes sarladaises, Canelés de Bordeaux.', 6, 24, 3, 'Contient du porc (grenier médocain) et des sulfites.', 12, NULL, 1, 1),
-  (2, 'Table du Médoc', 'Formule « Table du Médoc », composée de 5 préparations : Foie gras de canard mi-cuit, Agneau de Pauillac, Cèpes à la bordelaise, Pommes sarladaises, Macarons de Saint-Émilion.', 8, 34, 5, 'Contient sulfites et fruits à coque.', 6, NULL, 2, 1),
-  (3, 'Grand Sud-Ouest', 'Formule « Grand Sud-Ouest », composée de 5 préparations : Salade landaise, Confit de canard, Pommes sarladaises, Haricots tarbais, Gâteau basque.', 8, 29, 4, 'Contient du porc (jambon de Bayonne) et du céleri.', 8, NULL, 2, 1),
-  (4, 'Bassin d\'Arcachon', 'Formule « Bassin d\'Arcachon », composée de 4 préparations : Huîtres du Bassin d\'Arcachon, Lamproie à la bordelaise, Pommes sarladaises, Dunes blanches.', 6, 31, 4, 'Contient mollusques et poisson.', 7, NULL, 1, 3),
-  (5, 'Canard & Compagnie', 'Formule « Canard & Compagnie », composée de 5 préparations : Foie gras de canard mi-cuit, Magret de canard, Pommes sarladaises, Gratin de légumes, Pruneaux à l\'armagnac.', 8, 28, 4, 'Tout en canard. Aucune préparation à base de porc.', 9, NULL, 2, 3),
-  (6, 'Buffet Mariage', 'Formule « Buffet Mariage », composée de 10 préparations : Huîtres du Bassin d\'Arcachon, Foie gras de canard mi-cuit, Grenier médocain, Entrecôte à la bordelaise, Confit de canard, Cèpes à la bordelaise, Pommes sarladaises, Haricots tarbais, Canelés de Bordeaux, Macarons de Saint-Émilion.', 40, 42, 15, 'Contient la plupart des allergènes majeurs. Composition adaptable sur demande.', 3, NULL, 3, 1),
-  (7, 'Buffet Anniversaire', 'Formule « Buffet Anniversaire », composée de 5 préparations : Salade landaise, Magret de canard, Pommes sarladaises, Gratin de légumes, Canelés de Bordeaux.', 20, 32, 10, 'Sans porc. Contient sulfites et fruits à coque.', 5, NULL, 3, 3),
-  (8, 'Cocktail Girondin', 'Formule « Cocktail Girondin », composée de 3 préparations : Huîtres du Bassin d\'Arcachon, Grenier médocain, Foie gras de canard mi-cuit.', 15, 16, 5, 'Pièces à partager, servies froides ou tièdes. Contient mollusques et porc.', 10, NULL, 4, 1),
-  (9, 'Brunch Bordelais', 'Formule « Brunch Bordelais », composée de 5 préparations : Tourin blanchi à l\'ail, Asperges blanches du Blayais, Gratin de légumes, Canelés de Bordeaux, Dunes blanches.', 4, 21, 2, 'Végétarien. Contient gluten, lait et œuf.', 10, NULL, 5, 2),
-  (10, 'Table Sans Gluten', 'Formule « Table Sans Gluten », composée de 5 préparations : Magret de canard, Cèpes à la bordelaise, Pommes sarladaises, Gratin de légumes, Pruneaux à l\'armagnac.', 6, 26, 4, 'Élaboré sans ingrédient contenant du gluten.', 7, NULL, 1, 4);
+  (1, 'Bistrot Bordelais', 'Formule « Bistrot Bordelais », composée de 5 préparations : Grenier médocain, Entrecôte à la bordelaise, Cèpes à la bordelaise, Pommes sarladaises, Canelés de Bordeaux.', 6, 24, 3, 'L\\\'entrecôte est livrée saignante ; précisez la cuisson souhaitée à la commande.', 12, NULL, 1, 1),
+  (2, 'Table du Médoc', 'Formule « Table du Médoc », composée de 5 préparations : Foie gras de canard mi-cuit, Agneau de Pauillac, Cèpes à la bordelaise, Pommes sarladaises, Macarons de Saint-Émilion.', 8, 34, 5, 'L\\\'agneau est rôti rosé. Prévoir un four pour la remise en température.', 6, NULL, 2, 1),
+  (3, 'Grand Sud-Ouest', 'Formule « Grand Sud-Ouest », composée de 5 préparations : Salade landaise, Confit de canard, Pommes sarladaises, Haricots tarbais, Gâteau basque.', 8, 29, 4, 'Le confit se réchauffe 20 minutes à 180 °C pour retrouver une peau croustillante.', 8, NULL, 2, 1),
+  (4, 'Bassin d\'Arcachon', 'Formule « Bassin d\'Arcachon », composée de 4 préparations : Huîtres du Bassin d\'Arcachon, Lamproie à la bordelaise, Pommes sarladaises, Dunes blanches.', 6, 31, 4, 'Les huîtres sont livrées non ouvertes, à consommer dans les 24 heures.', 7, NULL, 1, 3),
+  (5, 'Canard & Compagnie', 'Formule « Canard & Compagnie », composée de 5 préparations : Foie gras de canard mi-cuit, Magret de canard, Pommes sarladaises, Gratin de légumes, Pruneaux à l\'armagnac.', 8, 28, 4, 'Sortir le foie gras du réfrigérateur 15 minutes avant le service.', 9, NULL, 2, 3),
+  (6, 'Buffet Mariage', 'Formule « Buffet Mariage », composée de 10 préparations : Huîtres du Bassin d\'Arcachon, Foie gras de canard mi-cuit, Grenier médocain, Entrecôte à la bordelaise, Confit de canard, Cèpes à la bordelaise, Pommes sarladaises, Haricots tarbais, Canelés de Bordeaux, Macarons de Saint-Émilion.', 40, 42, 15, 'Composition adaptable sur demande. Prévoir un espace réfrigéré sur le lieu de réception.', 3, NULL, 3, 1),
+  (7, 'Buffet Anniversaire', 'Formule « Buffet Anniversaire », composée de 5 préparations : Salade landaise, Magret de canard, Pommes sarladaises, Gratin de légumes, Canelés de Bordeaux.', 20, 32, 10, 'Livré en plats de service consignés, à restituer sous 48 heures.', 5, NULL, 3, 3),
+  (8, 'Cocktail Girondin', 'Formule « Cocktail Girondin », composée de 3 préparations : Huîtres du Bassin d\'Arcachon, Grenier médocain, Foie gras de canard mi-cuit.', 15, 16, 5, 'Pièces servies froides, à maintenir au frais jusqu\\\'au service.', 10, NULL, 4, 1),
+  (9, 'Brunch Bordelais', 'Formule « Brunch Bordelais », composée de 5 préparations : Tourin blanchi à l\'ail, Asperges blanches du Blayais, Gratin de légumes, Canelés de Bordeaux, Dunes blanches.', 4, 21, 2, 'Le tourin se sert très chaud : prévoir une remise en température sur place.', 10, NULL, 5, 2),
+  (10, 'Table Sans Gluten', 'Formule « Table Sans Gluten », composée de 5 préparations : Magret de canard, Cèpes à la bordelaise, Pommes sarladaises, Gratin de légumes, Pruneaux à l\'armagnac.', 6, 26, 4, 'Préparé sans ingrédient contenant du gluten. Notre atelier manipule par ailleurs des farines : une trace ne peut être totalement exclue.', 7, NULL, 1, 4),
+  (11, 'Cocktail Vigneron', 'Formule « Cocktail Vigneron », composée de 3 préparations : Grenier médocain, Foie gras de canard mi-cuit, Macarons de Saint-Émilion.', 15, 18, 5, 'Pièces servies froides, à maintenir au frais jusqu\\\'au service.', 10, NULL, 4, 1),
+  (12, 'Cocktail Marin', 'Formule « Cocktail Marin », composée de 3 préparations : Huîtres du Bassin d\'Arcachon, Noix de Saint-Jacques poêlées, Dunes blanches.', 12, 22, 5, 'Les huîtres sont livrées non ouvertes, à consommer dans les 24 heures.', 8, NULL, 4, 3),
+  (13, 'Brunch du Marché', 'Formule « Brunch du Marché », composée de 4 préparations : Saumon fumé et blinis, Asperges blanches du Blayais, Gratin de légumes, Canelés de Bordeaux.', 4, 23, 2, 'Les blinis se réchauffent deux minutes à la poêle, sans matière grasse.', 12, NULL, 5, 1),
+  (14, 'Brunch Végétal', 'Formule « Brunch Végétal », composée de 4 préparations : Tourin blanchi à l\'ail, Asperges blanches du Blayais, Gratin de légumes, Dunes blanches.', 4, 19, 2, 'Les choux se garnissent au dernier moment pour rester croustillants.', 12, NULL, 5, 2),
+  (15, 'Potager Girondin', 'Formule « Potager Girondin », composée de 5 préparations : Asperges blanches du Blayais, Tourin blanchi à l\'ail, Cèpes à la bordelaise, Gratin de légumes, Gâteau basque.', 6, 20, 3, 'Légumes de saison : la composition peut varier légèrement selon le marché.', 15, NULL, 2, 2),
+  (16, 'Buffet Sans Gluten', 'Formule « Buffet Sans Gluten », composée de 5 préparations : Noix de Saint-Jacques poêlées, Magret de canard, Cèpes à la bordelaise, Pommes sarladaises, Pruneaux à l\'armagnac.', 20, 36, 10, 'Préparé sans ingrédient contenant du gluten. Notre atelier manipule par ailleurs des farines : une trace ne peut être totalement exclue.', 4, NULL, 3, 4),
+  (17, 'Noël Tradition', 'Formule « Noël Tradition », composée de 5 préparations : Huîtres du Bassin d\'Arcachon, Foie gras de canard mi-cuit, Chapon farci aux cèpes, Pommes sarladaises, Bûche de Noël.', 6, 45, 10, 'Commandes closes le 15 décembre. Le chapon est livré cuit, à remettre en température une heure avant le service.', 8, NULL, 6, 1),
+  (18, 'Noël Marin', 'Formule « Noël Marin », composée de 5 préparations : Huîtres du Bassin d\'Arcachon, Noix de Saint-Jacques poêlées, Chapon farci aux cèpes, Gratin de légumes, Bûche de Noël.', 6, 52, 10, 'Commandes closes le 15 décembre. Huîtres livrées non ouvertes.', 5, NULL, 6, 3),
+  (19, 'Réveillon Prestige', 'Formule « Réveillon Prestige », composée de 6 préparations : Saumon fumé et blinis, Noix de Saint-Jacques poêlées, Chapon farci aux cèpes, Cèpes à la bordelaise, Pommes sarladaises, Bûche de Noël.', 8, 58, 12, 'Commandes closes le 20 décembre. Livraison possible jusqu\\\'à 19 h le 31.', 4, NULL, 7, 1),
+  (20, 'Réveillon Cocktail', 'Formule « Réveillon Cocktail », composée de 5 préparations : Huîtres du Bassin d\'Arcachon, Saumon fumé et blinis, Foie gras de canard mi-cuit, Macarons de Saint-Émilion, Dunes blanches.', 20, 28, 10, 'Commandes closes le 20 décembre. Pièces servies froides.', 6, NULL, 7, 1),
+  (21, 'Pâques Tradition', 'Formule « Pâques Tradition », composée de 5 préparations : Asperges blanches du Blayais, Gigot d\'agneau pascal, Gratin de légumes, Pommes sarladaises, Gâteau basque.', 6, 34, 7, 'Le gigot cuit sept heures est livré chaud : à servir dans l\\\'heure.', 8, NULL, 8, 1),
+  (22, 'Pâques Végétal', 'Formule « Pâques Végétal », composée de 4 préparations : Tourin blanchi à l\'ail, Asperges blanches du Blayais, Gratin de légumes, Moelleux au chocolat.', 4, 24, 5, 'Le moelleux se réchauffe cinq minutes à 180 °C pour retrouver son cœur coulant.', 10, NULL, 8, 2),
+  (23, 'Saint-Valentin en Duo', 'Formule « Saint-Valentin en Duo », composée de 4 préparations : Noix de Saint-Jacques poêlées, Magret de canard, Cèpes à la bordelaise, Moelleux au chocolat.', 2, 48, 5, 'Formule calibrée pour deux personnes exactement.', 12, NULL, 9, 3),
+  (24, 'Saint-Valentin Marin', 'Formule « Saint-Valentin Marin », composée de 5 préparations : Huîtres du Bassin d\'Arcachon, Saumon fumé et blinis, Noix de Saint-Jacques poêlées, Gratin de légumes, Moelleux au chocolat.', 2, 54, 5, 'Formule calibrée pour deux personnes. Huîtres livrées non ouvertes.', 8, NULL, 9, 3);
 
--- menu_plat (52 lignes)
+-- menu_plat (115 lignes)
 INSERT INTO `menu_plat` (`plat_id`, `menu_id`) VALUES
   (1, 4),
   (1, 6),
   (1, 8),
+  (1, 12),
+  (1, 17),
+  (1, 18),
+  (1, 20),
+  (1, 24),
   (2, 1),
   (2, 6),
   (2, 8),
+  (2, 11),
   (3, 2),
   (3, 5),
   (3, 6),
   (3, 8),
+  (3, 11),
+  (3, 17),
+  (3, 20),
   (4, 9),
+  (4, 14),
+  (4, 15),
+  (4, 22),
   (5, 9),
+  (5, 13),
+  (5, 14),
+  (5, 15),
+  (5, 21),
+  (5, 22),
   (6, 3),
   (6, 7),
   (7, 1),
@@ -273,6 +356,8 @@ INSERT INTO `menu_plat` (`plat_id`, `menu_id`) VALUES
   (9, 5),
   (9, 7),
   (9, 10),
+  (9, 16),
+  (9, 23),
   (10, 3),
   (10, 6),
   (11, 2),
@@ -280,6 +365,10 @@ INSERT INTO `menu_plat` (`plat_id`, `menu_id`) VALUES
   (12, 2),
   (12, 6),
   (12, 10),
+  (12, 15),
+  (12, 16),
+  (12, 19),
+  (12, 23),
   (13, 1),
   (13, 2),
   (13, 3),
@@ -288,78 +377,118 @@ INSERT INTO `menu_plat` (`plat_id`, `menu_id`) VALUES
   (13, 6),
   (13, 7),
   (13, 10),
+  (13, 16),
+  (13, 17),
+  (13, 19),
+  (13, 21),
   (14, 3),
   (14, 6),
   (15, 5),
   (15, 7),
   (15, 9),
   (15, 10),
+  (15, 13),
+  (15, 14),
+  (15, 15),
+  (15, 18),
+  (15, 21),
+  (15, 22),
+  (15, 24),
   (16, 1),
   (16, 6),
   (16, 7),
   (16, 9),
+  (16, 13),
   (17, 2),
   (17, 6),
+  (17, 11),
+  (17, 20),
   (18, 4),
   (18, 9),
+  (18, 12),
+  (18, 14),
+  (18, 20),
   (19, 3),
+  (19, 15),
+  (19, 21),
   (20, 5),
-  (20, 10);
+  (20, 10),
+  (20, 16),
+  (21, 13),
+  (21, 19),
+  (21, 20),
+  (21, 24),
+  (22, 12),
+  (22, 16),
+  (22, 18),
+  (22, 19),
+  (22, 23),
+  (22, 24),
+  (23, 17),
+  (23, 18),
+  (23, 19),
+  (24, 21),
+  (25, 17),
+  (25, 18),
+  (25, 19),
+  (26, 22),
+  (26, 23),
+  (26, 24);
 
 -- utilisateur (6 lignes)
 INSERT INTO `utilisateur` (`id`, `email`, `roles`, `password`, `nom`, `prenom`, `gsm`, `adresse_postale`, `actif`) VALUES
-  (1, 'admin@vite-gourmand.fr', '["ROLE_ADMIN"]', '$2y$13$.z/95NWtrW2Cc3Jnpgvse.K5ev3BR2LCftaT7GsFmg9pKDiOwQVdS', 'Pignolet', 'Kenny', '05 56 12 34 56', '12 cours de l\\\'Intendance, 33000 Bordeaux', 1),
-  (2, 'employe@vite-gourmand.fr', '["ROLE_EMPLOYE"]', '$2y$13$/FMBAv6JlWfr9bOMhc/i5unw49ANzaH1AvJjv.TNG6v2tV2b4cc8W', 'Lasserre', 'Marie', '05 56 23 45 67', '8 rue Sainte-Catherine, 33000 Bordeaux', 1),
-  (3, 'sophie.brunet@example.fr', '[]', '$2y$13$KUZeh8qDAr02/oU.N85VGuv5bDwy9h5UpyFmzeDxhBkCCoWcJ3iIW', 'Brunet', 'Sophie', '06 12 34 56 78', '24 rue Notre-Dame, 33000 Bordeaux', 1),
-  (4, 'david.marchand@example.fr', '[]', '$2y$13$MSjz5w20HFc6QW6C9BlzE.lp.Pzav1rmyH6dmG58aroDHngPgfgTO', 'Marchand', 'David', '06 23 45 67 89', '5 avenue de la Libération, 33700 Mérignac', 1),
-  (5, 'laetitia.fontaine@example.fr', '[]', '$2y$13$GSDm/o0TwlMzWDPBR0kYuuyJ1cNYBo1UFxKSWEKwUrdcE5CXgobpa', 'Fontaine', 'Laëtitia', NULL, '17 allée des Vignes, 33330 Saint-Émilion', 1),
-  (6, 'compte.desactive@example.fr', '[]', '$2y$13$dEk54wiO2hew6oDzI/g2G.1mX./IlLdiKmfuZwVayBdBrhqpHlmJq', 'Duviella', 'Jean', NULL, NULL, 0);
+  (1, 'admin@vite-gourmand.fr', '["ROLE_ADMIN"]', '$2y$13$FKPMA/zm/JOec19BTDgrz.vxSCZyEOMedqVzVxIgJItnRWOcE9yqu', 'Pignolet', 'Kenny', '05 56 12 34 56', '12 cours de l\\\'Intendance, 33000 Bordeaux', 1),
+  (2, 'employe@vite-gourmand.fr', '["ROLE_EMPLOYE"]', '$2y$13$f52knYM0LkoaPFS7LHW2TuDjzRlLAMuRVMbPoM3DGQPZN.vtGLpxe', 'Lasserre', 'Marie', '05 56 23 45 67', '8 rue Sainte-Catherine, 33000 Bordeaux', 1),
+  (3, 'sophie.brunet@example.fr', '[]', '$2y$13$13tflclnuEcnjPO0rNrPkuK6fcxJ9Nh7TJPJje1T0Gc/YMeBbRhYa', 'Brunet', 'Sophie', '06 12 34 56 78', '24 rue Notre-Dame, 33000 Bordeaux', 1),
+  (4, 'david.marchand@example.fr', '[]', '$2y$13$6m3dgyVIyXEacZs73mrNKulX5jQpgwpUGgrU8JfWNxBPG7CU7o28u', 'Marchand', 'David', '06 23 45 67 89', '5 avenue de la Libération, 33700 Mérignac', 1),
+  (5, 'laetitia.fontaine@example.fr', '[]', '$2y$13$vuS187LNI5gPdoMSfphyIO1u1LxfvhI2N9jDBGAmwFE4sYqiC51t6', 'Fontaine', 'Laëtitia', NULL, '17 allée des Vignes, 33330 Saint-Émilion', 1),
+  (6, 'compte.desactive@example.fr', '[]', '$2y$13$zuqDpQXDnP1u9.EJ6ipTUuHxq2mlwBLTlKv7tz5lQLzw73ma35AAq', 'Duviella', 'Jean', NULL, NULL, 0);
 
 -- commande (8 lignes)
 INSERT INTO `commande` (`id`, `date_commande`, `date_prestation`, `heure_livraison`, `lieu_livraison`, `nb_personnes`, `prix_total`, `statut`, `pret_materiel`, `utilisateur_id`, `menu_id`) VALUES
-  (1, '2026-08-17 06:49:47', '2026-08-25', '12:00:00', '24 rue Notre-Dame, 33000 Bordeaux', 10, 265, 'livrée', 1, 3, 1),
-  (2, '2026-08-27 06:49:47', '2026-09-02', '19:30:00', '5 avenue de la Libération, 33700 Mérignac', 8, 232, 'livrée', 0, 4, 3),
-  (3, '2026-09-01 06:49:47', '2026-09-07', '11:30:00', '24 rue Notre-Dame, 33000 Bordeaux', 6, 126, 'livrée', 0, 3, 9),
-  (4, '2026-09-04 06:49:47', '2026-09-11', '12:00:00', '17 allée des Vignes, 33330 Saint-Émilion', 6, 156, 'livrée', 0, 5, 10),
-  (5, '2026-09-10 06:49:47', '2026-09-18', '11:00:00', '17 allée des Vignes, 33330 Saint-Émilion', 25, 800, 'en préparation', 1, 5, 7),
-  (6, '2026-09-13 06:49:47', '2026-09-22', '19:00:00', '5 avenue de la Libération, 33700 Mérignac', 12, 372, 'confirmée', 0, 4, 4),
-  (7, '2026-09-15 06:49:47', '2026-10-11', '18:00:00', 'Château Pape Clément, 33600 Pessac', 60, 2520, 'en attente', 1, 5, 6),
-  (8, '2026-09-06 06:49:47', '2026-09-14', '18:30:00', '24 rue Notre-Dame, 33000 Bordeaux', 20, 320, 'annulée', 0, 3, 8);
+  (1, '2026-08-17 06:59:57', '2026-08-25', '12:00:00', '24 rue Notre-Dame, 33000 Bordeaux', 10, 265, 'livrée', 1, 3, 1),
+  (2, '2026-08-27 06:59:57', '2026-09-02', '19:30:00', '5 avenue de la Libération, 33700 Mérignac', 8, 232, 'livrée', 0, 4, 3),
+  (3, '2026-09-01 06:59:57', '2026-09-07', '11:30:00', '24 rue Notre-Dame, 33000 Bordeaux', 6, 126, 'livrée', 0, 3, 9),
+  (4, '2026-09-04 06:59:57', '2026-09-11', '12:00:00', '17 allée des Vignes, 33330 Saint-Émilion', 6, 156, 'livrée', 0, 5, 10),
+  (5, '2026-09-10 06:59:57', '2026-09-18', '11:00:00', '17 allée des Vignes, 33330 Saint-Émilion', 25, 800, 'en préparation', 1, 5, 7),
+  (6, '2026-09-13 06:59:57', '2026-09-22', '19:00:00', '5 avenue de la Libération, 33700 Mérignac', 12, 372, 'confirmée', 0, 4, 4),
+  (7, '2026-09-15 06:59:57', '2026-10-11', '18:00:00', 'Château Pape Clément, 33600 Pessac', 60, 2520, 'en attente', 1, 5, 6),
+  (8, '2026-09-06 06:59:57', '2026-09-14', '18:30:00', '24 rue Notre-Dame, 33000 Bordeaux', 20, 320, 'annulée', 0, 3, 8);
 
 -- suivi_commande (25 lignes)
 INSERT INTO `suivi_commande` (`id`, `statut`, `date_modification`, `motif`, `mode_contact`, `commande_id`) VALUES
-  (1, 'en attente', '2026-08-17 06:49:47', NULL, 'site web', 1),
-  (2, 'confirmée', '2026-08-18 06:49:47', NULL, 'email', 1),
-  (3, 'en préparation', '2026-08-19 06:49:47', NULL, 'email', 1),
-  (4, 'livrée', '2026-08-20 06:49:47', NULL, 'email', 1),
-  (5, 'en attente', '2026-08-27 06:49:47', NULL, 'site web', 2),
-  (6, 'confirmée', '2026-08-28 06:49:47', NULL, 'email', 2),
-  (7, 'en préparation', '2026-08-29 06:49:47', NULL, 'email', 2),
-  (8, 'livrée', '2026-08-30 06:49:47', NULL, 'email', 2),
-  (9, 'en attente', '2026-09-01 06:49:47', NULL, 'site web', 3),
-  (10, 'confirmée', '2026-09-02 06:49:47', NULL, 'email', 3),
-  (11, 'en préparation', '2026-09-03 06:49:47', NULL, 'email', 3),
-  (12, 'livrée', '2026-09-04 06:49:47', NULL, 'email', 3),
-  (13, 'en attente', '2026-09-04 06:49:47', NULL, 'site web', 4),
-  (14, 'confirmée', '2026-09-05 06:49:47', NULL, 'email', 4),
-  (15, 'en préparation', '2026-09-06 06:49:47', NULL, 'email', 4),
-  (16, 'livrée', '2026-09-07 06:49:47', NULL, 'email', 4),
-  (17, 'en attente', '2026-09-10 06:49:47', NULL, 'site web', 5),
-  (18, 'confirmée', '2026-09-11 06:49:47', NULL, 'email', 5),
-  (19, 'en préparation', '2026-09-12 06:49:47', NULL, 'email', 5),
-  (20, 'en attente', '2026-09-13 06:49:47', NULL, 'site web', 6),
-  (21, 'confirmée', '2026-09-14 06:49:47', NULL, 'email', 6),
-  (22, 'en attente', '2026-09-15 06:49:47', NULL, 'site web', 7),
-  (23, 'en attente', '2026-09-06 06:49:47', NULL, 'site web', 8),
-  (24, 'confirmée', '2026-09-07 06:49:47', NULL, 'email', 8),
-  (25, 'annulée', '2026-09-08 06:49:47', 'Annulation à la demande du client, plus de 48 h avant la prestation.', 'email', 8);
+  (1, 'en attente', '2026-08-17 06:59:57', NULL, 'site web', 1),
+  (2, 'confirmée', '2026-08-18 06:59:57', NULL, 'email', 1),
+  (3, 'en préparation', '2026-08-19 06:59:57', NULL, 'email', 1),
+  (4, 'livrée', '2026-08-20 06:59:57', NULL, 'email', 1),
+  (5, 'en attente', '2026-08-27 06:59:57', NULL, 'site web', 2),
+  (6, 'confirmée', '2026-08-28 06:59:57', NULL, 'email', 2),
+  (7, 'en préparation', '2026-08-29 06:59:57', NULL, 'email', 2),
+  (8, 'livrée', '2026-08-30 06:59:57', NULL, 'email', 2),
+  (9, 'en attente', '2026-09-01 06:59:57', NULL, 'site web', 3),
+  (10, 'confirmée', '2026-09-02 06:59:57', NULL, 'email', 3),
+  (11, 'en préparation', '2026-09-03 06:59:57', NULL, 'email', 3),
+  (12, 'livrée', '2026-09-04 06:59:57', NULL, 'email', 3),
+  (13, 'en attente', '2026-09-04 06:59:57', NULL, 'site web', 4),
+  (14, 'confirmée', '2026-09-05 06:59:57', NULL, 'email', 4),
+  (15, 'en préparation', '2026-09-06 06:59:57', NULL, 'email', 4),
+  (16, 'livrée', '2026-09-07 06:59:57', NULL, 'email', 4),
+  (17, 'en attente', '2026-09-10 06:59:57', NULL, 'site web', 5),
+  (18, 'confirmée', '2026-09-11 06:59:57', NULL, 'email', 5),
+  (19, 'en préparation', '2026-09-12 06:59:57', NULL, 'email', 5),
+  (20, 'en attente', '2026-09-13 06:59:57', NULL, 'site web', 6),
+  (21, 'confirmée', '2026-09-14 06:59:57', NULL, 'email', 6),
+  (22, 'en attente', '2026-09-15 06:59:57', NULL, 'site web', 7),
+  (23, 'en attente', '2026-09-06 06:59:57', NULL, 'site web', 8),
+  (24, 'confirmée', '2026-09-07 06:59:57', NULL, 'email', 8),
+  (25, 'annulée', '2026-09-08 06:59:57', 'Annulation à la demande du client, plus de 48 h avant la prestation.', 'email', 8);
 
 -- avis (4 lignes)
 INSERT INTO `avis` (`id`, `note`, `commentaire`, `statut_validation`, `date_creation`, `commande_id`, `utilisateur_id`) VALUES
-  (1, 5, 'Entrecôte parfaitement cuite et la sauce bordelaise était à tomber. Livraison pile à l\\\'heure, on recommandera.', 'validé', '2026-08-27 06:49:47', 1, 3),
-  (2, 4, 'Très bon confit, peau bien croustillante. Un peu juste sur les haricots pour huit personnes.', 'validé', '2026-09-04 06:49:47', 2, 4),
-  (3, 5, 'Enfin un traiteur qui soigne le végétarien. Le tourin était une vraie surprise, et les canelés impeccables.', 'validé', '2026-09-09 06:49:47', 3, 3),
-  (4, 3, 'Bon dans l\\\'ensemble, mais les pruneaux à l\\\'armagnac sont arrivés écrasés.', 'en attente', '2026-09-14 06:49:47', 4, 5);
+  (1, 5, 'Entrecôte parfaitement cuite et la sauce bordelaise était à tomber. Livraison pile à l\\\'heure, on recommandera.', 'validé', '2026-08-27 06:59:57', 1, 3),
+  (2, 4, 'Très bon confit, peau bien croustillante. Un peu juste sur les haricots pour huit personnes.', 'validé', '2026-09-04 06:59:57', 2, 4),
+  (3, 5, 'Enfin un traiteur qui soigne le végétarien. Le tourin était une vraie surprise, et les canelés impeccables.', 'validé', '2026-09-09 06:59:57', 3, 3),
+  (4, 3, 'Bon dans l\\\'ensemble, mais les pruneaux à l\\\'armagnac sont arrivés écrasés.', 'en attente', '2026-09-14 06:59:57', 4, 5);
 
 -- horaire (7 lignes)
 INSERT INTO `horaire` (`id`, `jour`, `heure_ouverture`, `heure_fermeture`) VALUES
@@ -373,8 +502,8 @@ INSERT INTO `horaire` (`id`, `jour`, `heure_ouverture`, `heure_fermeture`) VALUE
 
 -- contact (3 lignes)
 INSERT INTO `contact` (`id`, `titre`, `message`, `email`, `date_creation`) VALUES
-  (1, 'Devis pour un séminaire', 'Bonjour, nous organisons un séminaire pour 80 personnes le mois prochain à Bordeaux. Proposez-vous des formules adaptées ?', 'contact@entreprise-gironde.fr', '2026-09-11 06:49:47'),
-  (2, 'Question sur les allergènes', 'Ma fille est allergique aux fruits à coque. Le menu Bistrot Bordelais lui conviendrait-il ?', 'famille.robert@example.fr', '2026-09-13 06:49:47'),
-  (3, 'Livraison hors agglomération', 'Livrez-vous jusqu\\\'au Cap Ferret ? Merci d\\\'avance.', 'vacancier@example.fr', '2026-09-15 06:49:47');
+  (1, 'Devis pour un séminaire', 'Bonjour, nous organisons un séminaire pour 80 personnes le mois prochain à Bordeaux. Proposez-vous des formules adaptées ?', 'contact@entreprise-gironde.fr', '2026-09-11 06:59:57'),
+  (2, 'Question sur les allergènes', 'Ma fille est allergique aux fruits à coque. Le menu Bistrot Bordelais lui conviendrait-il ?', 'famille.robert@example.fr', '2026-09-13 06:59:57'),
+  (3, 'Livraison hors agglomération', 'Livrez-vous jusqu\\\'au Cap Ferret ? Merci d\\\'avance.', 'vacancier@example.fr', '2026-09-15 06:59:57');
 
 SET FOREIGN_KEY_CHECKS = 1;
