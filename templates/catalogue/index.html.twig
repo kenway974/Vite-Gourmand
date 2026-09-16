@@ -36,8 +36,14 @@
             </select>
 
             <label for="convives">Nombre de convives</label>
-            <input type="number" id="convives" name="convives" min="1"
-                   value="{{ filtres.nbPersonnes|default('') }}">
+            <select id="convives" name="convives">
+                <option value="">Peu importe</option>
+                {% for palier in paliers %}
+                    <option value="{{ palier }}" {{ filtres.nbPersonnes == palier ? 'selected' : '' }}>
+                        {{ palier }} et plus
+                    </option>
+                {% endfor %}
+            </select>
 
             <label for="tri">Trier par</label>
             <select id="tri" name="tri">
