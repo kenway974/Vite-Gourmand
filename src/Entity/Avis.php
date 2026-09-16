@@ -17,6 +17,15 @@ class Avis
     /** @var list<string> */
     public const STATUTS = [self::EN_ATTENTE, self::VALIDE, self::REFUSE];
 
+    /**
+     * Les maquettes datent chaque avis en toutes lettres — « Décembre 2024 ».
+     * Douze chaînes évitent d'ajouter twig/intl-extra pour ce seul format.
+     */
+    private const MOIS = [
+        1 => 'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+        'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -53,6 +62,30 @@ class Avis
     public function getCommande(): ?Commande
     {
         return $this->commande;
+    }
+
+    /**
+     * Contexte de l'avis tel que les maquettes l'affichent :
+     * « Décembre 2024 · 8 convives ».
+     *
+     * C'est la date de la PRESTATION qui fait foi, pas celle de l'avis : le
+     * lecteur veut savoir quand le repas a eu lieu, pas quand quelqu'un a
+     * trouvé le temps d'écrire.
+     */
+    public function contexte(): ?string
+    {
+        $prestation = $this->commande?->getDatePrestation();
+
+        if (null === $prestation || null === $this->commande?->getNbPersonnes()) {
+            return null;
+        }
+
+        return sprintf(
+            '%s %s · %d convives',
+            ucfirst(self::MOIS[(int) $prestation->format('n')]),
+            $prestation->format('Y'),
+            $this->commande->getNbPersonnes(),
+        );
     }
 
     public function setCommande(?Commande $commande): static
