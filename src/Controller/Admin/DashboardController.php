@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Allergene;
 use App\Entity\Commande;
+use App\Entity\Horaire;
 use App\Entity\Ingredient;
 use App\Entity\Menu;
 use App\Entity\Plat;
@@ -39,6 +40,7 @@ class DashboardController extends AbstractController
             'nbRegimes' => $em->getRepository(Regime::class)->count([]),
             'nbUtilisateurs' => $em->getRepository(Utilisateur::class)->count([]),
             'nbCommandes' => $em->getRepository(Commande::class)->count([]),
+            'nbHoraires' => $em->getRepository(Horaire::class)->count([]),
         ]);
     }
 }

@@ -55,5 +55,19 @@
         <main id="contenu">
             {% block body %}{% endblock %}
         </main>
+
+        <footer>
+            {% set horaires = horaires_semaine() %}
+            {% if horaires is not empty %}
+                <h2>Horaires d'ouverture</h2>
+                <p>{{ etablissement_ouvert() ? 'Ouvert en ce moment' : 'Fermé en ce moment' }}</p>
+                <dl>
+                    {% for horaire in horaires %}
+                        <dt>{{ horaire.jour }}</dt>
+                        <dd>{{ horaire.plage }}</dd>
+                    {% endfor %}
+                </dl>
+            {% endif %}
+        </footer>
     </body>
 </html>

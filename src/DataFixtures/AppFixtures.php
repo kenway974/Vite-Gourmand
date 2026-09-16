@@ -517,8 +517,8 @@ class AppFixtures extends Fixture
 
     private function chargerHoraires(ObjectManager $manager): void
     {
-        // Le champ `jour` est une chaîne : l'ordre chronologique doit être
-        // rétabli à l'affichage, un tri alphabétique donnerait dimanche en tête.
+        // Le dimanche n'a pas d'heures : il est fermé, pas ouvert de minuit
+        // à minuit. L'ordre chronologique est porté par Horaire::setJour().
         $semaine = [
             ['Lundi', '09:00', '18:00'],
             ['Mardi', '09:00', '18:00'],
@@ -526,14 +526,19 @@ class AppFixtures extends Fixture
             ['Jeudi', '09:00', '18:00'],
             ['Vendredi', '09:00', '19:00'],
             ['Samedi', '09:00', '13:00'],
-            ['Dimanche', '00:00', '00:00'],
+            ['Dimanche', null, null],
         ];
 
         foreach ($semaine as [$jour, $ouverture, $fermeture]) {
             $horaire = (new Horaire())
                 ->setJour($jour)
-                ->setHeureOuverture(new \DateTime($ouverture))
-                ->setHeureFermeture(new \DateTime($fermeture));
+                ->setFerme(null === $ouverture);
+
+            if (null !== $ouverture) {
+                $horaire
+                    ->setHeureOuverture(new \DateTime($ouverture))
+                    ->setHeureFermeture(new \DateTime($fermeture));
+            }
 
             $manager->persist($horaire);
         }
