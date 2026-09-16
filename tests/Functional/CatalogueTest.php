@@ -145,6 +145,33 @@ class CatalogueTest extends WebTestCase
         self::assertSame(['Petit comité'], $this->titres(['nbPersonnes' => 10]));
     }
 
+    public function testLeFiltreConvivesEstProposeParPaliers(): void
+    {
+        $this->menu('Buffet bordelais');
+
+        $crawler = $this->client->request('GET', '/menus');
+        $proposes = $crawler->filter('#convives option')->each(fn ($n) => $n->attr('value'));
+
+        // Les maquettes proposent trois paliers, pas un champ libre.
+        self::assertSame(['', '4', '6', '20'], $proposes);
+    }
+
+    public function testUnEffectifHorsPalierEstIgnore(): void
+    {
+        $this->menu('Petit comité', nbMinPersonnes: 4);
+        $this->menu('Grand banquet', nbMinPersonnes: 50);
+
+        // 6 est un palier : il filtre.
+        $crawler = $this->client->request('GET', '/menus?convives=6');
+        self::assertSelectorTextContains('.catalogue', 'Petit comité');
+        self::assertStringNotContainsString('Grand banquet', $crawler->filter('.catalogue')->text());
+
+        // 7 n'en est pas un : la valeur vient de l'URL, elle est ignorée
+        // plutôt que passée telle quelle à la requête.
+        $crawler = $this->client->request('GET', '/menus?convives=7');
+        self::assertStringContainsString('Grand banquet', $crawler->filter('.catalogue')->text());
+    }
+
     public function testUnMenuEpuiseResteAuCatalogueMaisPasDansLesCommandables(): void
     {
         $this->menu('Buffet bordelais', stock: 0);
@@ -275,6 +302,39 @@ class CatalogueTest extends WebTestCase
         self::assertStringContainsString('5 / 5 sur 1 avis', $texte);
     }
 
+    public function testChaqueAvisAfficheLeContexteDeSaCommande(): void
+    {
+        $menu = $this->menu('Buffet bordelais');
+        $this->avis($menu, 5, 'Parfait.', prestation: '2024-12-14', convives: 8);
+
+        $crawler = $this->client->request('GET', '/menus/'.$menu->getId());
+
+        // « Décembre 2024 · 8 convives », comme sur les maquettes : c'est la
+        // date du repas qui compte, pas celle de rédaction de l'avis.
+        self::assertStringContainsString('Décembre 2024 · 8 convives', $crawler->filter('body')->text());
+    }
+
+    public function testLeContexteDesAvisNeCoutePasUneRequeteParAvis(): void
+    {
+        $menu = $this->menu('Buffet bordelais');
+
+        for ($i = 0; $i < 6; ++$i) {
+            $this->avis($menu, 4, 'Très bien.');
+        }
+
+        $this->client->request('GET', '/');
+        $this->client->enableProfiler();
+        $this->client->request('GET', '/menus/'.$menu->getId());
+
+        $requetes = $this->client->getProfile()->getCollector('db')->getQueryCount();
+
+        self::assertLessThanOrEqual(
+            8,
+            $requetes,
+            sprintf('%d requêtes pour 6 avis : la commande n\'est plus ramenée avec.', $requetes),
+        );
+    }
+
     public function testUnMenuCommandableExposeLeLienDeCommande(): void
     {
         $menu = $this->menu('Buffet bordelais');
@@ -286,6 +346,53 @@ class CatalogueTest extends WebTestCase
         $crawler = $this->client->request('GET', '/menus/'.$epuise->getId());
         self::assertCount(0, $crawler->filter('a[href="/commander/'.$epuise->getId().'"]'));
         self::assertSelectorTextContains('body', 'Momentanément épuisé');
+    }
+
+    // --- Notation globale -------------------------------------------------
+
+    public function testLAccueilAfficheLaMoyenneTousMenusConfondus(): void
+    {
+        $premier = $this->menu('Buffet bordelais');
+        $second = $this->menu('Banquet de mariage');
+
+        $this->avis($premier, 5);
+        $this->avis($second, 4);
+        $this->avis($second, 1, 'En attente.', Avis::EN_ATTENTE);
+
+        $crawler = $this->client->request('GET', '/');
+        $texte = $crawler->filter('body')->text();
+
+        // (5 + 4) / 2 = 4,5. L'avis en modération ne compte pas : « vérifiés ».
+        self::assertStringContainsString('4,5 sur 5', $texte);
+        self::assertStringContainsString('2 avis vérifiés', $texte);
+    }
+
+    public function testLAccueilNAnnonceRienSansAvisPublie(): void
+    {
+        $menu = $this->menu('Buffet bordelais');
+        $this->avis($menu, 5, 'En attente.', Avis::EN_ATTENTE);
+
+        $crawler = $this->client->request('GET', '/');
+
+        self::assertResponseIsSuccessful();
+        self::assertStringNotContainsString('sur 5', $crawler->filter('body')->text());
+    }
+
+    public function testLaMoyenneGlobaleDiffereDeCelleDuMenu(): void
+    {
+        $premier = $this->menu('Buffet bordelais');
+        $second = $this->menu('Banquet de mariage');
+
+        $this->avis($premier, 5);
+        $this->avis($second, 1);
+
+        // Deux agrégats distincts : 3,0 en global, 5 sur la fiche du premier menu.
+        // La moyenne globale garde toujours une décimale, comme « 4,8 sur 5 ».
+        self::assertStringContainsString('3,0 sur 5', $this->client->request('GET', '/')->filter('body')->text());
+        self::assertStringContainsString(
+            '5 / 5 sur 1 avis',
+            $this->client->request('GET', '/menus/'.$premier->getId())->filter('body')->text(),
+        );
     }
 
     // --- Coût en requêtes -------------------------------------------------
@@ -368,8 +475,14 @@ class CatalogueTest extends WebTestCase
         return $menu;
     }
 
-    private function avis(Menu $menu, int $note, string $commentaire = 'Très bien.', string $statut = Avis::VALIDE): Avis
-    {
+    private function avis(
+        Menu $menu,
+        int $note,
+        string $commentaire = 'Très bien.',
+        string $statut = Avis::VALIDE,
+        string $prestation = '-1 week',
+        int $convives = 10,
+    ): Avis {
         static $rang = 0;
         ++$rang;
 
@@ -383,10 +496,10 @@ class CatalogueTest extends WebTestCase
             ->setUtilisateur($client)
             ->setMenu($menu)
             ->setDateCommande(new \DateTime('-1 month'))
-            ->setDatePrestation(new \DateTime('-1 week'))
+            ->setDatePrestation(new \DateTime($prestation))
             ->setHeureLivraison(new \DateTime('12:00'))
             ->setLieuLivraison('12 cours de l\'Intendance, Bordeaux')
-            ->setNbPersonnes(10)
+            ->setNbPersonnes($convives)
             ->setPrixTotal('420.00')
             ->setStatut(Commande::LIVREE)
             ->setPretMateriel(false);
