@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon compte — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Mon compte</h1>
+
+    <dl>
+        <dt>Nom</dt>
+        <dd>{{ app.user.prenom }} {{ app.user.nom }}</dd>
+
+        <dt>Adresse e-mail</dt>
+        <dd>{{ app.user.userIdentifier }}</dd>
+
+        <dt>Téléphone</dt>
+        <dd>{{ app.user.gsm|default('Non renseigné') }}</dd>
+
+        <dt>Adresse postale</dt>
+        <dd>{{ app.user.adressePostale|default('Non renseignée') }}</dd>
+    </dl>
+
+    <ul>
+        <li><a href="{{ path('app_compte_modifier') }}">Modifier mes coordonnées</a></li>
+        <li><a href="{{ path('app_compte_mot_de_passe') }}">Changer mon mot de passe</a></li>
+        <li><a href="{{ path('app_client_commandes') }}">Mes commandes</a></li>
+    </ul>
+{% endblock %}
