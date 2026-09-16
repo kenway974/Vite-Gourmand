@@ -661,6 +661,12 @@ class AppFixtures extends Fixture
                 ->setEmail($email)
                 ->setDateCreation(new \DateTime(sprintf('%+d days', $jours)));
 
+            // Le plus ancien a reçu sa réponse ; les deux autres sont en attente,
+            // dont un qui dépasse déjà les 48 heures annoncées.
+            if ($jours <= -5) {
+                $contact->marquerTraite();
+            }
+
             $manager->persist($contact);
         }
     }
