@@ -275,6 +275,39 @@ class CatalogueTest extends WebTestCase
         self::assertStringContainsString('5 / 5 sur 1 avis', $texte);
     }
 
+    public function testChaqueAvisAfficheLeContexteDeSaCommande(): void
+    {
+        $menu = $this->menu('Buffet bordelais');
+        $this->avis($menu, 5, 'Parfait.', prestation: '2024-12-14', convives: 8);
+
+        $crawler = $this->client->request('GET', '/menus/'.$menu->getId());
+
+        // « Décembre 2024 · 8 convives », comme sur les maquettes : c'est la
+        // date du repas qui compte, pas celle de rédaction de l'avis.
+        self::assertStringContainsString('Décembre 2024 · 8 convives', $crawler->filter('body')->text());
+    }
+
+    public function testLeContexteDesAvisNeCoutePasUneRequeteParAvis(): void
+    {
+        $menu = $this->menu('Buffet bordelais');
+
+        for ($i = 0; $i < 6; ++$i) {
+            $this->avis($menu, 4, 'Très bien.');
+        }
+
+        $this->client->request('GET', '/');
+        $this->client->enableProfiler();
+        $this->client->request('GET', '/menus/'.$menu->getId());
+
+        $requetes = $this->client->getProfile()->getCollector('db')->getQueryCount();
+
+        self::assertLessThanOrEqual(
+            8,
+            $requetes,
+            sprintf('%d requêtes pour 6 avis : la commande n\'est plus ramenée avec.', $requetes),
+        );
+    }
+
     public function testUnMenuCommandableExposeLeLienDeCommande(): void
     {
         $menu = $this->menu('Buffet bordelais');
@@ -368,8 +401,14 @@ class CatalogueTest extends WebTestCase
         return $menu;
     }
 
-    private function avis(Menu $menu, int $note, string $commentaire = 'Très bien.', string $statut = Avis::VALIDE): Avis
-    {
+    private function avis(
+        Menu $menu,
+        int $note,
+        string $commentaire = 'Très bien.',
+        string $statut = Avis::VALIDE,
+        string $prestation = '-1 week',
+        int $convives = 10,
+    ): Avis {
         static $rang = 0;
         ++$rang;
 
@@ -383,10 +422,10 @@ class CatalogueTest extends WebTestCase
             ->setUtilisateur($client)
             ->setMenu($menu)
             ->setDateCommande(new \DateTime('-1 month'))
-            ->setDatePrestation(new \DateTime('-1 week'))
+            ->setDatePrestation(new \DateTime($prestation))
             ->setHeureLivraison(new \DateTime('12:00'))
             ->setLieuLivraison('12 cours de l\'Intendance, Bordeaux')
-            ->setNbPersonnes(10)
+            ->setNbPersonnes($convives)
             ->setPrixTotal('420.00')
             ->setStatut(Commande::LIVREE)
             ->setPretMateriel(false);

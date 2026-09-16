@@ -107,15 +107,16 @@ class AvisRepository extends ServiceEntityRepository
     /**
      * Les avis publiés d'un menu, du plus récent au plus ancien.
      *
-     * L'auteur est ramené avec : le gabarit affiche son prénom, sans quoi
-     * chaque avis déclencherait sa propre requête.
+     * L'auteur ET la commande sont ramenés avec : le gabarit affiche le prénom
+     * et le contexte du repas, sans quoi chaque avis coûterait deux requêtes
+     * de plus.
      *
      * @return Avis[]
      */
     public function findPubliesPourMenu(Menu $menu): array
     {
         return $this->createQueryBuilder('a')
-            ->addSelect('u')
+            ->addSelect('u', 'c')
             ->join('a.utilisateur', 'u')
             ->join('a.commande', 'c')
             ->andWhere('c.menu = :menu')
