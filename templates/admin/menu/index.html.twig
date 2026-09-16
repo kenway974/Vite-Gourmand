@@ -20,6 +20,7 @@
                     <th scope="col">À partir de</th>
                     <th scope="col">Min. pers.</th>
                     <th scope="col">Stock</th>
+                    <th scope="col">Disponibilité</th>
                     <th scope="col">Actions</th>
                 </tr>
             </thead>
@@ -32,6 +33,18 @@
                         <td>{{ menu.prixMin }} €</td>
                         <td>{{ menu.nbMinPersonnes }}</td>
                         <td>{{ menu.stock }}</td>
+                        <td>
+                            {% set etat = menu.disponibilite %}
+                            {% if etat == 'disponible' %}
+                                Commandable
+                            {% elseif etat == 'bientot' %}
+                                À partir du {{ menu.dateDebut|date('d/m/Y') }}
+                            {% elseif etat == 'termine' %}
+                                Terminé le {{ menu.dateFin|date('d/m/Y') }}
+                            {% else %}
+                                Épuisé
+                            {% endif %}
+                        </td>
                         <td>
                             <a href="{{ path('app_admin_menu_edit', {id: menu.id}) }}">Modifier</a>
 

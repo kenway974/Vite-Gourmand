@@ -50,17 +50,91 @@ class RequetesTest extends WebTestCase
 
     // --- 7 : catalogue public ---------------------------------------------
 
-    public function testLeCatalogueEcarteLesMenusEnRupture(): void
+    public function testLeCatalogueGardeLesMenusEnRupture(): void
     {
-        $t = $this->theme('Créole');
-        $r = $this->regime('Sans gluten');
+        $t = $this->theme('Bistrot');
+        $r = $this->regime('Standard');
         $this->menu('En vente', $t, $r, stock: 5);
         $this->menu('En rupture', $t, $r, stock: 0);
+
+        // Un menu épuisé reste au catalogue : le masquer reviendrait à cacher
+        // au visiteur qu'on le propose. Son état est signalé à l'affichage.
+        $resultats = iterator_to_array($this->menus()->findCatalogue());
+
+        self::assertCount(2, $resultats);
+    }
+
+    public function testLeCatalogueMasqueLesMenusDontLaPeriodeEstPassee(): void
+    {
+        $t = $this->theme('Noël');
+        $r = $this->regime('Standard');
+        $this->menu('Toute l\'année', $t, $r);
+        $this->menu('Saison terminée', $t, $r, debut: '-60 days', fin: '-30 days');
 
         $resultats = iterator_to_array($this->menus()->findCatalogue());
 
         self::assertCount(1, $resultats);
-        self::assertSame('En vente', $resultats[0]->getTitre());
+        self::assertSame('Toute l\'année', $resultats[0]->getTitre());
+    }
+
+    public function testLeCatalogueGardeLesMenusDontLaSaisonNaPasCommence(): void
+    {
+        $t = $this->theme('Noël');
+        $r = $this->regime('Standard');
+        $this->menu('Noël Tradition', $t, $r, debut: '+60 days', fin: '+90 days');
+
+        // Visible, mais pas encore commandable : c'est tout l'intérêt.
+        $resultats = iterator_to_array($this->menus()->findCatalogue());
+
+        self::assertCount(1, $resultats);
+        self::assertFalse($resultats[0]->estCommandable());
+        self::assertSame(Menu::BIENTOT, $resultats[0]->disponibilite());
+    }
+
+    public function testLeFiltreSeulementCommandablesEcarteRuptureEtHorsSaison(): void
+    {
+        $t = $this->theme('Bistrot');
+        $r = $this->regime('Standard');
+        $this->menu('Commandable', $t, $r, stock: 5);
+        $this->menu('Épuisé', $t, $r, stock: 0);
+        $this->menu('Pas encore ouvert', $t, $r, debut: '+30 days', fin: '+60 days');
+
+        $tous = iterator_to_array($this->menus()->findCatalogue());
+        $commandables = iterator_to_array($this->menus()->findCatalogue(['seulementCommandables' => true]));
+
+        self::assertCount(3, $tous);
+        self::assertCount(1, $commandables);
+        self::assertSame('Commandable', $commandables[0]->getTitre());
+    }
+
+    public function testLesQuatreEtatsDeDisponibilite(): void
+    {
+        $t = $this->theme('Bistrot');
+        $r = $this->regime('Standard');
+
+        $disponible = $this->menu('Disponible', $t, $r, stock: 5);
+        $epuise = $this->menu('Épuisé', $t, $r, stock: 0);
+        $bientot = $this->menu('Bientôt', $t, $r, stock: 5, debut: '+10 days', fin: '+20 days');
+        $termine = $this->menu('Terminé', $t, $r, stock: 5, debut: '-20 days', fin: '-10 days');
+
+        self::assertSame(Menu::DISPONIBLE, $disponible->disponibilite());
+        self::assertSame(Menu::EPUISE, $epuise->disponibilite());
+        self::assertSame(Menu::BIENTOT, $bientot->disponibilite());
+        self::assertSame(Menu::TERMINE, $termine->disponibilite());
+
+        // La période prime sur le stock : un menu de Noël consulté en juillet
+        // doit annoncer « bientôt », pas « épuisé ».
+        $horsSaisonEtEpuise = $this->menu('Hors saison et épuisé', $t, $r, stock: 0, debut: '+10 days', fin: '+20 days');
+        self::assertSame(Menu::BIENTOT, $horsSaisonEtEpuise->disponibilite());
+    }
+
+    public function testUnMenuSansDateEstProposeTouteLAnnee(): void
+    {
+        $menu = $this->menu('Sans date', $this->theme('Bistrot'), $this->regime('Standard'));
+
+        self::assertTrue($menu->estDansSaPeriode());
+        self::assertTrue($menu->estDansSaPeriode(new \DateTime('+10 years')));
+        self::assertTrue($menu->estCommandable());
     }
 
     public function testLeCatalogueFiltreParTheme(): void
@@ -330,10 +404,14 @@ class RequetesTest extends WebTestCase
         int $stock = 10,
         int $nbMin = 4,
         string $prix = '20.00',
+        ?string $debut = null,
+        ?string $fin = null,
     ): Menu {
         $m = new Menu();
         $m->setTitre($titre)->setDescription('Description.')->setTheme($theme)->setRegime($regime)
-            ->setNbMinPersonnes($nbMin)->setPrixMin($prix)->setDelaiCommandeJours(2)->setStock($stock);
+            ->setNbMinPersonnes($nbMin)->setPrixMin($prix)->setDelaiCommandeJours(2)->setStock($stock)
+            ->setDateDebut($debut ? new \DateTime($debut) : null)
+            ->setDateFin($fin ? new \DateTime($fin) : null);
         $this->em->persist($m);
         $this->em->flush();
 

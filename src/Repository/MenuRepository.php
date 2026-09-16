@@ -65,7 +65,7 @@ class MenuRepository extends ServiceEntityRepository
     }
 
     /**
-     * Catalogue public : menus en vente, filtrés et paginés.
+     * Catalogue public : menus proposés, filtrés et paginés.
      *
      * Le filtrage et la pagination sont faits par la base. Les faire en PHP
      * supposerait de charger tout le catalogue en mémoire à chaque visite,
@@ -74,7 +74,7 @@ class MenuRepository extends ServiceEntityRepository
      * Seules des relations ToOne sont jointes (thème, régime) : une jointure
      * sur une collection multiplierait les lignes et fausserait LIMIT/OFFSET.
      *
-     * @param array{theme?: ?Theme, regime?: ?Regime, prixMax?: ?string, nbPersonnes?: ?int} $filtres
+     * @param array{theme?: ?Theme, regime?: ?Regime, prixMax?: ?string, nbPersonnes?: ?int, seulementCommandables?: bool} $filtres
      *
      * @return Paginator<Menu>
      */
@@ -84,9 +84,19 @@ class MenuRepository extends ServiceEntityRepository
             ->addSelect('t', 'r')
             ->join('m.theme', 't')
             ->join('m.regime', 'r')
-            // Un menu en rupture n'a pas à apparaître au catalogue.
-            ->andWhere('m.stock > 0')
+            // On masque uniquement les menus dont la période est révolue :
+            // ils ne sont plus proposés. Un menu épuisé, ou dont la saison
+            // n'a pas commencé, reste affiché — c'est précisément ce qui fait
+            // savoir au visiteur qu'on le propose. Sa commandabilité est
+            // signalée à l'affichage par Menu::disponibilite().
+            ->andWhere('m.dateFin IS NULL OR m.dateFin >= :aujourdhui')
+            ->setParameter('aujourdhui', new \DateTime('today'))
             ->orderBy('m.titre', 'ASC');
+
+        if (!empty($filtres['seulementCommandables'])) {
+            $qb->andWhere('m.stock > 0')
+               ->andWhere('m.dateDebut IS NULL OR m.dateDebut <= :aujourdhui');
+        }
 
         if (!empty($filtres['theme'])) {
             $qb->andWhere('m.theme = :theme')->setParameter('theme', $filtres['theme']);

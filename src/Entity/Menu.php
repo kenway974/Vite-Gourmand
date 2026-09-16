@@ -10,6 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
+#[Assert\Expression(
+    'this.getDateFin() === null or this.getDateDebut() === null or this.getDateFin() >= this.getDateDebut()',
+    message: 'La date de fin de disponibilité doit être postérieure à la date de début.',
+)]
 class Menu
 {
     #[ORM\Id]
@@ -62,6 +66,19 @@ class Menu
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(max: 255)]
     private ?string $image = null;
+
+    /**
+     * Début de la période pendant laquelle le menu est proposé.
+     * null signifie « disponible toute l'année ».
+     */
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $dateDebut = null;
+
+    /**
+     * Fin de la période. null signifie « sans date de fin ».
+     */
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $dateFin = null;
 
     /**
      * @var Collection<int, Plat>
@@ -261,5 +278,89 @@ class Menu
         }
 
         return $this;
+    }
+
+    /**
+     * États de disponibilité d'un menu, dans l'ordre où ils sont éprouvés.
+     */
+    public const DISPONIBLE = 'disponible';
+    public const BIENTOT = 'bientot';
+    public const TERMINE = 'termine';
+    public const EPUISE = 'epuise';
+
+    public function getDateDebut(): ?\DateTime
+    {
+        return $this->dateDebut;
+    }
+
+    public function setDateDebut(?\DateTime $dateDebut): static
+    {
+        $this->dateDebut = $dateDebut;
+
+        return $this;
+    }
+
+    public function getDateFin(): ?\DateTime
+    {
+        return $this->dateFin;
+    }
+
+    public function setDateFin(?\DateTime $dateFin): static
+    {
+        $this->dateFin = $dateFin;
+
+        return $this;
+    }
+
+    /**
+     * Le menu est-il dans sa période de disponibilité ?
+     *
+     * Les deux bornes sont facultatives et incluses. Un menu sans aucune date
+     * est proposé toute l'année.
+     */
+    public function estDansSaPeriode(?\DateTimeInterface $date = null): bool
+    {
+        $jour = ($date ?? new \DateTime())->format('Y-m-d');
+
+        if (null !== $this->dateDebut && $jour < $this->dateDebut->format('Y-m-d')) {
+            return false;
+        }
+
+        if (null !== $this->dateFin && $jour > $this->dateFin->format('Y-m-d')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Le menu peut-il être commandé à cette date ?
+     *
+     * Deux conditions distinctes : être dans sa période, et avoir du stock.
+     */
+    public function estCommandable(?\DateTimeInterface $date = null): bool
+    {
+        return $this->estDansSaPeriode($date) && $this->stock > 0;
+    }
+
+    /**
+     * État à afficher au visiteur.
+     *
+     * La période est éprouvée avant le stock : un menu de Noël consulté en
+     * juillet doit annoncer « bientôt disponible », pas « épuisé ».
+     */
+    public function disponibilite(?\DateTimeInterface $date = null): string
+    {
+        $jour = ($date ?? new \DateTime())->format('Y-m-d');
+
+        if (null !== $this->dateDebut && $jour < $this->dateDebut->format('Y-m-d')) {
+            return self::BIENTOT;
+        }
+
+        if (null !== $this->dateFin && $jour > $this->dateFin->format('Y-m-d')) {
+            return self::TERMINE;
+        }
+
+        return $this->stock > 0 ? self::DISPONIBLE : self::EPUISE;
     }
 }

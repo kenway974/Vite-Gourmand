@@ -33,6 +33,24 @@ class AppFixtures extends Fixture
 {
     public const MOT_DE_PASSE = 'Motdepasse&33!';
 
+    /**
+     * Périodes de disponibilité des menus événementiels.
+     *
+     * Les menus sans entrée ici sont proposés toute l'année. Hors période, un
+     * menu reste visible au catalogue mais annonce « bientôt disponible » :
+     * c'est ce qui fait savoir au visiteur qu'on le propose.
+     */
+    private const PERIODES = [
+        'noel-tradition' => ['2026-11-15', '2026-12-24'],
+        'noel-marin' => ['2026-11-15', '2026-12-24'],
+        'reveillon-prestige' => ['2026-12-01', '2026-12-31'],
+        'reveillon-cocktail' => ['2026-12-01', '2026-12-31'],
+        'paques-tradition' => ['2027-03-01', '2027-04-05'],
+        'paques-vegetal' => ['2027-03-01', '2027-04-05'],
+        'valentin-duo' => ['2027-01-20', '2027-02-14'],
+        'valentin-marin' => ['2027-01-20', '2027-02-14'],
+    ];
+
     public function __construct(
         private readonly UserPasswordHasherInterface $hasher,
     ) {
@@ -364,7 +382,7 @@ class AppFixtures extends Fixture
                 ['asperges', 'tourin', 'cepes', 'gratin', 'gateau-basque'],
             ],
             'festif-sans-gluten' => [
-                'Buffet Sans Gluten', 'festif', 'sans-gluten', 20, '36.00', 10, 4,
+                'Buffet Sans Gluten', 'festif', 'sans-gluten', 20, '36.00', 10, 0,
                 "Préparé sans ingrédient contenant du gluten. Notre atelier manipule par ailleurs des farines : une trace ne peut être totalement exclue.",
                 ['saint-jacques', 'magret', 'cepes', 'sarladaises', 'pruneaux'],
             ],
@@ -428,6 +446,11 @@ class AppFixtures extends Fixture
                 ->setDelaiCommandeJours($delai)
                 ->setStock($stock)
                 ->setPrecautions($precautions);
+
+            if (isset(self::PERIODES[$cle])) {
+                [$debut, $fin] = self::PERIODES[$cle];
+                $menu->setDateDebut(new \DateTime($debut))->setDateFin(new \DateTime($fin));
+            }
 
             foreach ($clesPlats as $clePlat) {
                 $menu->addPlat($plats[$clePlat]);
