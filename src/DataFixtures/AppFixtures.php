@@ -561,7 +561,7 @@ class AppFixtures extends Fixture
         $definitions = [
             'livree1' => ['client1', 'bistrot-bordelais', -30, -22, '12:00', "24 rue Notre-Dame, 33000 Bordeaux", 10, Commande::LIVREE, true],
             'livree2' => ['client2', 'grand-sud-ouest', -20, -14, '19:30', "5 avenue de la Libération, 33700 Mérignac", 8, Commande::LIVREE, false],
-            'livree3' => ['client1', 'brunch-bordelais', -15, -9, '11:30', "24 rue Notre-Dame, 33000 Bordeaux", 6, Commande::LIVREE, false],
+            'livree3' => ['client1', 'brunch-bordelais', -15, -9, '11:30', "24 rue Notre-Dame, 33000 Bordeaux", 6, Commande::LIVREE, true],
             'livree4' => ['client3', 'table-sans-gluten', -12, -5, '12:00', "17 allée des Vignes, 33330 Saint-Émilion", 6, Commande::LIVREE, false],
             'preparation' => ['client3', 'buffet-anniversaire', -6, 2, '11:00', "17 allée des Vignes, 33330 Saint-Émilion", 25, Commande::EN_PREPARATION, true],
             'confirmee' => ['client2', 'bassin-arcachon', -3, 6, '19:00', "5 avenue de la Libération, 33700 Mérignac", 12, Commande::CONFIRMEE, false],
@@ -590,6 +590,11 @@ class AppFixtures extends Fixture
 
             $this->chargerSuivi($manager, $commande, $statut, $joursCommande);
         }
+
+        // Deux cas de prêt à observer sur la page « Matériel prêté » :
+        // livree3 est revenu dans les temps, livree1 a dépassé les dix jours
+        // ouvrés sans avoir été rendu.
+        $commandes['livree3']->restituerMateriel(new \DateTime('-7 days'));
 
         return $commandes;
     }

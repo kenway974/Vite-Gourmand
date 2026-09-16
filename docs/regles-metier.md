@@ -39,8 +39,22 @@ dit rien : à trancher.
 > indemnité de 600 € s'applique. »
 
 Se rattache à `Commande::pretMateriel`. Le délai est en **jours ouvrés**, pas
-calendaires. Rien dans le modèle ne permet aujourd'hui de tracer la
-restitution ni l'application de l'indemnité.
+calendaires : dix jours ouvrés font deux semaines pleines.
+
+Implémenté sur `Commande` :
+
+- `dateLimiteRestitution()` — prestation + 10 jours ouvrés, week-ends sautés.
+  Les jours fériés ne sont **pas** déduits : les maquettes n'en parlent pas, et
+  les inventer avancerait la date limite au détriment du client.
+- `materielEstEnRetard()` — vrai aussi pour un matériel rendu en retard. C'est
+  le dépassement qui déclenche l'indemnité, pas l'absence définitive de retour.
+- `restituerMateriel()` / `annulerRestitutionMateriel()` — annuler un retour
+  efface aussi l'indemnité.
+- `appliquerIndemniteMateriel()` — refuse tant que le délai n'est pas dépassé.
+  Le montant facturé est stocké à part du barème : un geste commercial reste
+  traçable.
+
+Suivi par l'employé sur `/employe/materiel`.
 
 ## 5. Le délai de commande est ferme
 
@@ -120,13 +134,15 @@ Confirme la saisonnalité ajoutée sur la branche `saisonnalite-menus` :
 
 # Manques dans le modèle de données
 
-1. **`Commande`** ne trace ni la remise appliquée ni son montant. `prixTotal`
-   seul ne permet pas de justifier une facture.
-2. **`Commande`** ne trace pas la restitution du matériel (date, indemnité).
-3. **`Contact`** n'a aucun statut de traitement : impossible de distinguer un
-   message traité d'un message en attente.
-4. **`Horaire::jour`** est une chaîne sans ordre : un tri alphabétique donne
-   dimanche, jeudi, lundi…
+1. ~~**`Commande`** ne trace ni la remise appliquée ni son montant.~~
+   Comblé : `tauxRemise` et `montantRemise`, posés par `appliquerPrix()`.
+2. ~~**`Commande`** ne trace pas la restitution du matériel (date, indemnité).~~
+   Comblé : `dateRestitutionMateriel` et `indemniteMateriel`.
+3. ~~**`Contact`** n'a aucun statut de traitement.~~ Comblé : `traite`,
+   `dateTraitement` et `estEnRetard()` (délai de réponse de 48 h).
+4. ~~**`Horaire::jour`** est une chaîne sans ordre.~~ Comblé : colonne `ordre`,
+   renseignée par `setJour()`, plus un marqueur `ferme` pour les jours sans
+   service.
 5. **Pas de zone de livraison**, alors que le prix en dépend.
 6. **`Commande::statut`** et **`Avis::statutValidation`** sont des chaînes
    libres : une faute de frappe crée un statut fantôme.

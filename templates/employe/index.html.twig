@@ -9,6 +9,7 @@
         <li><a href="{{ path('app_employe_commandes') }}">Suivi des commandes</a> — {{ nouvellesCommandes }} en attente</li>
         <li><a href="{{ path('app_employe_avis') }}">Modération des avis</a> — {{ avisEnAttente }} à relire</li>
         <li><a href="{{ path('app_employe_messages') }}">Messages de contact</a></li>
+        <li><a href="{{ path('app_employe_materiel') }}">Matériel prêté</a></li>
     </ul>
 
     {% for titre, liste in {"Aujourd'hui": aPreparerAujourdhui, 'Demain': aPreparerDemain} %}

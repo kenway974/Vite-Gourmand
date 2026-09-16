@@ -39,6 +39,16 @@ class Commande
     /** Statuts après lesquels plus rien ne bouge. */
     public const STATUTS_FINAUX = [self::LIVREE, self::ANNULEE];
 
+    /**
+     * « Plats et présentoirs sont à restituer sous dix jours ouvrés, sans quoi
+     * une indemnité de 600 € s'applique. »
+     *
+     * Le délai court en jours OUVRÉS depuis la prestation, pas en jours
+     * calendaires : dix jours ouvrés font deux semaines pleines.
+     */
+    public const DELAI_RESTITUTION_JOURS_OUVRES = 10;
+    public const INDEMNITE_MATERIEL = '600.00';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -97,6 +107,22 @@ class Commande
 
     #[ORM\Column]
     private ?bool $pretMateriel = null;
+
+    /**
+     * Date effective de restitution. Null tant que le matériel n'est pas
+     * revenu — y compris passé le délai, où c'est précisément ce qui
+     * déclenche l'indemnité.
+     */
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $dateRestitutionMateriel = null;
+
+    /**
+     * Indemnité réellement facturée. Distincte de INDEMNITE_MATERIEL : celle-ci
+     * est le barème, celle-là ce qui a été appliqué à cette commande — un geste
+     * commercial doit rester traçable.
+     */
+    #[ORM\Column(type: Types::DECIMAL, precision: 8, scale: 2, options: ['default' => '0.00'])]
+    private string $indemniteMateriel = '0.00';
 
     /**
      * @var Collection<int, SuiviCommande>
@@ -340,6 +366,113 @@ class Commande
     public function estAnnulableParLeClient(): bool
     {
         return \in_array($this->statut, [self::EN_ATTENTE, self::CONFIRMEE], true);
+    }
+
+    public function getDateRestitutionMateriel(): ?\DateTime
+    {
+        return $this->dateRestitutionMateriel;
+    }
+
+    public function getIndemniteMateriel(): string
+    {
+        return $this->indemniteMateriel;
+    }
+
+    /**
+     * Date limite de restitution : la prestation plus dix jours ouvrés.
+     *
+     * Les jours fériés ne sont pas déduits — les maquettes n'en parlent pas,
+     * et les inventer avancerait la date limite au détriment du client.
+     */
+    public function dateLimiteRestitution(): ?\DateTimeImmutable
+    {
+        if (true !== $this->pretMateriel || null === $this->datePrestation) {
+            return null;
+        }
+
+        $jour = \DateTimeImmutable::createFromInterface($this->datePrestation)->setTime(0, 0);
+        $restants = self::DELAI_RESTITUTION_JOURS_OUVRES;
+
+        while ($restants > 0) {
+            $jour = $jour->modify('+1 day');
+
+            // 6 = samedi, 7 = dimanche.
+            if ((int) $jour->format('N') < 6) {
+                --$restants;
+            }
+        }
+
+        return $jour;
+    }
+
+    /**
+     * Le matériel a-t-il dépassé son délai de restitution ?
+     *
+     * Vrai aussi pour un matériel rendu en retard : c'est le dépassement qui
+     * déclenche l'indemnité, pas l'absence définitive de restitution.
+     */
+    public function materielEstEnRetard(?\DateTimeInterface $date = null): bool
+    {
+        $limite = $this->dateLimiteRestitution();
+
+        if (null === $limite) {
+            return false;
+        }
+
+        $reference = $this->dateRestitutionMateriel
+            ?? \DateTimeImmutable::createFromInterface($date ?? new \DateTimeImmutable());
+
+        return \DateTimeImmutable::createFromInterface($reference)->setTime(0, 0) > $limite;
+    }
+
+    /**
+     * Enregistre le retour du matériel.
+     *
+     * La date par défaut est aujourd'hui : c'est l'employé qui constate le
+     * retour au moment où il le saisit.
+     */
+    public function restituerMateriel(?\DateTimeInterface $date = null): static
+    {
+        $this->dateRestitutionMateriel = \DateTime::createFromInterface($date ?? new \DateTime())->setTime(0, 0);
+
+        return $this;
+    }
+
+    /**
+     * Annule un retour saisi par erreur, indemnité comprise : laisser une
+     * indemnité sur une commande dont le retour est effacé n'aurait pas de sens.
+     */
+    public function annulerRestitutionMateriel(): static
+    {
+        $this->dateRestitutionMateriel = null;
+        $this->indemniteMateriel = '0.00';
+
+        return $this;
+    }
+
+    /**
+     * Facture l'indemnité prévue au barème.
+     *
+     * Refuse tant que le délai n'est pas dépassé : une indemnité appliquée
+     * trop tôt est une erreur de facturation, pas une décision commerciale.
+     */
+    public function appliquerIndemniteMateriel(?string $montant = null, ?\DateTimeInterface $date = null): static
+    {
+        if (!$this->materielEstEnRetard($date)) {
+            throw new \LogicException('Le délai de restitution n\'est pas dépassé : aucune indemnité n\'est due.');
+        }
+
+        $this->indemniteMateriel = $montant ?? self::INDEMNITE_MATERIEL;
+
+        return $this;
+    }
+
+    public function indemniteEstFacturee(): bool
+    {
+        // Comparaison de chaînes exclue : MySQL rend « 600.00 » là où SQLite
+        // rend « 600 ». Le test à zéro est exact en flottant, contrairement
+        // à une addition, que la règle du centime entier interdit ailleurs.
+        return 0.0 !== (float) $this->indemniteMateriel;
     }
 
     /**

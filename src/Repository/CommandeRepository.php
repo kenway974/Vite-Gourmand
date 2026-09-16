@@ -106,6 +106,33 @@ class CommandeRepository extends ServiceEntityRepository
     }
 
     /**
+     * Matériel prêté et pas encore revenu, du plus ancien au plus récent :
+     * les commandes les plus en retard arrivent en tête.
+     *
+     * Client et menu sont ramenés avec, la liste les affiche tous les deux.
+     *
+     * @return Commande[]
+     */
+    public function findMaterielPrete(bool $restitue = false): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->addSelect('u', 'm')
+            ->join('c.utilisateur', 'u')
+            ->join('c.menu', 'm')
+            ->andWhere('c.pretMateriel = true')
+            // Une commande annulée n'a jamais donné lieu à un prêt effectif.
+            ->andWhere('c.statut = :livree')
+            ->setParameter('livree', Commande::LIVREE)
+            ->orderBy('c.datePrestation', 'ASC');
+
+        $qb->andWhere($restitue
+            ? 'c.dateRestitutionMateriel IS NOT NULL'
+            : 'c.dateRestitutionMateriel IS NULL');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
      * Feuille de route d'une journée : ce qu'il y a à préparer et à livrer.
      *
      * Triée par heure de livraison, et débarrassée des commandes annulées :
