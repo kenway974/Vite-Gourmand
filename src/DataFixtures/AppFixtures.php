@@ -31,7 +31,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
  */
 class AppFixtures extends Fixture
 {
-    public const MOT_DE_PASSE = 'Motdepasse&974!';
+    public const MOT_DE_PASSE = 'Motdepasse&33!';
 
     public function __construct(
         private readonly UserPasswordHasherInterface $hasher,
@@ -101,35 +101,43 @@ class AppFixtures extends Fixture
         // nom => allergènes contenus
         $definitions = [
             'farine' => ['Farine de blé', ['gluten']],
-            'oeuf' => ['Œuf', ['oeufs']],
-            'lait' => ['Lait', ['lait']],
-            'beurre' => ['Beurre', ['lait']],
+            'pain' => ['Pain de campagne', ['gluten']],
+            'oeuf' => ['Œuf fermier', ['oeufs']],
+            'lait' => ['Lait entier', ['lait']],
+            'beurre' => ['Beurre doux', ['lait']],
             'creme' => ['Crème fraîche', ['lait']],
-            'riz' => ['Riz', []],
-            'haricots' => ['Haricots rouges', []],
-            'tomate' => ['Tomate', []],
-            'oignon' => ['Oignon', []],
-            'ail' => ['Ail', []],
-            'gingembre' => ['Gingembre', []],
-            'curcuma' => ['Curcuma', []],
-            'piment' => ['Piment', []],
+            'echalote' => ['Échalote grise', []],
+            'ail' => ['Ail rose', []],
+            'persil' => ['Persil plat', []],
             'thym' => ['Thym', []],
-            'poulet' => ['Poulet fermier', []],
-            'porc' => ['Échine de porc', []],
-            'saucisse' => ['Saucisse fumée', ['sulfites']],
-            'crevette' => ['Crevette', ['crustaces']],
-            'thon' => ['Thon', ['poissons']],
-            'cabillaud' => ['Cabillaud', ['poissons']],
-            'sauce-soja' => ['Sauce soja', ['soja', 'gluten']],
-            'cacahuete' => ['Cacahuète', ['arachides']],
+            'vin-rouge' => ['Vin rouge de Bordeaux', ['sulfites']],
+            'armagnac' => ['Armagnac', ['sulfites']],
+            'moelle' => ['Moelle de bœuf', []],
+            'entrecote' => ['Entrecôte de bœuf', []],
+            'agneau' => ['Agneau de Pauillac', []],
+            'magret' => ['Magret de canard', []],
+            'confit' => ['Cuisse de canard confite', []],
+            'foie-gras' => ['Foie gras de canard', []],
+            'graisse-canard' => ['Graisse de canard', []],
+            'porc' => ['Panse de porc', []],
+            'jambon' => ['Jambon de Bayonne', []],
+            'huitre' => ['Huître du Bassin', ['mollusques']],
+            'lamproie' => ['Lamproie', ['poissons']],
+            'cepe' => ['Cèpe de Gironde', []],
+            'pomme-de-terre' => ['Pomme de terre', []],
+            'haricot-tarbais' => ['Haricot tarbais', []],
+            'asperge' => ['Asperge blanche du Blayais', []],
+            'laitue' => ['Laitue', []],
+            'gesier' => ['Gésier de canard', []],
+            'noix' => ['Noix du Périgord', ['fruits-a-coque']],
             'amande' => ['Amande', ['fruits-a-coque']],
-            'sesame' => ['Graine de sésame', ['sesame']],
+            'pruneau' => ['Pruneau d\'Agen', []],
+            'sucre' => ['Sucre', []],
+            'vanille' => ['Vanille', []],
+            'rhum' => ['Rhum ambré', ['sulfites']],
             'moutarde' => ['Moutarde', ['moutarde']],
-            'vanille' => ['Vanille Bourbon', []],
-            'patate-douce' => ['Patate douce', []],
-            'coco' => ['Noix de coco râpée', []],
-            'sucre' => ['Sucre de canne', []],
-            'palmiste' => ['Cœur de palmiste', []],
+            'celeri' => ['Céleri branche', ['celeri']],
+            'vinaigre' => ['Vinaigre de vin', ['sulfites']],
         ];
 
         $ingredients = [];
@@ -156,22 +164,26 @@ class AppFixtures extends Fixture
     private function chargerPlats(ObjectManager $manager, array $ingredients): array
     {
         $definitions = [
-            'samoussas' => ['Samoussas au thon', 'Entrée', "Petits triangles croustillants garnis de thon relevé au curcuma.", ['farine', 'thon', 'oignon', 'curcuma']],
-            'bouchons' => ['Bouchons créoles', 'Entrée', "Bouchons vapeur au porc et au gingembre, servis avec leur sauce.", ['farine', 'porc', 'gingembre', 'sauce-soja']],
-            'salade-palmiste' => ['Salade de cœur de palmiste', 'Entrée', "Le « millionnaire » réunionnais, en salade fraîche.", ['palmiste', 'tomate', 'moutarde']],
-            'rougail-saucisse' => ['Rougail saucisse', 'Plat', "Le plat emblématique de La Réunion : saucisses fumées mijotées en sauce tomate épicée.", ['saucisse', 'tomate', 'oignon', 'ail', 'piment', 'thym']],
-            'cari-poulet' => ['Cari de poulet', 'Plat', "Poulet fermier mijoté au curcuma, gingembre et oignon.", ['poulet', 'curcuma', 'gingembre', 'oignon', 'ail']],
-            'civet-porc' => ['Civet de porc', 'Plat', "Échine de porc longuement mijotée, relevée au thym et au piment.", ['porc', 'oignon', 'ail', 'thym', 'piment']],
-            'cari-crevettes' => ['Cari de crevettes', 'Plat', "Crevettes saisies puis mijotées en sauce créole.", ['crevette', 'tomate', 'curcuma', 'ail']],
-            'massale-cabillaud' => ['Massalé de cabillaud', 'Plat', "Dos de cabillaud au massalé, doux et parfumé.", ['cabillaud', 'curcuma', 'gingembre', 'tomate']],
-            'cari-legumes' => ['Cari de légumes', 'Plat', "Version végétarienne du cari, généreuse en légumes de saison.", ['patate-douce', 'tomate', 'oignon', 'curcuma', 'ail']],
-            'riz-blanc' => ['Riz blanc', 'Accompagnement', "Riz parfumé, cuisson vapeur.", ['riz']],
-            'grains' => ['Grains (haricots rouges)', 'Accompagnement', "Haricots rouges mijotés, l'accompagnement indissociable du cari.", ['haricots', 'oignon', 'thym']],
-            'rougail-tomate' => ['Rougail tomate', 'Accompagnement', "Condiment frais et pimenté, à doser selon le courage.", ['tomate', 'oignon', 'piment']],
-            'achards' => ['Achards de légumes', 'Accompagnement', "Légumes croquants marinés au curcuma.", ['curcuma', 'ail', 'moutarde']],
-            'gateau-patate' => ['Gâteau patate douce', 'Dessert', "Le dessert créole par excellence, moelleux et parfumé à la vanille.", ['patate-douce', 'oeuf', 'sucre', 'vanille', 'beurre']],
-            'tarte-vanille' => ['Tarte à la vanille Bourbon', 'Dessert', "Pâte sablée et crème à la vanille de Bourbon Pointu.", ['farine', 'beurre', 'oeuf', 'lait', 'vanille', 'sucre']],
-            'salade-fruits' => ['Salade de fruits tropicaux', 'Dessert', "Ananas Victoria, mangue et litchi selon la saison.", ['sucre', 'coco']],
+            'huitres' => ['Huîtres du Bassin d\'Arcachon', 'Entrée', "Servies nature, avec pain de seigle et beurre demi-sel.", ['huitre', 'pain', 'beurre', 'vinaigre', 'echalote']],
+            'grenier' => ['Grenier médocain', 'Entrée', "Charcuterie girondine traditionnelle, tranchée fin et servie froide.", ['porc', 'moutarde', 'thym']],
+            'foie-gras' => ['Foie gras de canard mi-cuit', 'Entrée', "Mi-cuit maison, accompagné de pruneaux à l\'armagnac.", ['foie-gras', 'pruneau', 'armagnac', 'pain']],
+            'tourin' => ['Tourin blanchi à l\'ail', 'Entrée', "La soupe à l\'ail du Sud-Ouest, liée à l\'œuf.", ['ail', 'oeuf', 'farine', 'vinaigre']],
+            'asperges' => ['Asperges blanches du Blayais', 'Entrée', "Asperges de saison, sauce mousseline.", ['asperge', 'oeuf', 'beurre', 'moutarde']],
+            'salade-landaise' => ['Salade landaise', 'Entrée', "Laitue, gésiers confits et noix du Périgord.", ['laitue', 'gesier', 'noix', 'moutarde', 'vinaigre']],
+            'entrecote' => ['Entrecôte à la bordelaise', 'Plat', "Entrecôte grillée, sauce au vin rouge, échalote et moelle.", ['entrecote', 'vin-rouge', 'echalote', 'moelle', 'beurre', 'persil']],
+            'lamproie' => ['Lamproie à la bordelaise', 'Plat', "Mijotée au vin rouge et aux poireaux, la recette la plus girondine qui soit.", ['lamproie', 'vin-rouge', 'echalote', 'ail', 'thym']],
+            'magret' => ['Magret de canard', 'Plat', "Cuit rosé, déglacé au vin rouge.", ['magret', 'vin-rouge', 'echalote', 'thym']],
+            'confit' => ['Confit de canard', 'Plat', "Cuisse confite dans sa graisse, peau croustillante.", ['confit', 'graisse-canard', 'ail', 'thym']],
+            'agneau' => ['Agneau de Pauillac', 'Plat', "Carré d\'agneau rôti, ail et thym.", ['agneau', 'ail', 'thym', 'beurre']],
+            'cepes' => ['Cèpes à la bordelaise', 'Accompagnement', "Cèpes poêlés à l\'échalote et au persil.", ['cepe', 'echalote', 'persil', 'ail']],
+            'sarladaises' => ['Pommes sarladaises', 'Accompagnement', "Pommes de terre sautées à la graisse de canard, ail et persil.", ['pomme-de-terre', 'graisse-canard', 'ail', 'persil']],
+            'haricots' => ['Haricots tarbais', 'Accompagnement', "Mijotés au jambon de Bayonne.", ['haricot-tarbais', 'jambon', 'celeri', 'thym']],
+            'gratin' => ['Gratin de légumes', 'Accompagnement', "Légumes de saison gratinés à la crème.", ['pomme-de-terre', 'creme', 'lait', 'beurre', 'ail']],
+            'caneles' => ['Canelés de Bordeaux', 'Dessert', "Croûte caramélisée, cœur moelleux au rhum et à la vanille.", ['farine', 'lait', 'oeuf', 'sucre', 'beurre', 'rhum', 'vanille']],
+            'macarons' => ['Macarons de Saint-Émilion', 'Dessert', "La recette des Ursulines, à l\'amande douce.", ['amande', 'sucre', 'oeuf']],
+            'dunes-blanches' => ['Dunes blanches', 'Dessert', "Petits choux garnis de crème fouettée, spécialité du Cap Ferret.", ['farine', 'oeuf', 'beurre', 'creme', 'sucre', 'lait']],
+            'gateau-basque' => ['Gâteau basque', 'Dessert', "Pâte sablée et crème pâtissière à la vanille.", ['farine', 'beurre', 'oeuf', 'lait', 'sucre', 'vanille']],
+            'pruneaux' => ['Pruneaux à l\'armagnac', 'Dessert', "Pruneaux d\'Agen macérés, servis avec une glace vanille.", ['pruneau', 'armagnac', 'creme', 'sucre', 'vanille']],
         ];
 
         $plats = [];
@@ -194,10 +206,10 @@ class AppFixtures extends Fixture
     private function chargerThemes(ObjectManager $manager): array
     {
         $definitions = [
-            'creole' => ['Créole traditionnel', "Les classiques de la cuisine réunionnaise, cuisinés comme à la maison."],
+            'bistrot' => ['Bistrot bordelais', "Les classiques des tables de la ville, sans chichi."],
+            'terroir' => ['Terroir du Sud-Ouest', "Canard, cèpes et produits de la région."],
             'festif' => ['Buffet festif', "Formules généreuses pour mariages, anniversaires et grandes tablées."],
             'cocktail' => ['Cocktail dînatoire', "Bouchées et pièces salées à partager debout."],
-            'metropole' => ['Cuisine métropolitaine', "Des recettes de l'Hexagone, pour changer du cari."],
             'brunch' => ['Brunch', "Formule du week-end, sucrée et salée."],
         ];
 
@@ -249,55 +261,55 @@ class AppFixtures extends Fixture
     {
         // titre, thème, régime, min pers., prix, délai, stock, précautions, plats
         $definitions = [
-            'creole-decouverte' => [
-                'Créole Découverte', 'creole', 'standard', 6, '18.50', 3, 12,
-                "Contient du porc. Le rougail tomate est servi à part pour doser le piment.",
-                ['samoussas', 'rougail-saucisse', 'riz-blanc', 'grains', 'rougail-tomate', 'gateau-patate'],
+            'bistrot-bordelais' => [
+                'Bistrot Bordelais', 'bistrot', 'standard', 6, '24.00', 3, 12,
+                "Contient du porc (grenier médocain) et des sulfites.",
+                ['grenier', 'entrecote', 'cepes', 'sarladaises', 'caneles'],
             ],
-            'creole-prestige' => [
-                'Créole Prestige', 'creole', 'standard', 10, '32.00', 5, 6,
-                "Contient crustacés, poisson et porc.",
-                ['bouchons', 'samoussas', 'cari-crevettes', 'civet-porc', 'riz-blanc', 'grains', 'achards', 'tarte-vanille'],
+            'table-medoc' => [
+                'Table du Médoc', 'terroir', 'standard', 8, '34.00', 5, 6,
+                "Contient sulfites et fruits à coque.",
+                ['foie-gras', 'agneau', 'cepes', 'sarladaises', 'macarons'],
             ],
-            'creole-volaille' => [
-                'Cari de Volaille', 'creole', 'sans-porc', 6, '21.00', 3, 15,
-                "Aucune préparation à base de porc.",
-                ['salade-palmiste', 'cari-poulet', 'riz-blanc', 'grains', 'salade-fruits'],
+            'grand-sud-ouest' => [
+                'Grand Sud-Ouest', 'terroir', 'standard', 8, '29.00', 4, 8,
+                "Contient du porc (jambon de Bayonne) et du céleri.",
+                ['salade-landaise', 'confit', 'sarladaises', 'haricots', 'gateau-basque'],
             ],
-            'ocean-indien' => [
-                'Océan Indien', 'creole', 'sans-porc', 8, '27.50', 4, 8,
-                "Contient poisson et crustacés.",
-                ['samoussas', 'massale-cabillaud', 'cari-crevettes', 'riz-blanc', 'achards', 'salade-fruits'],
+            'bassin-arcachon' => [
+                'Bassin d\'Arcachon', 'bistrot', 'sans-porc', 6, '31.00', 4, 7,
+                "Contient mollusques et poisson.",
+                ['huitres', 'lamproie', 'sarladaises', 'dunes-blanches'],
             ],
-            'jardin-creole' => [
-                'Jardin Créole', 'creole', 'vegetarien', 6, '16.00', 3, 20,
-                "Entièrement végétarien.",
-                ['salade-palmiste', 'cari-legumes', 'riz-blanc', 'grains', 'achards', 'salade-fruits'],
+            'canard-compagnie' => [
+                'Canard & Compagnie', 'terroir', 'sans-porc', 8, '28.00', 4, 9,
+                "Tout en canard. Aucune préparation à base de porc.",
+                ['foie-gras', 'magret', 'sarladaises', 'gratin', 'pruneaux'],
             ],
             'buffet-mariage' => [
-                'Buffet Mariage', 'festif', 'standard', 40, '38.00', 15, 3,
-                "Contient tous les allergènes majeurs. Composition adaptable sur demande.",
-                ['bouchons', 'samoussas', 'salade-palmiste', 'rougail-saucisse', 'cari-poulet', 'cari-crevettes', 'riz-blanc', 'grains', 'achards', 'gateau-patate', 'tarte-vanille'],
+                'Buffet Mariage', 'festif', 'standard', 40, '42.00', 15, 3,
+                "Contient la plupart des allergènes majeurs. Composition adaptable sur demande.",
+                ['huitres', 'foie-gras', 'grenier', 'entrecote', 'confit', 'cepes', 'sarladaises', 'haricots', 'caneles', 'macarons'],
             ],
             'buffet-anniversaire' => [
-                'Buffet Anniversaire', 'festif', 'sans-porc', 20, '29.00', 10, 5,
-                "Sans porc. Contient poisson.",
-                ['samoussas', 'cari-poulet', 'massale-cabillaud', 'riz-blanc', 'grains', 'gateau-patate'],
+                'Buffet Anniversaire', 'festif', 'sans-porc', 20, '32.00', 10, 5,
+                "Sans porc. Contient sulfites et fruits à coque.",
+                ['salade-landaise', 'magret', 'sarladaises', 'gratin', 'caneles'],
             ],
-            'cocktail-sale' => [
-                'Cocktail Salé', 'cocktail', 'standard', 15, '14.00', 5, 10,
-                "Pièces à partager, servies froides ou tièdes.",
-                ['bouchons', 'samoussas', 'salade-palmiste'],
+            'cocktail-girondin' => [
+                'Cocktail Girondin', 'cocktail', 'standard', 15, '16.00', 5, 10,
+                "Pièces à partager, servies froides ou tièdes. Contient mollusques et porc.",
+                ['huitres', 'grenier', 'foie-gras'],
             ],
-            'brunch-dimanche' => [
-                'Brunch du Dimanche', 'brunch', 'vegetarien', 4, '19.50', 2, 10,
+            'brunch-bordelais' => [
+                'Brunch Bordelais', 'brunch', 'vegetarien', 4, '21.00', 2, 10,
                 "Végétarien. Contient gluten, lait et œuf.",
-                ['salade-palmiste', 'cari-legumes', 'riz-blanc', 'tarte-vanille', 'salade-fruits'],
+                ['tourin', 'asperges', 'gratin', 'caneles', 'dunes-blanches'],
             ],
-            'sans-gluten-creole' => [
-                'Créole Sans Gluten', 'creole', 'sans-gluten', 6, '23.00', 4, 7,
+            'table-sans-gluten' => [
+                'Table Sans Gluten', 'bistrot', 'sans-gluten', 6, '26.00', 4, 7,
                 "Élaboré sans ingrédient contenant du gluten.",
-                ['cari-poulet', 'riz-blanc', 'grains', 'rougail-tomate', 'salade-fruits'],
+                ['magret', 'cepes', 'sarladaises', 'gratin', 'pruneaux'],
             ],
         ];
 
@@ -347,12 +359,12 @@ class AppFixtures extends Fixture
     {
         // email, prénom, nom, rôles, téléphone, adresse, actif
         $definitions = [
-            'admin' => ['admin@vite-gourmand.fr', 'Kenny', 'Pignolet', ['ROLE_ADMIN'], '0692 12 34 56', "12 rue de la Compagnie, 97400 Saint-Denis", true],
-            'employe' => ['employe@vite-gourmand.fr', 'Marie', 'Hoarau', ['ROLE_EMPLOYE'], '0692 23 45 67', "5 rue Juliette Dodu, 97400 Saint-Denis", true],
-            'client1' => ['sophie.grondin@example.fr', 'Sophie', 'Grondin', [], '0692 34 56 78', "8 chemin des Manguiers, 97490 Sainte-Clotilde", true],
-            'client2' => ['david.payet@example.fr', 'David', 'Payet', [], '0692 45 67 89', "22 rue du Stade, 97410 Saint-Pierre", true],
-            'client3' => ['laetitia.fontaine@example.fr', 'Laëtitia', 'Fontaine', [], null, "3 allée des Filaos, 97434 Saint-Gilles", true],
-            'inactif' => ['compte.desactive@example.fr', 'Jean', 'Técher', [], null, null, false],
+            'admin' => ['admin@vite-gourmand.fr', 'Kenny', 'Pignolet', ['ROLE_ADMIN'], '05 56 12 34 56', "12 cours de l\'Intendance, 33000 Bordeaux", true],
+            'employe' => ['employe@vite-gourmand.fr', 'Marie', 'Lasserre', ['ROLE_EMPLOYE'], '05 56 23 45 67', "8 rue Sainte-Catherine, 33000 Bordeaux", true],
+            'client1' => ['sophie.brunet@example.fr', 'Sophie', 'Brunet', [], '06 12 34 56 78', "24 rue Notre-Dame, 33000 Bordeaux", true],
+            'client2' => ['david.marchand@example.fr', 'David', 'Marchand', [], '06 23 45 67 89', "5 avenue de la Libération, 33700 Mérignac", true],
+            'client3' => ['laetitia.fontaine@example.fr', 'Laëtitia', 'Fontaine', [], null, "17 allée des Vignes, 33330 Saint-Émilion", true],
+            'inactif' => ['compte.desactive@example.fr', 'Jean', 'Duviella', [], null, null, false],
         ];
 
         $utilisateurs = [];
@@ -411,14 +423,14 @@ class AppFixtures extends Fixture
         // client, menu, jours écoulés depuis la commande, jours avant prestation,
         // heure, lieu, nb personnes, prix total, statut, prêt de matériel
         $definitions = [
-            'livree1' => ['client1', 'creole-decouverte', -30, -22, '12:00', "8 chemin des Manguiers, 97490 Sainte-Clotilde", 10, '185.00', 'livrée', true],
-            'livree2' => ['client2', 'creole-volaille', -20, -14, '19:30', "22 rue du Stade, 97410 Saint-Pierre", 8, '168.00', 'livrée', false],
-            'livree3' => ['client1', 'jardin-creole', -15, -9, '12:30', "8 chemin des Manguiers, 97490 Sainte-Clotilde", 6, '96.00', 'livrée', false],
-            'livree4' => ['client3', 'sans-gluten-creole', -12, -5, '12:00', "3 allée des Filaos, 97434 Saint-Gilles", 6, '138.00', 'livrée', false],
-            'preparation' => ['client3', 'buffet-anniversaire', -6, 2, '11:00', "3 allée des Filaos, 97434 Saint-Gilles", 25, '725.00', 'en préparation', true],
-            'confirmee' => ['client2', 'ocean-indien', -3, 6, '19:00', "22 rue du Stade, 97410 Saint-Pierre", 12, '330.00', 'confirmée', false],
-            'attente' => ['client3', 'buffet-mariage', -1, 25, '18:00', "Domaine du Grand Hazier, 97438 Sainte-Marie", 60, '2280.00', 'en attente', true],
-            'annulee' => ['client1', 'cocktail-sale', -10, -2, '18:30', "8 chemin des Manguiers, 97490 Sainte-Clotilde", 20, '280.00', 'annulée', false],
+            'livree1' => ['client1', 'bistrot-bordelais', -30, -22, '12:00', "24 rue Notre-Dame, 33000 Bordeaux", 10, '265.00', 'livrée', true],
+            'livree2' => ['client2', 'grand-sud-ouest', -20, -14, '19:30', "5 avenue de la Libération, 33700 Mérignac", 8, '232.00', 'livrée', false],
+            'livree3' => ['client1', 'brunch-bordelais', -15, -9, '11:30', "24 rue Notre-Dame, 33000 Bordeaux", 6, '126.00', 'livrée', false],
+            'livree4' => ['client3', 'table-sans-gluten', -12, -5, '12:00', "17 allée des Vignes, 33330 Saint-Émilion", 6, '156.00', 'livrée', false],
+            'preparation' => ['client3', 'buffet-anniversaire', -6, 2, '11:00', "17 allée des Vignes, 33330 Saint-Émilion", 25, '800.00', 'en préparation', true],
+            'confirmee' => ['client2', 'bassin-arcachon', -3, 6, '19:00', "5 avenue de la Libération, 33700 Mérignac", 12, '372.00', 'confirmée', false],
+            'attente' => ['client3', 'buffet-mariage', -1, 25, '18:00', "Château Pape Clément, 33600 Pessac", 60, '2520.00', 'en attente', true],
+            'annulee' => ['client1', 'cocktail-girondin', -10, -2, '18:30', "24 rue Notre-Dame, 33000 Bordeaux", 20, '320.00', 'annulée', false],
         ];
 
         $commandes = [];
@@ -481,10 +493,10 @@ class AppFixtures extends Fixture
         //
         // commande, note, commentaire, statut de validation, jours écoulés
         $definitions = [
-            ['livree1', 5, "Rougail excellent, quantités généreuses. Livraison pile à l'heure, on recommandera.", 'validé', -20],
-            ['livree2', 4, "Très bon cari, bien parfumé. Un peu juste sur le riz pour huit personnes.", 'validé', -12],
-            ['livree3', 5, "Enfin un traiteur qui soigne le végétarien. Le cari de légumes était une vraie réussite.", 'validé', -7],
-            ['livree4', 3, "Bon dans l'ensemble, mais le gâteau patate est arrivé écrasé.", 'en attente', -2],
+            ['livree1', 5, "Entrecôte parfaitement cuite et la sauce bordelaise était à tomber. Livraison pile à l\'heure, on recommandera.", 'validé', -20],
+            ['livree2', 4, "Très bon confit, peau bien croustillante. Un peu juste sur les haricots pour huit personnes.", 'validé', -12],
+            ['livree3', 5, "Enfin un traiteur qui soigne le végétarien. Le tourin était une vraie surprise, et les canelés impeccables.", 'validé', -7],
+            ['livree4', 3, "Bon dans l\'ensemble, mais les pruneaux à l\'armagnac sont arrivés écrasés.", 'en attente', -2],
         ];
 
         foreach ($definitions as [$cleCommande, $note, $commentaire, $statut, $jours]) {
@@ -505,9 +517,9 @@ class AppFixtures extends Fixture
     private function chargerContacts(ObjectManager $manager): void
     {
         $definitions = [
-            ["Devis pour un séminaire", "Bonjour, nous organisons un séminaire pour 80 personnes le mois prochain. Proposez-vous des formules adaptées ?", 'contact@entreprise-974.fr', -5],
-            ["Question sur les allergènes", "Ma fille est allergique aux fruits à coque. Le menu Créole Découverte lui conviendrait-il ?", 'famille.robert@example.fr', -3],
-            ["Livraison dans les Hauts", "Livrez-vous jusqu'à Cilaos ? Merci d'avance.", 'randonneur@example.fr', -1],
+            ["Devis pour un séminaire", "Bonjour, nous organisons un séminaire pour 80 personnes le mois prochain à Bordeaux. Proposez-vous des formules adaptées ?", 'contact@entreprise-gironde.fr', -5],
+            ["Question sur les allergènes", "Ma fille est allergique aux fruits à coque. Le menu Bistrot Bordelais lui conviendrait-il ?", 'famille.robert@example.fr', -3],
+            ["Livraison hors agglomération", "Livrez-vous jusqu\'au Cap Ferret ? Merci d\'avance.", 'vacancier@example.fr', -1],
         ];
 
         foreach ($definitions as [$titre, $message, $email, $jours]) {
