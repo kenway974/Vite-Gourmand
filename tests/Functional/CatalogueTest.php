@@ -145,6 +145,33 @@ class CatalogueTest extends WebTestCase
         self::assertSame(['Petit comité'], $this->titres(['nbPersonnes' => 10]));
     }
 
+    public function testLeFiltreConvivesEstProposeParPaliers(): void
+    {
+        $this->menu('Buffet bordelais');
+
+        $crawler = $this->client->request('GET', '/menus');
+        $proposes = $crawler->filter('#convives option')->each(fn ($n) => $n->attr('value'));
+
+        // Les maquettes proposent trois paliers, pas un champ libre.
+        self::assertSame(['', '4', '6', '20'], $proposes);
+    }
+
+    public function testUnEffectifHorsPalierEstIgnore(): void
+    {
+        $this->menu('Petit comité', nbMinPersonnes: 4);
+        $this->menu('Grand banquet', nbMinPersonnes: 50);
+
+        // 6 est un palier : il filtre.
+        $crawler = $this->client->request('GET', '/menus?convives=6');
+        self::assertSelectorTextContains('.catalogue', 'Petit comité');
+        self::assertStringNotContainsString('Grand banquet', $crawler->filter('.catalogue')->text());
+
+        // 7 n'en est pas un : la valeur vient de l'URL, elle est ignorée
+        // plutôt que passée telle quelle à la requête.
+        $crawler = $this->client->request('GET', '/menus?convives=7');
+        self::assertStringContainsString('Grand banquet', $crawler->filter('.catalogue')->text());
+    }
+
     public function testUnMenuEpuiseResteAuCatalogueMaisPasDansLesCommandables(): void
     {
         $this->menu('Buffet bordelais', stock: 0);

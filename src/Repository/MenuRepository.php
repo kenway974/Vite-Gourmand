@@ -20,6 +20,15 @@ class MenuRepository extends ServiceEntityRepository
      * Ordres de tri acceptés par le catalogue, libellés compris. La clé est
      * ce qui circule dans l'URL ; toute autre valeur retombe sur le titre.
      */
+    /**
+     * Paliers du filtre « nombre de convives », tels que les maquettes les
+     * proposent : « 4 et plus / 6 et plus / 20 et plus ». Un champ libre
+     * laisserait saisir 7 convives et ne renverrait rien de différent de 6.
+     *
+     * @var list<int>
+     */
+    public const PALIERS_CONVIVES = [4, 6, 20];
+
     public const TRIS = [
         'titre' => 'Ordre alphabétique',
         'prix-croissant' => 'Prix croissant',
