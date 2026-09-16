@@ -437,58 +437,58 @@ INSERT INTO `menu_plat` (`plat_id`, `menu_id`) VALUES
 
 -- utilisateur (6 lignes)
 INSERT INTO `utilisateur` (`id`, `email`, `roles`, `password`, `nom`, `prenom`, `gsm`, `adresse_postale`, `actif`) VALUES
-  (1, 'admin@vite-gourmand.fr', '["ROLE_ADMIN"]', '$2y$13$eQ46vQrQL5cfXX8b1epGCePliDLxPGDAk.LVrCRc93IPWXiGlAgbq', 'Pignolet', 'Kenny', '05 56 12 34 56', '12 cours de l\\\'Intendance, 33000 Bordeaux', 1),
-  (2, 'employe@vite-gourmand.fr', '["ROLE_EMPLOYE"]', '$2y$13$Rmxb0CMGxknZlhvmONKvvuHC44DKUF3/uRtbh.FD5qj/AUGLlZEeW', 'Lasserre', 'Marie', '05 56 23 45 67', '8 rue Sainte-Catherine, 33000 Bordeaux', 1),
-  (3, 'sophie.brunet@example.fr', '[]', '$2y$13$I8UjYqqcVIruRI68mpE6Ne50IXWHCKY2PeuhMG5Aze02vKochaTBW', 'Brunet', 'Sophie', '06 12 34 56 78', '24 rue Notre-Dame, 33000 Bordeaux', 1),
-  (4, 'david.marchand@example.fr', '[]', '$2y$13$K9Xza2Diy36JNqpBf.OKsOKM7QICWlCBCbR2il1G9Moi7V.Z3Nic.', 'Marchand', 'David', '06 23 45 67 89', '5 avenue de la Libération, 33700 Mérignac', 1),
-  (5, 'laetitia.fontaine@example.fr', '[]', '$2y$13$QEAA8TbLFE/ueqOuqcudLuS42fq0hlkseFBI4cv9uCKBBXOLestlu', 'Fontaine', 'Laëtitia', NULL, '17 allée des Vignes, 33330 Saint-Émilion', 1),
-  (6, 'compte.desactive@example.fr', '[]', '$2y$13$ZanrysSGbCgWfqdSFRPREumV4WHW5qJxZdIzICLaL4BufVzZtaCD2', 'Duviella', 'Jean', NULL, NULL, 0);
+  (1, 'admin@vite-gourmand.fr', '["ROLE_ADMIN"]', '$2y$13$Mmm32Ha/.K4incNhwEA0cemZ46VqCesSfO/eqiYmNGJHdPNaiO5Eu', 'Pignolet', 'Kenny', '05 56 12 34 56', '12 cours de l\\\'Intendance, 33000 Bordeaux', 1),
+  (2, 'employe@vite-gourmand.fr', '["ROLE_EMPLOYE"]', '$2y$13$7.X.wHOeaAla2u2crJYv9ehk1oT7/sDwBmuO10YHJ2Kv6IDnrcIuK', 'Lasserre', 'Marie', '05 56 23 45 67', '8 rue Sainte-Catherine, 33000 Bordeaux', 1),
+  (3, 'sophie.brunet@example.fr', '[]', '$2y$13$sZO7dcWbNOSAYjL5X/S4NOwV/UKTot9QmsTGpFbgPh1xjjAXHwrIm', 'Brunet', 'Sophie', '06 12 34 56 78', '24 rue Notre-Dame, 33000 Bordeaux', 1),
+  (4, 'david.marchand@example.fr', '[]', '$2y$13$wMm7DExoFkGwEzVRRZexDe61okbaNrJL2PXA9O/sTvxl3jpcYowOu', 'Marchand', 'David', '06 23 45 67 89', '5 avenue de la Libération, 33700 Mérignac', 1),
+  (5, 'laetitia.fontaine@example.fr', '[]', '$2y$13$Pauu1SPDpJzYT30gTZEABuAgncUCUrbbOWVnYR4bzTqaL0A4bVZ0S', 'Fontaine', 'Laëtitia', NULL, '17 allée des Vignes, 33330 Saint-Émilion', 1),
+  (6, 'compte.desactive@example.fr', '[]', '$2y$13$jDoUnrxCuCjoQ30Wz15SYO7A2szzZDpN58NRBmOtkPsSijEHh6gAm', 'Duviella', 'Jean', NULL, NULL, 0);
 
 -- commande (8 lignes)
-INSERT INTO `commande` (`id`, `date_commande`, `date_prestation`, `heure_livraison`, `lieu_livraison`, `nb_personnes`, `prix_total`, `statut`, `pret_materiel`, `utilisateur_id`, `menu_id`) VALUES
-  (1, '2026-08-17 07:06:27', '2026-08-25', '12:00:00', '24 rue Notre-Dame, 33000 Bordeaux', 10, 265, 'livrée', 1, 3, 1),
-  (2, '2026-08-27 07:06:27', '2026-09-02', '19:30:00', '5 avenue de la Libération, 33700 Mérignac', 8, 232, 'livrée', 0, 4, 3),
-  (3, '2026-09-01 07:06:27', '2026-09-07', '11:30:00', '24 rue Notre-Dame, 33000 Bordeaux', 6, 126, 'livrée', 0, 3, 9),
-  (4, '2026-09-04 07:06:27', '2026-09-11', '12:00:00', '17 allée des Vignes, 33330 Saint-Émilion', 6, 156, 'livrée', 0, 5, 10),
-  (5, '2026-09-10 07:06:27', '2026-09-18', '11:00:00', '17 allée des Vignes, 33330 Saint-Émilion', 25, 800, 'en préparation', 1, 5, 7),
-  (6, '2026-09-13 07:06:27', '2026-09-22', '19:00:00', '5 avenue de la Libération, 33700 Mérignac', 12, 372, 'confirmée', 0, 4, 4),
-  (7, '2026-09-15 07:06:27', '2026-10-11', '18:00:00', 'Château Pape Clément, 33600 Pessac', 60, 2520, 'en attente', 1, 5, 6),
-  (8, '2026-09-06 07:06:27', '2026-09-14', '18:30:00', '24 rue Notre-Dame, 33000 Bordeaux', 20, 320, 'annulée', 0, 3, 8);
+INSERT INTO `commande` (`id`, `date_commande`, `date_prestation`, `heure_livraison`, `lieu_livraison`, `nb_personnes`, `prix_total`, `taux_remise`, `montant_remise`, `statut`, `pret_materiel`, `utilisateur_id`, `menu_id`) VALUES
+  (1, '2026-08-17 11:10:51', '2026-08-25', '12:00:00', '24 rue Notre-Dame, 33000 Bordeaux', 10, 240, 0, 0, 'livrée', 1, 3, 1),
+  (2, '2026-08-27 11:10:51', '2026-09-02', '19:30:00', '5 avenue de la Libération, 33700 Mérignac', 8, 232, 0, 0, 'livrée', 0, 4, 3),
+  (3, '2026-09-01 11:10:51', '2026-09-07', '11:30:00', '24 rue Notre-Dame, 33000 Bordeaux', 6, 126, 0, 0, 'livrée', 0, 3, 9),
+  (4, '2026-09-04 11:10:51', '2026-09-11', '12:00:00', '17 allée des Vignes, 33330 Saint-Émilion', 6, 156, 0, 0, 'livrée', 0, 5, 10),
+  (5, '2026-09-10 11:10:51', '2026-09-18', '11:00:00', '17 allée des Vignes, 33330 Saint-Émilion', 25, 720, 10, 80, 'en préparation', 1, 5, 7),
+  (6, '2026-09-13 11:10:51', '2026-09-22', '19:00:00', '5 avenue de la Libération, 33700 Mérignac', 12, '334.8', 10, '37.2', 'confirmée', 0, 4, 4),
+  (7, '2026-09-15 11:10:51', '2026-10-11', '18:00:00', 'Château Pape Clément, 33600 Pessac', 60, 2268, 10, 252, 'en attente', 1, 5, 6),
+  (8, '2026-09-06 11:10:51', '2026-09-14', '18:30:00', '24 rue Notre-Dame, 33000 Bordeaux', 20, 288, 10, 32, 'annulée', 0, 3, 8);
 
 -- suivi_commande (25 lignes)
 INSERT INTO `suivi_commande` (`id`, `statut`, `date_modification`, `motif`, `mode_contact`, `commande_id`) VALUES
-  (1, 'en attente', '2026-08-17 07:06:27', NULL, 'site web', 1),
-  (2, 'confirmée', '2026-08-18 07:06:27', NULL, 'email', 1),
-  (3, 'en préparation', '2026-08-19 07:06:27', NULL, 'email', 1),
-  (4, 'livrée', '2026-08-20 07:06:27', NULL, 'email', 1),
-  (5, 'en attente', '2026-08-27 07:06:27', NULL, 'site web', 2),
-  (6, 'confirmée', '2026-08-28 07:06:27', NULL, 'email', 2),
-  (7, 'en préparation', '2026-08-29 07:06:27', NULL, 'email', 2),
-  (8, 'livrée', '2026-08-30 07:06:27', NULL, 'email', 2),
-  (9, 'en attente', '2026-09-01 07:06:27', NULL, 'site web', 3),
-  (10, 'confirmée', '2026-09-02 07:06:27', NULL, 'email', 3),
-  (11, 'en préparation', '2026-09-03 07:06:27', NULL, 'email', 3),
-  (12, 'livrée', '2026-09-04 07:06:27', NULL, 'email', 3),
-  (13, 'en attente', '2026-09-04 07:06:27', NULL, 'site web', 4),
-  (14, 'confirmée', '2026-09-05 07:06:27', NULL, 'email', 4),
-  (15, 'en préparation', '2026-09-06 07:06:27', NULL, 'email', 4),
-  (16, 'livrée', '2026-09-07 07:06:27', NULL, 'email', 4),
-  (17, 'en attente', '2026-09-10 07:06:27', NULL, 'site web', 5),
-  (18, 'confirmée', '2026-09-11 07:06:27', NULL, 'email', 5),
-  (19, 'en préparation', '2026-09-12 07:06:27', NULL, 'email', 5),
-  (20, 'en attente', '2026-09-13 07:06:27', NULL, 'site web', 6),
-  (21, 'confirmée', '2026-09-14 07:06:27', NULL, 'email', 6),
-  (22, 'en attente', '2026-09-15 07:06:27', NULL, 'site web', 7),
-  (23, 'en attente', '2026-09-06 07:06:27', NULL, 'site web', 8),
-  (24, 'confirmée', '2026-09-07 07:06:27', NULL, 'email', 8),
-  (25, 'annulée', '2026-09-08 07:06:27', 'Annulation à la demande du client, plus de 48 h avant la prestation.', 'email', 8);
+  (1, 'en attente', '2026-08-17 11:10:51', NULL, 'site web', 1),
+  (2, 'confirmée', '2026-08-18 11:10:51', NULL, 'email', 1),
+  (3, 'en préparation', '2026-08-19 11:10:51', NULL, 'email', 1),
+  (4, 'livrée', '2026-08-20 11:10:51', NULL, 'email', 1),
+  (5, 'en attente', '2026-08-27 11:10:51', NULL, 'site web', 2),
+  (6, 'confirmée', '2026-08-28 11:10:51', NULL, 'email', 2),
+  (7, 'en préparation', '2026-08-29 11:10:51', NULL, 'email', 2),
+  (8, 'livrée', '2026-08-30 11:10:51', NULL, 'email', 2),
+  (9, 'en attente', '2026-09-01 11:10:51', NULL, 'site web', 3),
+  (10, 'confirmée', '2026-09-02 11:10:51', NULL, 'email', 3),
+  (11, 'en préparation', '2026-09-03 11:10:51', NULL, 'email', 3),
+  (12, 'livrée', '2026-09-04 11:10:51', NULL, 'email', 3),
+  (13, 'en attente', '2026-09-04 11:10:51', NULL, 'site web', 4),
+  (14, 'confirmée', '2026-09-05 11:10:51', NULL, 'email', 4),
+  (15, 'en préparation', '2026-09-06 11:10:51', NULL, 'email', 4),
+  (16, 'livrée', '2026-09-07 11:10:51', NULL, 'email', 4),
+  (17, 'en attente', '2026-09-10 11:10:51', NULL, 'site web', 5),
+  (18, 'confirmée', '2026-09-11 11:10:51', NULL, 'email', 5),
+  (19, 'en préparation', '2026-09-12 11:10:51', NULL, 'email', 5),
+  (20, 'en attente', '2026-09-13 11:10:51', NULL, 'site web', 6),
+  (21, 'confirmée', '2026-09-14 11:10:51', NULL, 'email', 6),
+  (22, 'en attente', '2026-09-15 11:10:51', NULL, 'site web', 7),
+  (23, 'en attente', '2026-09-06 11:10:51', NULL, 'site web', 8),
+  (24, 'confirmée', '2026-09-07 11:10:51', NULL, 'email', 8),
+  (25, 'annulée', '2026-09-08 11:10:51', 'Annulation à la demande du client, plus de 48 h avant la prestation.', 'email', 8);
 
 -- avis (4 lignes)
 INSERT INTO `avis` (`id`, `note`, `commentaire`, `statut_validation`, `date_creation`, `commande_id`, `utilisateur_id`) VALUES
-  (1, 5, 'Entrecôte parfaitement cuite et la sauce bordelaise était à tomber. Livraison pile à l\\\'heure, on recommandera.', 'validé', '2026-08-27 07:06:27', 1, 3),
-  (2, 4, 'Très bon confit, peau bien croustillante. Un peu juste sur les haricots pour huit personnes.', 'validé', '2026-09-04 07:06:27', 2, 4),
-  (3, 5, 'Enfin un traiteur qui soigne le végétarien. Le tourin était une vraie surprise, et les canelés impeccables.', 'validé', '2026-09-09 07:06:27', 3, 3),
-  (4, 3, 'Bon dans l\\\'ensemble, mais les pruneaux à l\\\'armagnac sont arrivés écrasés.', 'en attente', '2026-09-14 07:06:27', 4, 5);
+  (1, 5, 'Entrecôte parfaitement cuite et la sauce bordelaise était à tomber. Livraison pile à l\\\'heure, on recommandera.', 'validé', '2026-08-27 11:10:51', 1, 3),
+  (2, 4, 'Très bon confit, peau bien croustillante. Un peu juste sur les haricots pour huit personnes.', 'validé', '2026-09-04 11:10:51', 2, 4),
+  (3, 5, 'Enfin un traiteur qui soigne le végétarien. Le tourin était une vraie surprise, et les canelés impeccables.', 'validé', '2026-09-09 11:10:51', 3, 3),
+  (4, 3, 'Bon dans l\\\'ensemble, mais les pruneaux à l\\\'armagnac sont arrivés écrasés.', 'en attente', '2026-09-14 11:10:51', 4, 5);
 
 -- horaire (7 lignes)
 INSERT INTO `horaire` (`id`, `jour`, `heure_ouverture`, `heure_fermeture`) VALUES
@@ -502,8 +502,8 @@ INSERT INTO `horaire` (`id`, `jour`, `heure_ouverture`, `heure_fermeture`) VALUE
 
 -- contact (3 lignes)
 INSERT INTO `contact` (`id`, `titre`, `message`, `email`, `date_creation`) VALUES
-  (1, 'Devis pour un séminaire', 'Bonjour, nous organisons un séminaire pour 80 personnes le mois prochain à Bordeaux. Proposez-vous des formules adaptées ?', 'contact@entreprise-gironde.fr', '2026-09-11 07:06:27'),
-  (2, 'Question sur les allergènes', 'Ma fille est allergique aux fruits à coque. Le menu Bistrot Bordelais lui conviendrait-il ?', 'famille.robert@example.fr', '2026-09-13 07:06:27'),
-  (3, 'Livraison hors agglomération', 'Livrez-vous jusqu\\\'au Cap Ferret ? Merci d\\\'avance.', 'vacancier@example.fr', '2026-09-15 07:06:27');
+  (1, 'Devis pour un séminaire', 'Bonjour, nous organisons un séminaire pour 80 personnes le mois prochain à Bordeaux. Proposez-vous des formules adaptées ?', 'contact@entreprise-gironde.fr', '2026-09-11 11:10:51'),
+  (2, 'Question sur les allergènes', 'Ma fille est allergique aux fruits à coque. Le menu Bistrot Bordelais lui conviendrait-il ?', 'famille.robert@example.fr', '2026-09-13 11:10:51'),
+  (3, 'Livraison hors agglomération', 'Livrez-vous jusqu\\\'au Cap Ferret ? Merci d\\\'avance.', 'vacancier@example.fr', '2026-09-15 11:10:51');
 
 SET FOREIGN_KEY_CHECKS = 1;

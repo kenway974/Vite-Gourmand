@@ -6,6 +6,7 @@ use App\Repository\CommandeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use App\Service\DetailPrix;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
@@ -44,6 +45,19 @@ class Commande
 
     #[ORM\Column(type: Types::DECIMAL, precision: 8, scale: 2)]
     private ?string $prixTotal = null;
+
+    /**
+     * Taux de remise appliqué, en pourcentage (10.00 pour 10 %).
+     *
+     * Figé au moment de la commande : la règle peut évoluer, une facture
+     * émise ne doit pas changer rétroactivement.
+     */
+    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, options: ['default' => '0.00'])]
+    private string $tauxRemise = '0.00';
+
+    /** Montant de la remise, conservé pour que le total reste justifiable. */
+    #[ORM\Column(type: Types::DECIMAL, precision: 8, scale: 2, options: ['default' => '0.00'])]
+    private string $montantRemise = '0.00';
 
     #[ORM\Column(length: 30)]
     private ?string $statut = null;
@@ -235,6 +249,46 @@ class Commande
                 $suiviCommande->setCommande(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTauxRemise(): string
+    {
+        return $this->tauxRemise;
+    }
+
+    public function setTauxRemise(string $tauxRemise): static
+    {
+        $this->tauxRemise = $tauxRemise;
+
+        return $this;
+    }
+
+    public function getMontantRemise(): string
+    {
+        return $this->montantRemise;
+    }
+
+    public function setMontantRemise(string $montantRemise): static
+    {
+        $this->montantRemise = $montantRemise;
+
+        return $this;
+    }
+
+    /**
+     * Applique un calcul de prix à la commande, remise comprise.
+     *
+     * Passer par ce point unique évite qu'un appelant enregistre un total sans
+     * la remise qui l'explique.
+     */
+    public function appliquerPrix(DetailPrix $detail): static
+    {
+        $this->nbPersonnes = $detail->nbPersonnes;
+        $this->prixTotal = $detail->montantTotal;
+        $this->montantRemise = $detail->montantRemise;
+        $this->tauxRemise = sprintf('%.2f', $detail->tauxRemise * 100);
 
         return $this;
     }

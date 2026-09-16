@@ -16,6 +16,7 @@ use App\Entity\Theme;
 use App\Entity\Utilisateur;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use App\Service\CalculateurPrix;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
@@ -53,6 +54,7 @@ class AppFixtures extends Fixture
 
     public function __construct(
         private readonly UserPasswordHasherInterface $hasher,
+        private readonly CalculateurPrix $calculateurPrix,
     ) {
     }
 
@@ -545,22 +547,26 @@ class AppFixtures extends Fixture
      */
     private function chargerCommandes(ObjectManager $manager, array $utilisateurs, array $menus): array
     {
+        // Le prix n'est plus écrit ici : il est calculé par CalculateurPrix, ce
+        // qui garantit que le jeu de données respecte les règles de tarification
+        // au lieu de les contredire.
+        //
         // client, menu, jours écoulés depuis la commande, jours avant prestation,
-        // heure, lieu, nb personnes, prix total, statut, prêt de matériel
+        // heure, lieu, nb personnes, statut, prêt de matériel
         $definitions = [
-            'livree1' => ['client1', 'bistrot-bordelais', -30, -22, '12:00', "24 rue Notre-Dame, 33000 Bordeaux", 10, '265.00', 'livrée', true],
-            'livree2' => ['client2', 'grand-sud-ouest', -20, -14, '19:30', "5 avenue de la Libération, 33700 Mérignac", 8, '232.00', 'livrée', false],
-            'livree3' => ['client1', 'brunch-bordelais', -15, -9, '11:30', "24 rue Notre-Dame, 33000 Bordeaux", 6, '126.00', 'livrée', false],
-            'livree4' => ['client3', 'table-sans-gluten', -12, -5, '12:00', "17 allée des Vignes, 33330 Saint-Émilion", 6, '156.00', 'livrée', false],
-            'preparation' => ['client3', 'buffet-anniversaire', -6, 2, '11:00', "17 allée des Vignes, 33330 Saint-Émilion", 25, '800.00', 'en préparation', true],
-            'confirmee' => ['client2', 'bassin-arcachon', -3, 6, '19:00', "5 avenue de la Libération, 33700 Mérignac", 12, '372.00', 'confirmée', false],
-            'attente' => ['client3', 'buffet-mariage', -1, 25, '18:00', "Château Pape Clément, 33600 Pessac", 60, '2520.00', 'en attente', true],
-            'annulee' => ['client1', 'cocktail-girondin', -10, -2, '18:30', "24 rue Notre-Dame, 33000 Bordeaux", 20, '320.00', 'annulée', false],
+            'livree1' => ['client1', 'bistrot-bordelais', -30, -22, '12:00', "24 rue Notre-Dame, 33000 Bordeaux", 10, 'livrée', true],
+            'livree2' => ['client2', 'grand-sud-ouest', -20, -14, '19:30', "5 avenue de la Libération, 33700 Mérignac", 8, 'livrée', false],
+            'livree3' => ['client1', 'brunch-bordelais', -15, -9, '11:30', "24 rue Notre-Dame, 33000 Bordeaux", 6, 'livrée', false],
+            'livree4' => ['client3', 'table-sans-gluten', -12, -5, '12:00', "17 allée des Vignes, 33330 Saint-Émilion", 6, 'livrée', false],
+            'preparation' => ['client3', 'buffet-anniversaire', -6, 2, '11:00', "17 allée des Vignes, 33330 Saint-Émilion", 25, 'en préparation', true],
+            'confirmee' => ['client2', 'bassin-arcachon', -3, 6, '19:00', "5 avenue de la Libération, 33700 Mérignac", 12, 'confirmée', false],
+            'attente' => ['client3', 'buffet-mariage', -1, 25, '18:00', "Château Pape Clément, 33600 Pessac", 60, 'en attente', true],
+            'annulee' => ['client1', 'cocktail-girondin', -10, -2, '18:30', "24 rue Notre-Dame, 33000 Bordeaux", 20, 'annulée', false],
         ];
 
         $commandes = [];
 
-        foreach ($definitions as $cle => [$client, $menu, $joursCommande, $joursPrestation, $heure, $lieu, $nbPersonnes, $prix, $statut, $materiel]) {
+        foreach ($definitions as $cle => [$client, $menu, $joursCommande, $joursPrestation, $heure, $lieu, $nbPersonnes, $statut, $materiel]) {
             $commande = new Commande();
             $commande->setUtilisateur($utilisateurs[$client])
                 ->setMenu($menus[$menu])
@@ -568,10 +574,11 @@ class AppFixtures extends Fixture
                 ->setDatePrestation(new \DateTime(sprintf('%+d days', $joursPrestation)))
                 ->setHeureLivraison(new \DateTime($heure))
                 ->setLieuLivraison($lieu)
-                ->setNbPersonnes($nbPersonnes)
-                ->setPrixTotal($prix)
                 ->setStatut($statut)
                 ->setPretMateriel($materiel);
+
+            // Effectif, total et remise sont posés d'un seul geste.
+            $commande->appliquerPrix($this->calculateurPrix->calculer($menus[$menu], $nbPersonnes));
 
             $manager->persist($commande);
             $commandes[$cle] = $commande;
