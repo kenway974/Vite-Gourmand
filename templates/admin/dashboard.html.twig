@@ -1,9 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration — Vite &amp; Gourmand{% endblock %}
+{# Un seul nom pour une seule page : le titre de l'onglet, le titre de la
+   page et le lien de navigation doivent dire la même chose. #}
+{% set intitule = is_granted('ROLE_ADMIN') ? 'Administration' : 'Catalogue' %}
+
+{% block title %}{{ intitule }} — Vite &amp; Gourmand{% endblock %}
 
 {% block body %}
-    <h1>{{ is_granted('ROLE_ADMIN') ? 'Administration' : 'Gestion du catalogue' }}</h1>
+    <h1>{{ intitule }}</h1>
 
     <h2>Catalogue</h2>
     <table>
