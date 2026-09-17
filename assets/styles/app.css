@@ -929,36 +929,41 @@ main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
     align-items: flex-end;
     padding: var(--e-5) var(--e-4) var(--e-4);
     /*
-     * Voile échantillonné sur une courbe plutôt que trois arrêts.
+     * Voile calibré sur la position réelle du texte, mesurée dans le
+     * navigateur : la légende occupe les 18 à 35 premiers pixels au-dessus
+     * du bord, sur un voile qui en fait 241.
      *
-     * Trois arrêts donnent une rampe linéaire, et l'œil y voit une cassure
-     * franche là où la pente change. Dix-sept arrêts suivant une racine
-     * carrée effacent la cassure : chute douce au pied, longue traîne vers
-     * le haut, rien à quoi le regard puisse s'accrocher.
+     * D'où deux régimes. Jusqu'à 18 % de la hauteur du voile — la bande du
+     * texte, avec de la marge — l'opacité reste presque plate autour de
+     * 65 % : c'est ce qui tient la légende lisible, 4,64:1 au pire, même
+     * posée sur une photo blanche. Au-dessus, elle s'effondre vite : 19 % à
+     * mi-hauteur, 7 % aux deux tiers, plus rien ensuite.
      *
-     * 66 % au pied, et pas moins : c'est le plancher mesuré pour que le
-     * texte blanc tienne 4,5:1 même posé sur une photo très claire. À 60 %
-     * il retombe à 4,37:1 et échoue. Le milieu reste à 52 %, inchangé.
+     * La photo n'est donc assombrie que dans son quart bas, là où le texte
+     * en a besoin, et reste intacte partout ailleurs.
+     *
+     * Dix-sept arrêts échelonnés sur la courbe plutôt que trois : une rampe
+     * à trois arrêts laisse voir la cassure là où la pente change.
      */
     background: linear-gradient(
         to top,
-        rgb(36 30 27 / 66%) 0%,
-        rgb(36 30 27 / 64%) 6%,
-        rgb(36 30 27 / 62%) 12%,
-        rgb(36 30 27 / 59%) 19%,
-        rgb(36 30 27 / 57%) 25%,
-        rgb(36 30 27 / 55%) 31%,
-        rgb(36 30 27 / 52%) 38%,
-        rgb(36 30 27 / 50%) 44%,
-        rgb(36 30 27 / 47%) 50%,
-        rgb(36 30 27 / 44%) 56%,
-        rgb(36 30 27 / 40%) 62%,
-        rgb(36 30 27 / 37%) 69%,
-        rgb(36 30 27 / 33%) 75%,
-        rgb(36 30 27 / 29%) 81%,
-        rgb(36 30 27 / 19%) 88%,
-        rgb(36 30 27 / 7%) 94%,
-        rgb(36 30 27 / 0%) 100%
+        rgb(36 30 27 / 68.0%) 0%,
+        rgb(36 30 27 / 66.3%) 5%,
+        rgb(36 30 27 / 64.7%) 10%,
+        rgb(36 30 27 / 63.3%) 14%,
+        rgb(36 30 27 / 62.0%) 18%,
+        rgb(36 30 27 / 53.3%) 23%,
+        rgb(36 30 27 / 43.9%) 29%,
+        rgb(36 30 27 / 35.5%) 35%,
+        rgb(36 30 27 / 27.0%) 42%,
+        rgb(36 30 27 / 18.9%) 50%,
+        rgb(36 30 27 / 12.4%) 58%,
+        rgb(36 30 27 / 7.5%) 66%,
+        rgb(36 30 27 / 3.9%) 74%,
+        rgb(36 30 27 / 1.6%) 82%,
+        rgb(36 30 27 / 0.4%) 90%,
+        rgb(36 30 27 / 0.1%) 95%,
+        rgb(36 30 27 / 0.0%) 100%
     );
     font-size: var(--t-sm);
     font-weight: 500;
