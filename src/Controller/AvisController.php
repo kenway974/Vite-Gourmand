@@ -22,15 +22,29 @@ class AvisController extends AbstractController
 {
     private const PAR_PAGE = 10;
 
+    /**
+     * Plafond du numéro de page.
+     *
+     * Sans lui, « ?page=9999999999999999999 » déborde la capacité des entiers
+     * au calcul du décalage : le produit devient un flottant et Doctrine
+     * refuse l'argument, ce qui rend un 500. Au-delà de ce plafond il n'y a de
+     * toute façon aucun avis à montrer.
+     */
+    private const PAGE_MAX = 1_000_000;
+
     #[Route('/avis', name: 'app_avis', methods: ['GET'])]
     public function index(Request $request, AvisRepository $avis): Response
     {
-        // getInt() lève une exception sur « abc » et rendrait un 400 : une
-        // adresse mal recopiée ne doit pas afficher une erreur au visiteur.
-        // Le transtypage ramène tout ce qui n'est pas un nombre à 0, que
-        // max() renvoie sur la première page plutôt que sur un décalage
-        // négatif.
-        $page = max(1, (int) $request->query->get('page', 1));
+        // Une adresse mal recopiée ne doit jamais afficher d'erreur au
+        // visiteur. Deux pièges évités ici :
+        //   - get() et getInt() lèvent une exception sur « ?page[]=2 », donc
+        //     un 400 : on lit la valeur brute et on écarte ce qui n'est pas
+        //     scalaire ;
+        //   - le transtypage d'un nombre démesuré rend PHP_INT_MAX, dont le
+        //     produit par PAR_PAGE déborde en flottant : le plafond l'évite.
+        $brut = $request->query->all()['page'] ?? 1;
+        $page = \is_scalar($brut) ? (int) $brut : 1;
+        $page = max(1, min($page, self::PAGE_MAX));
 
         $publies = $avis->findPublies($page, self::PAR_PAGE);
         // Paginator::count() rend le total de la recherche, pas la taille de

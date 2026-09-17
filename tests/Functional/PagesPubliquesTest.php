@@ -180,6 +180,14 @@ class PagesPubliquesTest extends WebTestCase
         yield 'page négative' => ['?page=-5'];
         yield 'page non numérique' => ['?page=abc'];
         yield 'page au-delà du dernier avis' => ['?page=99'];
+        // Transtypé, ce nombre rend PHP_INT_MAX ; son produit par la taille
+        // de page débordait en flottant et Doctrine rendait un 500.
+        yield 'page démesurée' => ['?page=9999999999999999999'];
+        yield 'page négative démesurée' => ['?page=-9999999999999999999'];
+        // InputBag::get() lève une exception sur une valeur non scalaire,
+        // ce qui rendait un 400 au visiteur.
+        yield 'page passée en tableau' => ['?page[]=2'];
+        yield 'page vide' => ['?page='];
     }
 
     public function testUnePageVideRenvoieVersLePremierAvis(): void

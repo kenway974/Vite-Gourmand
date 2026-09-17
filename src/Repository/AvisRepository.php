@@ -161,7 +161,10 @@ class AvisRepository extends ServiceEntityRepository
      */
     public function findPublies(int $page = 1, int $parPage = 10): Paginator
     {
-        $page = max(1, $page);
+        // Borné des deux côtés : un appelant qui passerait un numéro
+        // démesuré ferait déborder le calcul du décalage en flottant, que
+        // setFirstResult() refuse.
+        $page = max(1, min($page, 1_000_000));
 
         $requete = $this->createQueryBuilder('a')
             ->addSelect('u', 'c', 'm')
