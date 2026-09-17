@@ -104,8 +104,53 @@ l'ASCII. Les tests en tiennent compte, mais une vérification sur MySQL avant
 mise en production reste recommandée :
 
 ```bash
-DATABASE_URL="mysql://app:motdepasse@127.0.0.1:3306/vite_gourmand_test?serverVersion=8.0.32&charset=utf8mb4" vendor/bin/phpunit
+# Doctrine ajoute lui-même le suffixe « _test » au nom de la base
+# (config/packages/doctrine.yaml), il ne faut donc PAS l'écrire ici.
+DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/vite_gourmand?serverVersion=8.0.32&charset=utf8mb4" vendor/bin/phpunit
 ```
+
+La base `vite_gourmand_test` doit exister et appartenir au même utilisateur :
+
+```bash
+mysql -u root -p -e "CREATE DATABASE vite_gourmand_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL ON vite_gourmand_test.* TO 'app'@'%';"
+```
+
+---
+
+## Déploiement
+
+Cible : **Railway** — un service PHP et une base MySQL managée.
+
+L'application a besoin de trois choses que le conteneur local fournit et qu'il
+faut redéclarer sur l'hébergeur :
+
+| Variable | Valeur |
+|---|---|
+| `APP_ENV` | `prod` |
+| `APP_SECRET` | 32 caractères hexadécimaux, générés une fois |
+| `DATABASE_URL` | l'URL MySQL fournie par Railway |
+| `MAILER_DSN` | un vrai SMTP — sans lui, aucun courriel ne part |
+| `COURRIEL_EXPEDITEUR` | l'adresse d'expédition |
+
+Puis, dans l'ordre :
+
+```bash
+composer install --no-dev --optimize-autoloader
+php bin/console doctrine:migrations:migrate --no-interaction
+php bin/console app:creer-admin
+```
+
+**Un second service est nécessaire** pour les courriels : la réinitialisation
+de mot de passe passe par Messenger, la réponse HTTP n'attend donc pas le
+serveur SMTP. Sans worker, les messages s'empilent en base et personne ne
+reçoit rien.
+
+```bash
+php bin/console messenger:consume async
+```
+
+Les fixtures ne sont **pas** à charger en production : elles vident la base
+avant de la remplir de données de démonstration.
 
 ---
 

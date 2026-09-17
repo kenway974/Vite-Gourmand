@@ -3,7 +3,9 @@ services:
 ###> doctrine/doctrine-bundle ###
   database:
     ports:
-      - "3306"
+      # Mapping explicite : sans les deux-points, Docker publie sur un port
+      # de l'hôte tiré au hasard, alors que DATABASE_URL vise 3306 en dur.
+      - "3306:3306"
 ###< doctrine/doctrine-bundle ###
 
 ###> symfony/mailer ###
