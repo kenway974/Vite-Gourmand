@@ -78,15 +78,32 @@ export default class extends Controller {
         this.arreter(bulle);
         bulle.dataset.sortie = 'true';
 
-        // Retrait à la fin de l'animation, ou tout de suite si le visiteur a
-        // demandé moins de mouvement — l'événement ne viendrait alors jamais.
-        const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (reduit) {
+        // Retrait immédiat si le visiteur a demandé moins de mouvement :
+        // l'animation est alors quasi nulle et l'événement peu fiable.
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             bulle.remove();
 
             return;
         }
 
-        bulle.addEventListener('animationend', () => bulle.remove(), { once: true });
+        /*
+         * Filet de sécurité derrière animationend.
+         *
+         * Cet événement peut ne jamais arriver — animation interrompue,
+         * élément masqué, onglet mis en arrière-plan. La bulle resterait
+         * alors à l'écran, invisible mais toujours présente, et comme elle
+         * capte le pointeur elle avalerait en silence les clics sur la zone
+         * qu'elle occupe.
+         */
+        const retirer = () => bulle.remove();
+        const secours = setTimeout(retirer, 1000);
+        bulle.addEventListener(
+            'animationend',
+            () => {
+                clearTimeout(secours);
+                retirer();
+            },
+            { once: true },
+        );
     }
 }

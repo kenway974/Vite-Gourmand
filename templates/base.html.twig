@@ -91,10 +91,12 @@
                 interrompt sa lecture — et ne s'effacent jamais seules. Les
                 confirmations passent en « status », plus poli, et s'effacent
                 au bout de quelques secondes.
+
+                Pas d'aria-live sur le conteneur : ces deux rôles sont déjà
+                des régions live, et en imbriquer une dans une autre fait
+                annoncer le message deux fois par certains lecteurs d'écran.
             #}
-            <div class="notifications"
-                 data-controller="notification"
-                 aria-live="polite">
+            <div class="notifications" data-controller="notification">
                 {% for type, messages in flashes %}
                     {% set grave = type in ['error', 'danger', 'warning'] %}
                     {% for message in messages %}
