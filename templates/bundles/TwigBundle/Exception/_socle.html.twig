@@ -1,0 +1,24 @@
+{# Socle autonome des pages d'erreur.
+   
+   N'hérite PAS de base.html.twig, et c'est tout l'intérêt : celui-ci appelle
+   horaires_semaine() pour son pied de page et app.user pour sa navigation,
+   deux accès à la base. Or le cas d'usage principal d'une erreur 500, c'est
+   justement une base injoignable — la page d'erreur lèverait alors sa propre
+   exception, et Symfony retomberait sur son gabarit brut.
+   
+   Rien ici ne doit pouvoir échouer. #}
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Vite &amp; Gourmand{% endblock %}</title>
+    </head>
+    <body>
+        <a href="/">Vite &amp; Gourmand</a>
+
+        <main>
+            {% block body %}{% endblock %}
+        </main>
+    </body>
+</html>

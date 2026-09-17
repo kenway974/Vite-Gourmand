@@ -183,6 +183,63 @@ aujourd'hui.
 
 ---
 
+# Répartition des droits (cahier des charges § 3)
+
+> « Employé : gère les menus, les horaires, les commandes et valide les avis. »
+> « Admin : fait tout ce que fait l'employé, plus la création des comptes
+> employés et les statistiques. »
+
+| Section | Employé | Admin |
+|---|---|---|
+| Menus, plats, ingrédients, allergènes, thèmes, régimes | ✅ | ✅ |
+| Horaires d'ouverture | ✅ | ✅ |
+| Commandes, avis, messages, matériel | ✅ | ✅ |
+| Comptes utilisateurs | ❌ | ✅ |
+| Zones de livraison | ❌ | ✅ |
+| Statistiques | ❌ | ✅ |
+
+Ingrédients, allergènes, thèmes et régimes ne sont pas cités par le cahier des
+charges, mais un menu ne se compose pas sans eux : les refuser à l'employé le
+bloquerait dès qu'un plat demande un ingrédient qui n'existe pas encore.
+
+Les zones de livraison suivent les comptes plutôt que le catalogue : elles
+fixent ce qui est facturé au client, c'est une décision commerciale.
+
+---
+
+# Conformité légale
+
+## Pages obligatoires
+
+- **Mentions légales** — art. 6 LCEN. Certaines valeurs (SIRET, RCS, médiateur,
+  adresse de l'hébergeur) ne peuvent venir que du client : elles sont laissées
+  visiblement `[à compléter]` plutôt que remplies au hasard.
+- **CGV** — art. L111-1 du code de la consommation. Elles décrivent **ce que le
+  code fait réellement** : remise de 10 %, indemnité de 600 €, dix jours
+  ouvrés, vingt-quatre heures de conservation, réponse sous 48 h, livraison
+  comprise intra-muros. Un test vérifie que ces chiffres y figurent — un contrat
+  qui annonce autre chose que le code serait faux.
+- **Politique de confidentialité** — RGPD art. 13.
+
+## Droit à l'effacement (art. 17 RGPD)
+
+Le compte ne se supprime pas, il **s'anonymise**. Un `DELETE` emporterait les
+commandes, que le code de commerce impose de conserver dix ans, ainsi que les
+avis et le suivi.
+
+`Utilisateur::anonymiser()` efface nom, prénom, e-mail, téléphone, adresse,
+rôles et mot de passe, désactive le compte et annule toute réinitialisation en
+cours. L'e-mail est remplacé par une valeur aléatoire en `@invalide.local`, de
+sorte que deux effacements ne violent pas l'index unique.
+
+## Pages d'erreur
+
+404, 403 et 500 personnalisées. La 500 n'affiche **aucun détail technique** :
+un message d'exception peut révéler la structure de la base ou des chemins de
+fichiers.
+
+---
+
 # Statistiques (cahier des charges § 4 et § 5)
 
 > « pour l'admin : […] voir les statistiques (commandes et chiffre d'affaires

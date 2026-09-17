@@ -3,11 +3,13 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Utilisateur;
+use App\Form\CompteInterneType;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -36,6 +38,54 @@ class UtilisateurController extends AbstractController
             'recherche' => $request->query->getString('recherche'),
             'roles' => self::ROLES,
         ]);
+    }
+
+    /**
+     * Création d'un compte employé ou administrateur.
+     *
+     * Le cahier des charges réserve cette action à l'administrateur. Elle
+     * n'existait qu'en console (app:creer-admin), ce qui suppose un accès au
+     * serveur — inutilisable pour le gérant du traiteur.
+     */
+    #[Route('/nouveau', name: 'app_admin_utilisateur_new', methods: ['GET', 'POST'])]
+    public function nouveau(
+        Request $request,
+        UserPasswordHasherInterface $hasher,
+        EntityManagerInterface $em,
+    ): Response {
+        $utilisateur = new Utilisateur();
+        $form = $this->createForm(CompteInterneType::class, $utilisateur);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $role = $form->get('role')->getData();
+
+            // Le rôle vient d'un ChoiceType, donc déjà validé ; on revérifie
+            // tout de même contre la liste de référence de cet écran.
+            if (!\in_array($role, self::ROLES, true) || '' === $role) {
+                $this->addFlash('danger', 'Rôle inconnu.');
+
+                return $this->redirectToRoute('app_admin_utilisateur_new');
+            }
+
+            $utilisateur
+                ->setRoles([$role])
+                ->setActif(true)
+                ->setPassword($hasher->hashPassword($utilisateur, $form->get('plainPassword')->getData()));
+
+            $em->persist($utilisateur);
+            $em->flush();
+
+            $this->addFlash('success', sprintf(
+                'Le compte de %s %s a été créé.',
+                $utilisateur->getPrenom(),
+                $utilisateur->getNom(),
+            ));
+
+            return $this->redirectToRoute('app_admin_utilisateur_index');
+        }
+
+        return $this->render('admin/utilisateur/nouveau.html.twig', ['form' => $form]);
     }
 
     #[Route('/{id}/role', name: 'app_admin_utilisateur_role', requirements: ['id' => '\d+'], methods: ['POST'])]

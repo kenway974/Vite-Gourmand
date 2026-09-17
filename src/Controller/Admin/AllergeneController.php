@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/allergenes')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_EMPLOYE')]
 class AllergeneController extends AbstractController
 {
     private const INTITULE = 'L\'allergène';

@@ -13,10 +13,15 @@ use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Constraints\IsTrue;
 
 class RegistrationFormType extends AbstractType
 {
+    public function __construct(private readonly UrlGeneratorInterface $urls)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -62,6 +67,16 @@ class RegistrationFormType extends AbstractType
             ->add('agreeTerms', CheckboxType::class, [
                 'label' => "J'accepte les conditions générales de vente.",
                 'mapped' => false,
+                // La case renvoyait vers rien tant que la page n'existait pas :
+                // faire accepter un contrat illisible n'engage personne.
+                // Adresse produite par le routeur : en dur, elle casserait
+                // sous un préfixe d'installation et se désynchroniserait au
+                // premier renommage de route.
+                'help' => sprintf(
+                    '<a href="%s" target="_blank" rel="noopener">Lire les conditions générales de vente</a>',
+                    $this->urls->generate('app_cgv'),
+                ),
+                'help_html' => true,
                 'constraints' => [
                     new IsTrue(message: 'Vous devez accepter les conditions générales de vente.'),
                 ],

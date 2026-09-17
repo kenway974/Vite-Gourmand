@@ -66,7 +66,17 @@ security:
         # S'adresse par définition à quelqu'un qui ne peut pas se connecter.
         - { path: ^/mot-de-passe-oublie, roles: PUBLIC_ACCESS }
 
-        - { path: ^/admin, roles: ROLE_ADMIN }
+        # Seule la PREMIÈRE règle qui correspond s'applique : les sections
+        # réservées à l'administrateur doivent donc précéder la règle
+        # générale sur ^/admin.
+        #
+        # Le cahier des charges donne au personnel la gestion du catalogue et
+        # des horaires ; à l'administrateur seul les comptes, la tarification
+        # de la livraison et les statistiques.
+        - { path: ^/admin/utilisateurs, roles: ROLE_ADMIN }
+        - { path: ^/admin/zones, roles: ROLE_ADMIN }
+        - { path: ^/admin/statistiques, roles: ROLE_ADMIN }
+        - { path: ^/admin, roles: ROLE_EMPLOYE }
         - { path: ^/employe, roles: ROLE_EMPLOYE }
         - { path: ^/mon-compte, roles: ROLE_USER }
         - { path: ^/commander, roles: ROLE_USER }

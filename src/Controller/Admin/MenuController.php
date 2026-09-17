@@ -16,7 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  * Gestion des menus : création, consultation, modification, suppression.
  */
 #[Route('/admin/menus')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_EMPLOYE')]
 class MenuController extends AbstractController
 {
     #[Route('', name: 'app_admin_menu_index', methods: ['GET'])]
