@@ -84,12 +84,57 @@
             </header>
         {% endblock %}
 
-        {# Messages flash : role="alert" pour que les lecteurs d'écran les annoncent. #}
-        {% for type, messages in app.flashes %}
-            {% for message in messages %}
-                <p class="flash flash-{{ type }}" role="alert">{{ message }}</p>
-            {% endfor %}
-        {% endfor %}
+        {% set flashes = app.flashes %}
+        {% if flashes is not empty %}
+            {#
+                Les erreurs sont annoncées en « alert » — le lecteur d'écran
+                interrompt sa lecture — et ne s'effacent jamais seules. Les
+                confirmations passent en « status », plus poli, et s'effacent
+                au bout de quelques secondes.
+            #}
+            <div class="notifications"
+                 data-controller="notification"
+                 aria-live="polite">
+                {% for type, messages in flashes %}
+                    {% set grave = type in ['error', 'danger', 'warning'] %}
+                    {% for message in messages %}
+                        <div class="flash flash-{{ type }}"
+                             role="{{ grave ? 'alert' : 'status' }}"
+                             data-notification-target="bulle"
+                             data-persistant="{{ grave ? 'true' : 'false' }}"
+                             data-action="mouseenter->notification#suspendre
+                                          mouseleave->notification#reprendre
+                                          focusin->notification#suspendre
+                                          focusout->notification#reprendre">
+                            <svg class="flash__icone" viewBox="0 0 20 20" aria-hidden="true"
+                                 fill="none" stroke="currentColor" stroke-width="1.6"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                {% if type == 'success' %}
+                                    <path d="M4 10.5l4 4 8-9"/>
+                                {% elseif grave %}
+                                    <circle cx="10" cy="10" r="8"/><path d="M10 6v5M10 14h.01"/>
+                                {% else %}
+                                    <circle cx="10" cy="10" r="8"/><path d="M10 9v5M10 6h.01"/>
+                                {% endif %}
+                            </svg>
+
+                            <p class="flash__texte">{{ message }}</p>
+
+                            <button type="button"
+                                    class="flash__fermer"
+                                    data-action="notification#fermer">
+                                <span class="sr-only">Fermer ce message</span>
+                                <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"
+                                     fill="none" stroke="currentColor" stroke-width="1.8"
+                                     stroke-linecap="round">
+                                    <path d="M1 1l10 10M11 1L1 11"/>
+                                </svg>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
 
         <main id="contenu">
             {% block body %}{% endblock %}

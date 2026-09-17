@@ -913,6 +913,10 @@ main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
 
 .carte-photo__legende {
     position: absolute;
+    /* Sans cette remise à zéro, la marge basse héritée de p rétrécit la
+       boîte — qui est calée par top ET bottom — et le dégradé s'arrête un
+       rem trop haut, laissant apparaître une bande claire sous le texte. */
+    margin: 0;
     /* Le voile couvre la moitié basse plutôt qu'un bandeau : la coupure
        franche se voyait, l'image paraissait tronquée. */
     inset: 45% 0 0;
@@ -1139,21 +1143,89 @@ textarea[aria-invalid='true'] {
 
 /* --- Messages flash --------------------------------------------------- */
 
+/*
+ * Bulles flottantes plutôt qu'un bandeau poussant le contenu.
+ *
+ * Placement : en haut à droite sur grand écran, sous l'en-tête, là où l'œil
+ * revient après une action. Sur téléphone, en bas — à portée du pouce, et
+ * surtout hors de la zone de l'en-tête et de la bascule du menu.
+ *
+ * Le conteneur ne capte pas le pointeur, seules les bulles le font : sans
+ * cela il masquerait les clics sur toute la colonne qu'il occupe, même vide.
+ */
+.notifications {
+    position: fixed;
+    z-index: 60;
+    top: 5.5rem;
+    right: var(--e-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--e-3);
+    width: min(24rem, calc(100vw - 2 * var(--e-5)));
+    pointer-events: none;
+}
+
 .flash {
     display: flex;
+    align-items: flex-start;
     gap: var(--e-3);
-    max-width: var(--largeur);
-    margin: var(--e-5) auto 0;
-    padding: var(--e-4) var(--e-5);
+    padding: var(--e-4);
     border: 1px solid var(--filet);
     border-left: 3px solid var(--laiton);
-    border-radius: var(--rayon);
+    border-radius: var(--rayon-lg);
     background: var(--blanc);
+    color: var(--texte);
+    box-shadow: var(--ombre);
     font-size: var(--t-sm);
+    line-height: 1.5;
+    pointer-events: auto;
+    animation: flash-entree 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.flash__icone {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.1rem;
+    color: var(--laiton-fonce);
+}
+
+.flash__texte {
+    flex: 1;
+    margin: 0;
+}
+
+/*
+ * Fermeture manuelle, toujours présente : une bulle qu'on ne peut refermer
+ * qu'en attendant force la main au visiteur.
+ */
+.flash__fermer {
+    flex: none;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    border-radius: var(--rayon);
+    color: var(--texte-doux);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.flash__fermer:hover {
+    background: var(--pierre);
+    color: var(--texte);
 }
 
 .flash-success {
     border-left-color: #2f6b45;
+}
+
+.flash-success .flash__icone {
+    color: #2f6b45;
 }
 
 .flash-error,
@@ -1161,8 +1233,62 @@ textarea[aria-invalid='true'] {
     border-left-color: #9a1d2e;
 }
 
+.flash-error .flash__icone,
+.flash-danger .flash__icone {
+    color: #9a1d2e;
+}
+
 .flash-warning {
     border-left-color: var(--laiton);
+}
+
+/* Sortie déclenchée par le script ; l'élément est retiré à la fin. */
+.flash[data-sortie='true'] {
+    animation: flash-sortie 200ms ease forwards;
+}
+
+@keyframes flash-entree {
+    from {
+        opacity: 0;
+        transform: translateY(-0.75rem) scale(0.97);
+    }
+}
+
+@keyframes flash-sortie {
+    to {
+        opacity: 0;
+        transform: translateX(1rem);
+    }
+}
+
+@media (max-width: 640px) {
+    .notifications {
+        top: auto;
+        bottom: var(--e-4);
+        left: var(--e-4);
+        right: var(--e-4);
+        width: auto;
+    }
+
+    @keyframes flash-entree {
+        from {
+            opacity: 0;
+            transform: translateY(0.75rem) scale(0.97);
+        }
+    }
+}
+
+/*
+ * Repli sans JavaScript : le conteneur reprend sa place dans le flux plutôt
+ * que de flotter. Une bulle superposée qu'aucun script ne peut refermer
+ * resterait sur l'écran indéfiniment, et masquerait le contenu dessous.
+ */
+.notifications:not(.notifications--js) {
+    position: static;
+    width: auto;
+    max-width: var(--largeur);
+    margin: var(--e-5) auto 0;
+    padding-inline: var(--e-5);
 }
 
 /* --- Tableaux --------------------------------------------------------- */

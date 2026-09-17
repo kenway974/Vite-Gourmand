@@ -219,12 +219,45 @@
 
         <h2>Messages</h2>
         <p class="petit texte-doux">
-            En usage réel, ils s'affichent juste sous la barre de navigation,
-            avant le contenu de la page. Ils sont reproduits ici pour montrer
-            les trois variantes.
+            En usage réel ils flottent : en haut à droite sur grand écran,
+            en bas sur téléphone. Les confirmations s'effacent au bout de six
+            secondes, les erreurs et les avertissements restent jusqu'à ce
+            qu'on les referme. Le compte à rebours s'arrête au survol et au
+            focus clavier.
         </p>
-        <p class="flash flash-success" role="status">Votre demande a bien été enregistrée.</p>
-        <p class="flash flash-error" role="status">Le code postal saisi n'est pas desservi.</p>
-        <p class="flash flash-warning" role="status">Ce menu demande un délai de dix jours.</p>
+
+        <div class="notifications notifications--js"
+             data-controller="notification"
+             style="position: static; width: auto; margin-top: 1.5rem"
+             aria-live="polite">
+            {% for demo in [
+                {type: 'success', texte: 'Votre demande a bien été enregistrée.', grave: false},
+                {type: 'error', texte: "Le code postal saisi n'est pas desservi.", grave: true},
+                {type: 'warning', texte: 'Ce menu demande un délai de dix jours.', grave: true}
+            ] %}
+                <div class="flash flash-{{ demo.type }}"
+                     role="{{ demo.grave ? 'alert' : 'status' }}"
+                     data-notification-target="bulle"
+                     data-persistant="true">
+                    <svg class="flash__icone" viewBox="0 0 20 20" aria-hidden="true"
+                         fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        {% if demo.type == 'success' %}
+                            <path d="M4 10.5l4 4 8-9"/>
+                        {% else %}
+                            <circle cx="10" cy="10" r="8"/><path d="M10 6v5M10 14h.01"/>
+                        {% endif %}
+                    </svg>
+                    <p class="flash__texte">{{ demo.texte }}</p>
+                    <button type="button" class="flash__fermer" data-action="notification#fermer">
+                        <span class="sr-only">Fermer ce message</span>
+                        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"
+                             fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                            <path d="M1 1l10 10M11 1L1 11"/>
+                        </svg>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
     </section>
 {% endblock %}
