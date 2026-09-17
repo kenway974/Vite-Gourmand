@@ -46,10 +46,15 @@ php -r 'echo "APP_SECRET=" . bin2hex(random_bytes(16)) . PHP_EOL;' >> .env.local
 
 ### Collation
 
-La base doit être en `utf8mb4_unicode_ci` — c'est le réglage du conteneur
-`compose.yaml`. C'est elle qui rend la recherche du
-catalogue insensible à la casse **et aux accents** : `MenuRepository::findCatalogue()`
-s'appuie dessus plutôt que sur un `LOWER()`, qui ne sait pas abaisser un « Ô ».
+Les tables sont converties en `utf8mb4_unicode_ci` par une migration dédiée
+(`Version20260917100000`). Ce n'est pas cosmétique : cette collation compare
+sans tenir compte de la casse, ce qui fait que `Jean@example.fr` et
+`jean@example.fr` restent le même identifiant. En collation binaire, l'index
+unique sur l'e-mail laisserait passer deux comptes.
+
+La recherche du catalogue, elle, ne dépend pas de ce réglage : elle porte sur
+des colonnes normalisées en PHP, et se comporte donc à l'identique sur MySQL,
+MariaDB ou SQLite.
 
 ### Courriels
 
