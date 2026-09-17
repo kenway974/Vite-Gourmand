@@ -26,12 +26,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  * pare-feu évoluerait.
  */
 #[Route('/admin')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_EMPLOYE')]
 class DashboardController extends AbstractController
 {
     #[Route('', name: 'app_admin', methods: ['GET'])]
     public function index(EntityManagerInterface $em): Response
     {
+        $admin = $this->isGranted('ROLE_ADMIN');
+
         return $this->render('admin/dashboard.html.twig', [
             'nbMenus' => $em->getRepository(Menu::class)->count([]),
             'nbPlats' => $em->getRepository(Plat::class)->count([]),
@@ -39,10 +41,13 @@ class DashboardController extends AbstractController
             'nbAllergenes' => $em->getRepository(Allergene::class)->count([]),
             'nbThemes' => $em->getRepository(Theme::class)->count([]),
             'nbRegimes' => $em->getRepository(Regime::class)->count([]),
-            'nbUtilisateurs' => $em->getRepository(Utilisateur::class)->count([]),
             'nbCommandes' => $em->getRepository(Commande::class)->count([]),
             'nbHoraires' => $em->getRepository(Horaire::class)->count([]),
-            'nbZones' => $em->getRepository(ZoneLivraison::class)->count([]),
+            // Comptes et zones ne s'affichent que pour l'administrateur : les
+            // compter pour un employé serait deux requêtes jetées à chaque
+            // chargement.
+            'nbUtilisateurs' => $admin ? $em->getRepository(Utilisateur::class)->count([]) : 0,
+            'nbZones' => $admin ? $em->getRepository(ZoneLivraison::class)->count([]) : 0,
         ]);
     }
 }

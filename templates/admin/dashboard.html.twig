@@ -1,9 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration — Vite &amp; Gourmand{% endblock %}
+{# Un seul nom pour une seule page : le titre de l'onglet, le titre de la
+   page et le lien de navigation doivent dire la même chose. #}
+{% set intitule = is_granted('ROLE_ADMIN') ? 'Administration' : 'Catalogue' %}
+
+{% block title %}{{ intitule }} — Vite &amp; Gourmand{% endblock %}
 
 {% block body %}
-    <h1>Administration</h1>
+    <h1>{{ intitule }}</h1>
 
     <h2>Catalogue</h2>
     <table>
@@ -58,9 +62,14 @@
 
     <h2>Activité</h2>
     <ul>
-        <li><strong>{{ nbUtilisateurs }}</strong> utilisateur(s) — <a href="{{ path('app_admin_utilisateur_index') }}">gérer les comptes</a></li>
         <li><strong>{{ nbHoraires }}</strong> jour(s) d'ouverture renseigné(s) — <a href="{{ path('app_admin_horaire_index') }}">gérer les horaires</a></li>
-        <li><strong>{{ nbZones }}</strong> commune(s) desservie(s) — <a href="{{ path('app_admin_zone_index') }}">gérer les zones de livraison</a></li>
+
+        {# Comptes et tarifs de livraison ne sont pas du ressort du personnel :
+           afficher le lien sans le droit d'entrer ne ferait que promettre un 403. #}
+        {% if is_granted('ROLE_ADMIN') %}
+            <li><strong>{{ nbUtilisateurs }}</strong> utilisateur(s) — <a href="{{ path('app_admin_utilisateur_index') }}">gérer les comptes</a></li>
+            <li><strong>{{ nbZones }}</strong> commune(s) desservie(s) — <a href="{{ path('app_admin_zone_index') }}">gérer les zones de livraison</a></li>
+        {% endif %}
         <li><strong>{{ nbCommandes }}</strong> commande(s)</li>
     </ul>
 {% endblock %}

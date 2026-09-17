@@ -90,9 +90,20 @@ class AdminHoraireTest extends WebTestCase
         self::assertStringContainsString('/connexion', $this->client->getResponse()->headers->get('Location') ?? '');
     }
 
-    public function testLesHorairesSontInterditsAuxEmployes(): void
+    public function testLesHorairesSontOuvertsAuPersonnel(): void
     {
+        // Le cahier des charges confie les horaires à l'employé, au même titre
+        // que les menus. Ce test affirmait l'inverse tant que /admin était
+        // fermé au personnel.
         $this->connecter($this->utilisateur('employe@example.com', ['ROLE_EMPLOYE']));
+
+        $this->client->request('GET', '/admin/horaires');
+        self::assertResponseIsSuccessful();
+    }
+
+    public function testLesHorairesRestentFermesAuxClients(): void
+    {
+        $this->connecter($this->utilisateur('client@example.com', []));
 
         $this->client->request('GET', '/admin/horaires');
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
