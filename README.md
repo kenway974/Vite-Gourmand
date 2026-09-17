@@ -120,6 +120,30 @@ La base `vite_gourmand_test` doit exister et appartenir au même utilisateur :
 mysql -u root -p -e "CREATE DATABASE vite_gourmand_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL ON vite_gourmand_test.* TO 'app'@'%';"
 ```
 
+### Statistiques (MongoDB)
+
+Le cahier des charges demande une base MySQL pour les données et **une base
+MongoDB pour les statistiques**. Les relevés d'activité y sont conservés sous
+forme de documents : chacun porte une ventilation par menu de taille variable,
+et ajouter une métrique ne demandera aucune migration.
+
+L'extension PHP est nécessaire :
+
+```bash
+sudo apt install php8.4-mongodb     # ou : pecl install mongodb
+```
+
+Les relevés sont produits par une commande, à faire tourner une fois par nuit :
+
+```bash
+php bin/console app:calculer-statistiques
+```
+
+Si `MONGODB_URL` est vide ou l'extension absente, l'application démarre quand
+même : les chiffres du jour restent calculés depuis MySQL, seul l'historique
+est indisponible. C'est ce qui permet de développer et de lancer les tests
+sans serveur NoSQL.
+
 ---
 
 ## Déploiement
@@ -136,6 +160,8 @@ faut redéclarer sur l'hébergeur :
 | `DATABASE_URL` | l'URL MySQL fournie par Railway |
 | `MAILER_DSN` | un vrai SMTP — sans lui, aucun courriel ne part |
 | `COURRIEL_EXPEDITEUR` | l'adresse d'expédition |
+| `MONGODB_URL` | l'URL MongoDB fournie par Railway |
+| `MONGODB_BASE` | `vite_gourmand` |
 
 Puis, dans l'ordre :
 

@@ -180,3 +180,27 @@ Confirme la saisonnalité ajoutée sur la branche `saisonnalite-menus` :
 
 « Notre histoire » et « Avis » sont deux pages publiques que rien ne couvre
 aujourd'hui.
+
+---
+
+# Statistiques (cahier des charges § 4 et § 5)
+
+> « pour l'admin : […] voir les statistiques (commandes et chiffre d'affaires
+> par menu) » — « une base MySQL […] et une base MongoDB pour les statistiques »
+
+Deux comptes distincts, et la distinction n'est pas cosmétique :
+
+- le **chiffre d'affaires** ne retient que les commandes **livrées**. Une
+  commande en attente n'est pas un encaissement, une commande annulée ne le
+  sera jamais.
+- le **nombre de commandes** retient tout sauf les annulées : c'est l'activité,
+  pas la recette.
+- le **panier moyen** se rapporte aux seules commandes livrées. Diviser la
+  recette par des commandes qui n'ont rien rapporté la tirerait artificiellement
+  vers le bas.
+
+Le calcul lit MySQL, seul dépositaire des commandes. MongoDB conserve les
+relevés successifs : c'est l'accumulation dans le temps qu'une requête sur
+MySQL ne saurait pas reconstituer après coup.
+
+Réservé à `ROLE_ADMIN`.
