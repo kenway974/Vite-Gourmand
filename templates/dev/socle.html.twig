@@ -1,0 +1,263 @@
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Socle graphique — Vite &amp; Gourmand{% endblock %}
+
+{% block banniere %}
+    <div class="banniere">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Référence interne') }}
+            <h1>Socle graphique</h1>
+            {{ ui.signature() }}
+            <p class="chapeau">
+                Tous les composants réutilisables sur un écran. Cette page
+                n'existe qu'en développement.
+            </p>
+            <div class="banniere__actions">
+                {{ ui.bouton('Bouton laiton', '#boutons', 'laiton') }}
+                {{ ui.bouton('Bouton contour clair', '#boutons', 'contour-clair') }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <section class="bande conteneur" id="boutons">
+        {{ ui.surtitre('Composants') }}
+        <h2>Boutons</h2>
+
+        <div class="actions">
+            {{ ui.bouton('Principal', '#', 'principal') }}
+            {{ ui.bouton('Laiton', '#', 'laiton') }}
+            {{ ui.bouton('Contour', '#', 'contour') }}
+            {{ ui.bouton('Pilule', '#', 'contour', {pilule: true}) }}
+            {{ ui.bouton('Commander ce menu', '#', 'principal', {majuscules: true}) }}
+            {{ ui.bouton('Bouton de formulaire', null, 'principal', {type: 'button'}) }}
+        </div>
+
+        <p class="petit texte-doux">
+            Chaque état reste au-dessus de 4,5:1 : lie-de-vin au repos
+            (11,4:1), grenat au survol (14,7:1).
+        </p>
+
+        {{ ui.ornement() }}
+
+        <h2>Étiquettes et puces</h2>
+        <div class="actions">
+            {{ ui.puce('Mariage') }}
+            {{ ui.etiquette('Disponible') }}
+            {{ ui.etiquette('Bientôt', 'accent') }}
+            {{ ui.etiquette('Épuisé', 'sourde') }}
+        </div>
+    </section>
+
+    <section class="bande bande--pierre">
+        <div class="conteneur">
+            {{ ui.surtitre('Composants') }}
+            <h2>Cartes menu</h2>
+
+            <ul class="liste-nue grille grille--3">
+                {% for demo in [
+                    {cat: 'Noël', titre: 'Réveillon Tradition', prix: '48', desc: 'Chapon fermier, foie gras maison, bûche pâtissière.', meta: 'Dès 6 personnes · Commande 7 jours avant'},
+                    {cat: 'Pâques', titre: 'Table de Pâques', prix: '42', desc: 'Agneau rôti et légumes primeurs du marché.', meta: 'Dès 6 personnes · Commande 5 jours avant'},
+                    {cat: 'Classique · Végétarien', titre: 'Jardin Végétarien', prix: '34', desc: 'Assiette de saison, entièrement végétale.', meta: 'Dès 4 personnes · Commande 3 jours avant'}
+                ] %}
+                    <li>
+                        <article class="carte-menu">
+                            <div class="carte-menu__visuel"></div>
+                            <div class="carte-menu__corps">
+                                {{ ui.surtitre(demo.cat) }}
+                                <div class="carte-menu__ligne">
+                                    <h3 class="carte-menu__titre"><a href="#">{{ demo.titre }}</a></h3>
+                                    <p class="carte-menu__prix">{{ demo.prix }} €<small> /pers.</small></p>
+                                </div>
+                                <p class="carte-menu__description">{{ demo.desc }}</p>
+                                <p class="carte-menu__meta">{{ demo.meta }}</p>
+                            </div>
+                        </article>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <h2 style="margin-top: 3rem">Cartes photo</h2>
+            <ul class="liste-nue grille grille--4">
+                {% for demo in [
+                    {badge: 'Mariage', legende: '80 couverts, château en Médoc'},
+                    {badge: 'Noël', legende: 'Réveillon en famille'},
+                    {badge: 'Entreprise', legende: 'Buffet cocktail, 40 personnes'},
+                    {badge: 'Pâques', legende: 'Table de printemps'}
+                ] %}
+                    <li>
+                        <article class="carte-photo">
+                            {{ ui.puce(demo.badge) }}
+                            <p class="carte-photo__legende">{{ demo.legende }}</p>
+                        </article>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+    <section class="bande conteneur">
+        <div class="grille grille--contenu-aside">
+            <div>
+                {{ ui.surtitre('Composants') }}
+                <h2>Formulaires</h2>
+
+                <div class="champ">
+                    <label for="demo-texte">Intitulé du champ</label>
+                    <input type="text" id="demo-texte" placeholder="Saisie libre">
+                    <span class="aide-champ">Une aide discrète sous le champ.</span>
+                </div>
+
+                <div class="champ">
+                    <label for="demo-erreur">Champ en erreur</label>
+                    <input type="email" id="demo-erreur" aria-invalid="true" value="adresse-invalide">
+                    <span class="erreur-champ">Merci de saisir une adresse électronique valide.</span>
+                </div>
+
+                <div class="champ">
+                    <label for="demo-zone">Message</label>
+                    <textarea id="demo-zone" rows="3"></textarea>
+                </div>
+
+                <div class="grille grille--paire">
+                    <fieldset class="groupe-filtres">
+                        <legend>Régime</legend>
+                        <label class="choix"><input type="checkbox" checked> Végétarien</label>
+                        <label class="choix"><input type="checkbox"> Vegan</label>
+                        <label class="choix"><input type="checkbox"> Sans gluten</label>
+                    </fieldset>
+
+                    <fieldset class="groupe-filtres">
+                        <legend>Convives</legend>
+                        <label class="choix"><input type="radio" name="demo-convives" checked> 4 et plus</label>
+                        <label class="choix"><input type="radio" name="demo-convives"> 6 et plus</label>
+                        <label class="choix"><input type="radio" name="demo-convives"> 20 et plus</label>
+                    </fieldset>
+                </div>
+
+                <div class="champ-recherche">
+                    <span aria-hidden="true">&#9906;</span>
+                    <label class="sr-only" for="demo-recherche">Rechercher un menu</label>
+                    <input type="search" id="demo-recherche" placeholder="Rechercher un menu…">
+                </div>
+            </div>
+
+            <aside class="carte carte--relief">
+                {# Menu::image existe au schéma (nullable). Les fixtures ne le
+                   remplissent pas encore : ce bloc montre l'emplacement. #}
+                <div class="carte__visuel"></div>
+                {{ ui.surtitre('Encart') }}
+                <p class="stat__valeur">48 €</p>
+                <p class="stat__libelle">par personne, dès 6 convives</p>
+                <p class="petit texte-doux">
+                    Le prix inclut la livraison, le dressage et la reprise du
+                    matériel dans un rayon de Bordeaux intra-muros.
+                </p>
+                {{ ui.bouton('Commander ce menu', '#', 'principal', {large: true, majuscules: true}) }}
+            </aside>
+        </div>
+    </section>
+
+    <section class="bande bande--pierre">
+        <div class="conteneur">
+            {{ ui.surtitre('Composants') }}
+            <h2>Liste numérotée</h2>
+            <ol class="liste-numerotee">
+                {{ ui.etape('01', "Des produits qu'on choisit", 'Marché des Capucins et producteurs locaux, au rythme des saisons.') }}
+                {{ ui.etape('02', 'Une cuisine sur mesure', "Chaque menu s'adapte à votre événement et à vos convives.") }}
+                {{ ui.etape('03', "Livré, dressé, à l'heure", "On s'occupe de tout jusqu'à la table, matériel compris.") }}
+            </ol>
+        </div>
+    </section>
+
+    <section class="bande bande--sombre">
+        <div class="conteneur">
+            <div class="entre-deux">
+                <div>
+                    {{ ui.surtitre('Leurs mots') }}
+                    <h2>Ils nous ont fait confiance</h2>
+                </div>
+                {{ ui.notation('4,8', 47) }}
+            </div>
+
+            <div class="grille grille--3 temoignages" style="margin-top: 2rem">
+                {{ ui.temoignage("Menu de Noël impeccable, livré à l'heure et délicieux.", 'Marie C.', 'Décembre 2024 · 8 convives') }}
+                {{ ui.temoignage("Buffet d'entreprise de 40 personnes. Professionnels, généreux.", 'Thomas L.', 'Septembre 2024 · 40 convives') }}
+                {{ ui.temoignage('Notre mariage au complet, du cocktail à la pièce montée.', 'Sophie D.', 'Juin 2024 · 120 convives') }}
+            </div>
+        </div>
+    </section>
+
+    <section class="bande conteneur">
+        {{ ui.surtitre('Composants') }}
+        <h2>Tableau et pagination</h2>
+
+        <div class="tableau-defilant">
+            <table>
+                <caption>Exemple de liste d'administration</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Menu</th>
+                        <th scope="col">Thème</th>
+                        <th scope="col">Prix</th>
+                        <th scope="col">Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Réveillon Tradition</td><td>Noël</td><td>48,00 €</td><td>12</td></tr>
+                    <tr><td>Table de Pâques</td><td>Pâques</td><td>42,00 €</td><td>8</td></tr>
+                    <tr><td>Jardin Végétarien</td><td>Classique</td><td>34,00 €</td><td>20</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        {{ ui.pagination(2, 4, 'dev_socle') }}
+
+        {{ ui.ornement() }}
+
+        <h2>Messages</h2>
+        <p class="petit texte-doux">
+            En usage réel ils flottent : en haut à droite sur grand écran,
+            en bas sur téléphone. Les confirmations s'effacent au bout de six
+            secondes, les erreurs et les avertissements restent jusqu'à ce
+            qu'on les referme. Le compte à rebours s'arrête au survol et au
+            focus clavier.
+        </p>
+
+        <div class="notifications notifications--js"
+             data-controller="notification"
+             style="position: static; width: min(20rem, 100%); margin: 1.5rem 0 0"
+             aria-live="polite">
+            {% for demo in [
+                {type: 'success', texte: 'Votre demande a bien été enregistrée.', grave: false},
+                {type: 'error', texte: "Le code postal saisi n'est pas desservi.", grave: true},
+                {type: 'warning', texte: 'Ce menu demande un délai de dix jours.', grave: true}
+            ] %}
+                <div class="flash flash-{{ demo.type }}"
+                     role="{{ demo.grave ? 'alert' : 'status' }}"
+                     data-notification-target="bulle"
+                     data-persistant="true">
+                    <svg class="flash__icone" viewBox="0 0 20 20" aria-hidden="true"
+                         fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        {% if demo.type == 'success' %}
+                            <path d="M4 10.5l4 4 8-9"/>
+                        {% else %}
+                            <circle cx="10" cy="10" r="8"/><path d="M10 6v5M10 14h.01"/>
+                        {% endif %}
+                    </svg>
+                    <p class="flash__texte">{{ demo.texte }}</p>
+                    <button type="button" class="flash__fermer" data-action="notification#fermer">
+                        <span class="sr-only">Fermer ce message</span>
+                        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"
+                             fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                            <path d="M1 1l10 10M11 1L1 11"/>
+                        </svg>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

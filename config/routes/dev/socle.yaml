@@ -1,0 +1,7 @@
+# Page de référence du socle graphique.
+# Ce dossier n'est chargé qu'en environnement de développement : la page
+# n'existe donc pas en production, sans dépendre de personne pour l'y retirer.
+dev_socle:
+    path: /_socle
+    controller: App\Controller\Dev\SocleController::index
+    methods: [GET]

@@ -4,7 +4,9 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Vite &amp; Gourmand{% endblock %}</title>
+        <meta name="theme-color" content="#5E1F2E">
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>&#127859;</text></svg>">
+
         {% block stylesheets %}
         {% endblock %}
 
@@ -22,61 +24,183 @@
     <body>
         <a href="#contenu" class="skip-link">Aller au contenu principal</a>
 
-        <header>
-            <nav aria-label="Navigation principale">
-                <ul>
-                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
-                    <li><a href="{{ path('app_catalogue') }}">Nos menus</a></li>
-                    <li><a href="{{ path('app_avis') }}">Avis</a></li>
-                    <li><a href="{{ path('app_histoire') }}">Notre histoire</a></li>
-                    <li><a href="{{ path('app_contact') }}">Contact</a></li>
-                    {% if app.user %}
-                        <li><a href="{{ path('app_compte') }}">Mon compte</a></li>
-                        <li><a href="{{ path('app_client_commandes') }}">Mes commandes</a></li>
-                        {% if is_granted('ROLE_EMPLOYE') %}
-                            <li><a href="{{ path('app_employe') }}">Espace employé</a></li>
-                            <li><a href="{{ path('app_admin') }}">{{ is_granted('ROLE_ADMIN') ? 'Administration' : 'Catalogue' }}</a></li>
-                        {% endif %}
-                        <li><a href="{{ path('app_logout', {'_csrf_token': csrf_token('logout')}) }}">Déconnexion</a></li>
-                    {% else %}
-                        <li><a href="{{ path('app_login') }}">Connexion</a></li>
-                        <li><a href="{{ path('app_register') }}">Inscription</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </header>
+        {% block entete %}
+            {% set route = app.request.attributes.get('_route') %}
 
-        {# Messages flash : role="alert" pour que les lecteurs d'écran les annoncent. #}
-        {% for type, messages in app.flashes %}
-            {% for message in messages %}
-                <p class="flash flash-{{ type }}" role="alert">{{ message }}</p>
-            {% endfor %}
-        {% endfor %}
+            <header class="entete-site">
+                <div class="conteneur entete-site__barre" data-controller="menu">
+                    <a href="{{ path('app_home') }}" class="marque">Vite &amp; Gourmand</a>
+
+                    {# Le bouton reste masqué tant que le script n'a pas pris la
+                       main : sans JavaScript, la navigation s'affiche dépliée
+                       plutôt que d'être enfermée derrière une bascule inerte. #}
+                    <button type="button"
+                            class="bascule-menu"
+                            data-menu-target="bouton"
+                            data-action="menu#basculer"
+                            aria-expanded="false"
+                            aria-controls="nav-principale">
+                        <span class="sr-only" data-menu-target="intitule">Ouvrir le menu</span>
+                        <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true" fill="none"
+                             stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                            <path d="M1 1h18M1 7h18M1 13h18"/>
+                        </svg>
+                    </button>
+
+                    <nav class="nav-principale"
+                         id="nav-principale"
+                         data-menu-target="panneau"
+                         aria-label="Navigation principale">
+                        <ul class="liste-nue">
+                            <li><a href="{{ path('app_home') }}"{{ route == 'app_home' ? ' aria-current="page"' : '' }}>Accueil</a></li>
+                            <li><a href="{{ path('app_catalogue') }}"{{ route starts with 'app_catalogue' ? ' aria-current="page"' : '' }}>Nos menus</a></li>
+                            <li><a href="{{ path('app_histoire') }}"{{ route == 'app_histoire' ? ' aria-current="page"' : '' }}>Notre histoire</a></li>
+                            <li><a href="{{ path('app_avis') }}"{{ route == 'app_avis' ? ' aria-current="page"' : '' }}>Avis</a></li>
+                            <li><a href="{{ path('app_contact') }}"{{ route == 'app_contact' ? ' aria-current="page"' : '' }}>Contact</a></li>
+
+                            {% if app.user %}
+                                <li><a href="{{ path('app_client_commandes') }}">Mes commandes</a></li>
+                                {% if is_granted('ROLE_EMPLOYE') %}
+                                    <li><a href="{{ path('app_employe') }}">Espace employé</a></li>
+                                    <li><a href="{{ path('app_admin') }}">{{ is_granted('ROLE_ADMIN') ? 'Administration' : 'Catalogue' }}</a></li>
+                                {% endif %}
+                                <li><a href="{{ path('app_logout', {'_csrf_token': csrf_token('logout')}) }}">Déconnexion</a></li>
+                            {% else %}
+                                <li><a href="{{ path('app_register') }}">Inscription</a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+
+                    <div class="entete-site__actions">
+                        {% if app.user %}
+                            <a href="{{ path('app_compte') }}" class="bouton bouton--contour-clair bouton--pilule">Mon compte</a>
+                        {% else %}
+                            <a href="{{ path('app_login') }}" class="bouton bouton--contour-clair bouton--pilule">Espace client</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% block banniere %}{% endblock %}
+            </header>
+        {% endblock %}
+
+        {% set flashes = app.flashes %}
+        {% if flashes is not empty %}
+            {#
+                Les erreurs sont annoncées en « alert » — le lecteur d'écran
+                interrompt sa lecture — et ne s'effacent jamais seules. Les
+                confirmations passent en « status », plus poli, et s'effacent
+                au bout de quelques secondes.
+
+                Pas d'aria-live sur le conteneur : ces deux rôles sont déjà
+                des régions live, et en imbriquer une dans une autre fait
+                annoncer le message deux fois par certains lecteurs d'écran.
+            #}
+            <div class="notifications" data-controller="notification">
+                {% for type, messages in flashes %}
+                    {% set grave = type in ['error', 'danger', 'warning'] %}
+                    {% for message in messages %}
+                        <div class="flash flash-{{ type }}"
+                             role="{{ grave ? 'alert' : 'status' }}"
+                             data-notification-target="bulle"
+                             data-persistant="{{ grave ? 'true' : 'false' }}"
+                             data-action="mouseenter->notification#suspendre
+                                          mouseleave->notification#reprendre
+                                          focusin->notification#suspendre
+                                          focusout->notification#reprendre">
+                            <svg class="flash__icone" viewBox="0 0 20 20" aria-hidden="true"
+                                 fill="none" stroke="currentColor" stroke-width="1.6"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                {% if type == 'success' %}
+                                    <path d="M4 10.5l4 4 8-9"/>
+                                {% elseif grave %}
+                                    <circle cx="10" cy="10" r="8"/><path d="M10 6v5M10 14h.01"/>
+                                {% else %}
+                                    <circle cx="10" cy="10" r="8"/><path d="M10 9v5M10 6h.01"/>
+                                {% endif %}
+                            </svg>
+
+                            <p class="flash__texte">{{ message }}</p>
+
+                            <button type="button"
+                                    class="flash__fermer"
+                                    data-action="notification#fermer">
+                                <span class="sr-only">Fermer ce message</span>
+                                <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"
+                                     fill="none" stroke="currentColor" stroke-width="1.8"
+                                     stroke-linecap="round">
+                                    <path d="M1 1l10 10M11 1L1 11"/>
+                                </svg>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
 
         <main id="contenu">
             {% block body %}{% endblock %}
         </main>
 
-        <footer>
-            {% set horaires = horaires_semaine() %}
-            {% if horaires is not empty %}
-                <h2>Horaires d'ouverture</h2>
-                <p>{{ etablissement_ouvert() ? 'Ouvert en ce moment' : 'Fermé en ce moment' }}</p>
-                <dl>
-                    {% for horaire in horaires %}
-                        <dt>{{ horaire.jour }}</dt>
-                        <dd>{{ horaire.plage }}</dd>
-                    {% endfor %}
-                </dl>
-            {% endif %}
+        {% block pied %}
+            <footer class="pied-site">
+                <div class="conteneur">
+                    <div class="pied-site__colonnes">
+                        <div>
+                            <p class="pied-site__marque">Vite &amp; Gourmand</p>
+                            <p class="signature">Julie &amp; José</p>
+                            <p class="petit texte-doux">
+                                Traiteur artisanal à Bordeaux, pour vos réceptions
+                                privées comme professionnelles.
+                            </p>
+                        </div>
 
-            <h2>Informations légales</h2>
-            <ul>
-                <li><a href="{{ path('app_mentions_legales') }}">Mentions légales</a></li>
-                <li><a href="{{ path('app_cgv') }}">Conditions générales de vente</a></li>
-                <li><a href="{{ path('app_confidentialite') }}">Politique de confidentialité</a></li>
-                <li><a href="{{ path('app_contact') }}">Nous contacter</a></li>
-            </ul>
-        </footer>
+                        {% set horaires = horaires_semaine() %}
+                        {% if horaires is not empty %}
+                            <div>
+                                <h2>Horaires</h2>
+                                {% set ouvert = etablissement_ouvert() %}
+                                <p class="petit">
+                                    <span class="pastille" aria-hidden="true"></span>
+                                    {{ ouvert ? 'Ouvert en ce moment' : 'Fermé en ce moment' }}
+                                </p>
+                                <dl>
+                                    {% for horaire in horaires %}
+                                        <div>
+                                            <dt>{{ horaire.jour }}</dt>
+                                            <dd>{{ horaire.plage }}</dd>
+                                        </div>
+                                    {% endfor %}
+                                </dl>
+                            </div>
+                        {% endif %}
+
+                        <div>
+                            <h2>Nous joindre</h2>
+                            <ul class="liste-nue petit pile">
+                                <li>12 rue des Faussets, 33000 Bordeaux</li>
+                                <li><a href="tel:+33556000000">05 56 00 00 00</a></li>
+                                <li><a href="mailto:contact@vite-et-gourmand.fr">contact@vite-et-gourmand.fr</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h2>Informations</h2>
+                            <ul class="liste-nue petit pile">
+                                <li><a href="{{ path('app_mentions_legales') }}">Mentions légales</a></li>
+                                <li><a href="{{ path('app_cgv') }}">Conditions générales de vente</a></li>
+                                <li><a href="{{ path('app_confidentialite') }}">Politique de confidentialité</a></li>
+                                <li><a href="{{ path('app_contact') }}">Nous contacter</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="pied-site__bas">
+                        <span>&copy; {{ 'now'|date('Y') }} Vite &amp; Gourmand — Bordeaux</span>
+                        <span>Tous droits réservés</span>
+                    </div>
+                </div>
+            </footer>
+        {% endblock %}
     </body>
 </html>
