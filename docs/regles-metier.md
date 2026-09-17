@@ -183,6 +183,30 @@ aujourd'hui.
 
 ---
 
+# Répartition des droits (cahier des charges § 3)
+
+> « Employé : gère les menus, les horaires, les commandes et valide les avis. »
+> « Admin : fait tout ce que fait l'employé, plus la création des comptes
+> employés et les statistiques. »
+
+| Section | Employé | Admin |
+|---|---|---|
+| Menus, plats, ingrédients, allergènes, thèmes, régimes | ✅ | ✅ |
+| Horaires d'ouverture | ✅ | ✅ |
+| Commandes, avis, messages, matériel | ✅ | ✅ |
+| Comptes utilisateurs | ❌ | ✅ |
+| Zones de livraison | ❌ | ✅ |
+| Statistiques | ❌ | ✅ |
+
+Ingrédients, allergènes, thèmes et régimes ne sont pas cités par le cahier des
+charges, mais un menu ne se compose pas sans eux : les refuser à l'employé le
+bloquerait dès qu'un plat demande un ingrédient qui n'existe pas encore.
+
+Les zones de livraison suivent les comptes plutôt que le catalogue : elles
+fixent ce qui est facturé au client, c'est une décision commerciale.
+
+---
+
 # Conformité légale
 
 ## Pages obligatoires

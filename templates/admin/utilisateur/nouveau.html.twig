@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un compte interne — Administration{% endblock %}
+
+{% block body %}
+    <h1>Créer un compte employé ou administrateur</h1>
+
+    <p>
+        Le formulaire d'inscription public crée toujours des comptes clients.
+        C'est ici que se créent les comptes du personnel.
+    </p>
+
+    {{ form_errors(form) }}
+
+    {{ form_start(form) }}
+        {{ form_row(form.prenom) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.role) }}
+        {{ form_row(form.plainPassword) }}
+        <button type="submit">Créer le compte</button>
+    {{ form_end(form) }}
+
+    <p><a href="{{ path('app_admin_utilisateur_index') }}">Retour à la liste des comptes</a></p>
+{% endblock %}
