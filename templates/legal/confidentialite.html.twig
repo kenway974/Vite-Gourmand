@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Politique de confidentialité — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Politique de confidentialité</h1>
+
+    <p>
+        Cette page décrit les données que nous collectons, pourquoi, combien de
+        temps nous les gardons, et comment reprendre la main dessus.
+    </p>
+
+    <h2>Ce que nous collectons</h2>
+    <table>
+        <caption>Données traitées et raisons de leur traitement</caption>
+        <thead>
+            <tr>
+                <th scope="col">Donnée</th>
+                <th scope="col">Pourquoi</th>
+                <th scope="col">Base légale</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">Nom, prénom, adresse e-mail</th>
+                <td>Créer votre compte et vous identifier</td>
+                <td>Exécution du contrat</td>
+            </tr>
+            <tr>
+                <th scope="row">Téléphone, adresse postale</th>
+                <td>Vous joindre et livrer votre commande</td>
+                <td>Exécution du contrat</td>
+            </tr>
+            <tr>
+                <th scope="row">Commandes et montants</th>
+                <td>Honorer la prestation, tenir la comptabilité</td>
+                <td>Obligation légale</td>
+            </tr>
+            <tr>
+                <th scope="row">Avis déposés</th>
+                <td>Renseigner les autres clients</td>
+                <td>Votre consentement</td>
+            </tr>
+            <tr>
+                <th scope="row">Messages envoyés depuis le formulaire</th>
+                <td>Vous répondre</td>
+                <td>Intérêt légitime</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Combien de temps</h2>
+    <ul>
+        <li><strong>Votre compte</strong> : tant que vous le conservez.</li>
+        <li>
+            <strong>Vos commandes</strong> : dix ans après la prestation. Ce
+            délai n'est pas le nôtre, c'est celui que le code de commerce impose
+            aux pièces comptables.
+        </li>
+        <li><strong>Vos messages</strong> : trois ans après le dernier échange.</li>
+    </ul>
+
+    <h2>Vos droits</h2>
+    <p>
+        Vous pouvez accéder à vos données, les corriger, les faire effacer,
+        vous opposer à leur traitement ou en demander la portabilité.
+    </p>
+
+    <ul>
+        <li>
+            <strong>Corriger</strong> vos coordonnées :
+            {% if app.user %}
+                <a href="{{ path('app_compte_modifier') }}">depuis votre compte</a>, à tout moment.
+            {% else %}
+                depuis votre compte, une fois connecté.
+            {% endif %}
+        </li>
+        <li>
+            <strong>Effacer</strong> votre compte :
+            {% if app.user %}
+                <a href="{{ path('app_compte_suppression') }}">depuis votre compte</a>.
+            {% else %}
+                depuis votre compte, une fois connecté.
+            {% endif %}
+            Vos coordonnées sont alors effacées et remplacées par des valeurs
+            anonymes. Les commandes, elles, sont conservées sans votre identité,
+            parce que la loi comptable l'exige.
+        </li>
+        <li>
+            <strong>Pour tout le reste</strong> :
+            <a href="{{ path('app_contact') }}">écrivez-nous</a>.
+        </li>
+    </ul>
+
+    <h2>Qui voit vos données</h2>
+    <p>
+        Personne d'autre que Vite &amp; Gourmand et son hébergeur. Aucune donnée
+        n'est vendue, louée ni transmise à des fins publicitaires.
+    </p>
+
+    <h2>Cookies</h2>
+    <p>
+        Ce site dépose un cookie de session, nécessaire à votre connexion, et un
+        cookie « rester connecté » si vous cochez cette case. Aucun cookie
+        publicitaire ni de mesure d'audience n'est utilisé — c'est pourquoi
+        aucune bannière ne vous est présentée.
+    </p>
+
+    <h2>Réclamation</h2>
+    <p>
+        Vous pouvez introduire une réclamation auprès de la CNIL,
+        3 place de Fontenoy, 75007 Paris.
+    </p>
+{% endblock %}

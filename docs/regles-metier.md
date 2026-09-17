@@ -180,3 +180,36 @@ Confirme la saisonnalité ajoutée sur la branche `saisonnalite-menus` :
 
 « Notre histoire » et « Avis » sont deux pages publiques que rien ne couvre
 aujourd'hui.
+
+---
+
+# Conformité légale
+
+## Pages obligatoires
+
+- **Mentions légales** — art. 6 LCEN. Certaines valeurs (SIRET, RCS, médiateur,
+  adresse de l'hébergeur) ne peuvent venir que du client : elles sont laissées
+  visiblement `[à compléter]` plutôt que remplies au hasard.
+- **CGV** — art. L111-1 du code de la consommation. Elles décrivent **ce que le
+  code fait réellement** : remise de 10 %, indemnité de 600 €, dix jours
+  ouvrés, vingt-quatre heures de conservation, réponse sous 48 h, livraison
+  comprise intra-muros. Un test vérifie que ces chiffres y figurent — un contrat
+  qui annonce autre chose que le code serait faux.
+- **Politique de confidentialité** — RGPD art. 13.
+
+## Droit à l'effacement (art. 17 RGPD)
+
+Le compte ne se supprime pas, il **s'anonymise**. Un `DELETE` emporterait les
+commandes, que le code de commerce impose de conserver dix ans, ainsi que les
+avis et le suivi.
+
+`Utilisateur::anonymiser()` efface nom, prénom, e-mail, téléphone, adresse,
+rôles et mot de passe, désactive le compte et annule toute réinitialisation en
+cours. L'e-mail est remplacé par une valeur aléatoire en `@invalide.local`, de
+sorte que deux effacements ne violent pas l'index unique.
+
+## Pages d'erreur
+
+404, 403 et 500 personnalisées. La 500 n'affiche **aucun détail technique** :
+un message d'exception peut révéler la structure de la base ou des chemins de
+fichiers.

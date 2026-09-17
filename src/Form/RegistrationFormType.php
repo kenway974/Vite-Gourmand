@@ -62,6 +62,10 @@ class RegistrationFormType extends AbstractType
             ->add('agreeTerms', CheckboxType::class, [
                 'label' => "J'accepte les conditions générales de vente.",
                 'mapped' => false,
+                // La case renvoyait vers rien tant que la page n'existait pas :
+                // faire accepter un contrat illisible n'engage personne.
+                'help' => '<a href="/conditions-generales-de-vente" target="_blank" rel="noopener">Lire les conditions générales de vente</a>',
+                'help_html' => true,
                 'constraints' => [
                     new IsTrue(message: 'Vous devez accepter les conditions générales de vente.'),
                 ],

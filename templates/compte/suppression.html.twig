@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Supprimer mon compte — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Supprimer mon compte</h1>
+
+    <p role="alert"><strong>Cette action est définitive.</strong></p>
+
+    <h2>Ce qui sera effacé</h2>
+    <ul>
+        <li>Votre nom et votre prénom</li>
+        <li>Votre adresse e-mail</li>
+        <li>Votre téléphone et votre adresse postale</li>
+        <li>Votre mot de passe</li>
+    </ul>
+    <p>Vous ne pourrez plus vous connecter.</p>
+
+    <h2>Ce qui sera conservé</h2>
+    {% if nbCommandes > 0 %}
+        <p>
+            Vos <strong>{{ nbCommandes }} commande{{ nbCommandes > 1 ? 's' : '' }}</strong>,
+            sans votre identité. Le code de commerce impose de garder les pièces
+            comptables dix ans : nous ne pouvons pas les effacer, mais elles ne
+            porteront plus votre nom.
+        </p>
+    {% else %}
+        <p>
+            Vous n'avez passé aucune commande : rien ne sera conservé vous
+            concernant.
+        </p>
+    {% endif %}
+    <p>
+        Vos avis publiés restent visibles, rattachés à un compte anonyme.
+    </p>
+
+    <form method="post"
+          onsubmit="return confirm('Supprimer définitivement votre compte ?')">
+        <input type="hidden" name="_token" value="{{ csrf_token('supprimer-mon-compte') }}">
+        <button type="submit">Supprimer définitivement mon compte</button>
+    </form>
+
+    <p><a href="{{ path('app_compte') }}">Annuler et revenir à mon compte</a></p>
+{% endblock %}
