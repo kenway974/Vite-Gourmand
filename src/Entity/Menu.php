@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\MenuRepository;
+use App\Service\Normalisateur;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -29,6 +30,19 @@ class Menu
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(message: 'Merci de saisir une description.')]
     private ?string $description = null;
+
+    /**
+     * Titre et description réduits à une forme comparable : minuscules, sans
+     * accents. C'est sur cette colonne que porte la recherche du catalogue.
+     *
+     * Tenue à jour par les setters plutôt que par un événement Doctrine :
+     * modifier un champ dans preUpdate ne le persiste pas sans passer par
+     * l'API des changesets, un piège classique.
+     *
+     * Pas d'index : un LIKE commençant par « % » n'en utiliserait aucun.
+     */
+    #[ORM\Column(type: Types::TEXT)]
+    private string $recherche = '';
 
     #[ORM\ManyToOne(inversedBy: 'menus')]
     #[ORM\JoinColumn(nullable: false)]
@@ -111,6 +125,7 @@ class Menu
     public function setTitre(string $titre): static
     {
         $this->titre = $titre;
+        $this->majRecherche();
 
         return $this;
     }
@@ -123,8 +138,21 @@ class Menu
     public function setDescription(string $description): static
     {
         $this->description = $description;
+        $this->majRecherche();
 
         return $this;
+    }
+
+    public function getRecherche(): string
+    {
+        return $this->recherche;
+    }
+
+    private function majRecherche(): void
+    {
+        $this->recherche = Normalisateur::pourRecherche(
+            trim($this->titre.' '.$this->description),
+        );
     }
 
     public function getTheme(): ?Theme

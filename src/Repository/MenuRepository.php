@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Avis;
 use App\Entity\Menu;
+use App\Service\Normalisateur;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder;
@@ -138,20 +139,17 @@ class MenuRepository extends ServiceEntityRepository
         }
 
         if (!empty($filtres['recherche'])) {
-            // LIKE sur deux colonnes : suffisant pour un catalogue de cette
-            // taille, un index plein texte ne se justifierait qu'à partir de
-            // plusieurs milliers de menus.
-            //
-            // Pas de LOWER() : l'insensibilité à la casse vient de la
-            // collation de la table (utf8mb4_unicode_ci en MySQL), qui traite
-            // aussi les accents. LOWER() n'y ajouterait rien, et ne sait de
-            // toute façon pas abaisser « Ô » sans ICU.
+            // La recherche porte sur la colonne normalisée, pas sur le titre :
+            // « pate de foi » doit trouver « Pâté de foie ». Les deux côtés de
+            // la comparaison passent par le même normalisateur, si bien que le
+            // résultat ne dépend ni du SGBD ni de sa collation.
             //
             // Les jokers SQL saisis par le visiteur sont neutralisés, sans quoi
             // « % » à lui seul ramènerait tout le catalogue.
-            $motif = '%'.addcslashes(trim((string) $filtres['recherche']), '%_\\').'%';
+            $terme = Normalisateur::pourRecherche((string) $filtres['recherche']);
+            $motif = '%'.addcslashes($terme, '%_\\').'%';
 
-            $qb->andWhere('m.titre LIKE :recherche OR m.description LIKE :recherche')
+            $qb->andWhere('m.recherche LIKE :recherche')
                ->setParameter('recherche', $motif);
         }
 

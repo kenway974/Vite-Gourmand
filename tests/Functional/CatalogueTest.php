@@ -100,10 +100,35 @@ class CatalogueTest extends WebTestCase
     {
         $this->menu('Entrecôte à la bordelaise');
 
-        // Mot sans accent : l'insensibilité à la casse est portée par la
-        // collation. Celle de MySQL couvre aussi les accents, celle de SQLite
-        // — utilisée par ces tests — s'arrête à l'ASCII.
         self::assertSame(['Entrecôte à la bordelaise'], $this->titres(['recherche' => 'BORDELAISE']));
+        self::assertSame(['Entrecôte à la bordelaise'], $this->titres(['recherche' => 'EnTrEcÔtE']));
+    }
+
+    public function testLaRechercheIgnoreLesAccents(): void
+    {
+        $this->menu('Pâté de foie', description: 'Terrine de campagne.');
+        $this->menu('Plateau de fruits de mer', description: 'Huîtres et crevettes.');
+
+        // L'exigence : taper sans accent doit trouver le menu accentué.
+        self::assertSame(['Pâté de foie'], $this->titres(['recherche' => 'pate de foi']));
+        self::assertSame(['Pâté de foie'], $this->titres(['recherche' => 'PATE']));
+
+        // Et l'inverse : taper avec accent doit trouver aussi.
+        self::assertSame(['Pâté de foie'], $this->titres(['recherche' => 'pâté']));
+
+        // Y compris dans la description.
+        self::assertSame(['Plateau de fruits de mer'], $this->titres(['recherche' => 'huitres']));
+    }
+
+    public function testLaRechercheSansAccentsNeDependPasDuSgbd(): void
+    {
+        // Ce test tourne sur SQLite, qui ne plie pas les accents. S'il passe
+        // ici, c'est que la normalisation est bien faite en PHP et non déléguée
+        // à la collation de la base.
+        $menu = $this->menu('Crème brûlée');
+
+        self::assertSame('creme brulee une formule de saison.', $menu->getRecherche());
+        self::assertSame(['Crème brûlée'], $this->titres(['recherche' => 'creme brulee']));
     }
 
     public function testLaRechercheTrouveUnMenuParSaDescription(): void

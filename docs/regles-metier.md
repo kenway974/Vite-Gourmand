@@ -116,7 +116,14 @@ Implique un suivi des demandes de contact, donc un statut de traitement sur
 
 > « Rechercher un menu… » et « Trier par : Recommandés »
 
-`findCatalogue()` n'a ni recherche plein texte ni tri paramétrable.
+Implémenté : `findCatalogue()` accepte un mot-clé et quatre ordres de tri.
+
+La recherche ignore la casse **et les accents** : taper « pate de foi » doit
+trouver « Pâté de foie ». Ce n'est pas délégué à la collation de la base —
+elle varie d'un hébergeur à l'autre et n'est pas testable sur SQLite. Le texte
+est normalisé en PHP (`App\Service\Normalisateur`) et stocké dans une colonne
+dédiée, si bien que le comportement est identique partout et couvert par les
+tests.
 
 ## 11. Filtre convives par paliers
 
