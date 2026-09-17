@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos menus — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Nos menus</h1>
+
+    <form method="get" action="{{ path('app_catalogue') }}">
+        <fieldset>
+            <legend>Rechercher un menu</legend>
+
+            <label for="q">Mot-clé</label>
+            <input type="search" id="q" name="q" value="{{ filtres.recherche|default('') }}"
+                   placeholder="entrecôte, cannelé, végétarien…">
+
+            <label for="theme">Thème</label>
+            <select id="theme" name="theme">
+                <option value="">Tous les thèmes</option>
+                {% for theme in themes %}
+                    <option value="{{ theme.id }}"
+                            {{ filtres.theme and filtres.theme.id == theme.id ? 'selected' : '' }}>
+                        {{ theme.libelle }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="regime">Régime</label>
+            <select id="regime" name="regime">
+                <option value="">Tous les régimes</option>
+                {% for regime in regimes %}
+                    <option value="{{ regime.id }}"
+                            {{ filtres.regime and filtres.regime.id == regime.id ? 'selected' : '' }}>
+                        {{ regime.libelle }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="convives">Nombre de convives</label>
+            <select id="convives" name="convives">
+                <option value="">Peu importe</option>
+                {% for palier in paliers %}
+                    <option value="{{ palier }}" {{ filtres.nbPersonnes == palier ? 'selected' : '' }}>
+                        {{ palier }} et plus
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="tri">Trier par</label>
+            <select id="tri" name="tri">
+                {% for cle, libelle in tris %}
+                    <option value="{{ cle }}" {{ filtres.tri == cle ? 'selected' : '' }}>{{ libelle }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="commandables">
+                <input type="checkbox" id="commandables" name="commandables" value="1"
+                       {{ filtres.seulementCommandables ? 'checked' : '' }}>
+                Uniquement les menus commandables aujourd'hui
+            </label>
+
+            <button type="submit">Rechercher</button>
+            <a href="{{ path('app_catalogue') }}">Réinitialiser</a>
+        </fieldset>
+    </form>
+
+    <p role="status">
+        {{ total }} menu(s) correspondent à votre recherche.
+    </p>
+
+    {% if menus is empty %}
+        <p>Aucun menu ne correspond à ces critères. Essayez d'élargir votre recherche.</p>
+    {% else %}
+        <ul class="catalogue">
+            {% for menu in menus %}
+                {% set note = notes[menu.id]|default(null) %}
+                <li>
+                    <article>
+                        <h2><a href="{{ path('app_catalogue_menu', {id: menu.id}) }}">{{ menu.titre }}</a></h2>
+
+                        <p>{{ menu.theme.libelle }} — {{ menu.regime.libelle }}</p>
+                        <p>{{ menu.description }}</p>
+
+                        <p>
+                            <strong>{{ menu.prixMin }} € par personne</strong>,
+                            à partir de {{ menu.nbMinPersonnes }} convives.
+                        </p>
+
+                        {% if note %}
+                            <p>Note : {{ note.moyenne }} / 5 ({{ note.nombre }} avis)</p>
+                        {% else %}
+                            <p>Pas encore d'avis.</p>
+                        {% endif %}
+
+                        {{ include('catalogue/_disponibilite.html.twig') }}
+                    </article>
+                </li>
+            {% endfor %}
+        </ul>
+
+        {% if nbPages > 1 %}
+            <nav aria-label="Pagination du catalogue">
+                <p>Page {{ page }} sur {{ nbPages }}</p>
+                <ul>
+                    {% if page > 1 %}
+                        <li><a href="{{ path('app_catalogue', app.request.query.all|merge({page: page - 1})) }}"
+                               rel="prev">Page précédente</a></li>
+                    {% endif %}
+                    {% if page < nbPages %}
+                        <li><a href="{{ path('app_catalogue', app.request.query.all|merge({page: page + 1})) }}"
+                               rel="next">Page suivante</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% endif %}
+{% endblock %}

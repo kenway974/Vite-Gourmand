@@ -1,0 +1,11 @@
+{{ form_errors(form) }}
+
+{{ form_start(form) }}
+    {{ form_row(form.jour) }}
+    {{ form_row(form.ferme) }}
+    {{ form_row(form.heureOuverture) }}
+    {{ form_row(form.heureFermeture) }}
+    <button type="submit">{{ bouton }}</button>
+{{ form_end(form) }}
+
+<p><a href="{{ path('app_admin_horaire_index') }}">Retour à la liste</a></p>

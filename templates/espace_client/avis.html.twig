@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Déposer un avis — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Votre avis sur « {{ commande.menu.titre }} »</h1>
+
+    <p>Prestation du {{ commande.datePrestation|date('d/m/Y') }} pour {{ commande.nbPersonnes }} convives.</p>
+
+    {{ form_errors(form) }}
+
+    {{ form_start(form) }}
+        {{ form_row(form.note) }}
+        {{ form_row(form.commentaire) }}
+
+        <button type="submit">Envoyer mon avis</button>
+    {{ form_end(form) }}
+
+    <p><a href="{{ path('app_client_commande', {id: commande.id}) }}">Retour à la commande</a></p>
+{% endblock %}

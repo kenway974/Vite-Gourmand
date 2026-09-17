@@ -26,8 +26,14 @@
             <nav aria-label="Navigation principale">
                 <ul>
                     <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li><a href="{{ path('app_catalogue') }}">Nos menus</a></li>
+                    <li><a href="{{ path('app_contact') }}">Contact</a></li>
                     {% if app.user %}
                         <li><a href="{{ path('app_compte') }}">Mon compte</a></li>
+                        <li><a href="{{ path('app_client_commandes') }}">Mes commandes</a></li>
+                        {% if is_granted('ROLE_EMPLOYE') %}
+                            <li><a href="{{ path('app_employe') }}">Espace employé</a></li>
+                        {% endif %}
                         {% if is_granted('ROLE_ADMIN') %}
                             <li><a href="{{ path('app_admin') }}">Administration</a></li>
                         {% endif %}
@@ -50,5 +56,19 @@
         <main id="contenu">
             {% block body %}{% endblock %}
         </main>
+
+        <footer>
+            {% set horaires = horaires_semaine() %}
+            {% if horaires is not empty %}
+                <h2>Horaires d'ouverture</h2>
+                <p>{{ etablissement_ouvert() ? 'Ouvert en ce moment' : 'Fermé en ce moment' }}</p>
+                <dl>
+                    {% for horaire in horaires %}
+                        <dt>{{ horaire.jour }}</dt>
+                        <dd>{{ horaire.plage }}</dd>
+                    {% endfor %}
+                </dl>
+            {% endif %}
+        </footer>
     </body>
 </html>

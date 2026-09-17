@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace employé — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Espace employé</h1>
+
+    <ul>
+        <li><a href="{{ path('app_employe_commandes') }}">Suivi des commandes</a> — {{ nouvellesCommandes }} en attente</li>
+        <li><a href="{{ path('app_employe_avis') }}">Modération des avis</a> — {{ avisEnAttente }} à relire</li>
+        <li><a href="{{ path('app_employe_messages') }}">Messages de contact</a></li>
+        <li><a href="{{ path('app_employe_materiel') }}">Matériel prêté</a></li>
+    </ul>
+
+    {% for titre, liste in {"Aujourd'hui": aPreparerAujourdhui, 'Demain': aPreparerDemain} %}
+        <h2>{{ titre }}</h2>
+        {% if liste is empty %}
+            <p>Aucune prestation.</p>
+        {% else %}
+            <table>
+                <caption>Prestations à préparer — {{ titre|lower }} ({{ liste|length }})</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Heure</th>
+                        <th scope="col">Menu</th>
+                        <th scope="col">Convives</th>
+                        <th scope="col">Client</th>
+                        <th scope="col">Lieu</th>
+                        <th scope="col">Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for commande in liste %}
+                        <tr>
+                            <th scope="row">{{ commande.heureLivraison|date('H\\hi') }}</th>
+                            <td>{{ commande.menu.titre }}</td>
+                            <td>{{ commande.nbPersonnes }}</td>
+                            <td>{{ commande.utilisateur.prenom }} {{ commande.utilisateur.nom }}</td>
+                            <td>{{ commande.lieuLivraison }}</td>
+                            <td>{{ commande.statut }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

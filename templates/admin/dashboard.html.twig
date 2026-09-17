@@ -5,12 +5,62 @@
 {% block body %}
     <h1>Administration</h1>
 
+    <h2>Catalogue</h2>
+    <table>
+        <caption>Contenu du catalogue et accès à la gestion</caption>
+        <thead>
+            <tr>
+                <th scope="col">Section</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Gérer</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">Menus</th>
+                <td>{{ nbMenus }}</td>
+                <td><a href="{{ path('app_admin_menu_index') }}">Gérer les menus</a></td>
+            </tr>
+            <tr>
+                <th scope="row">Plats</th>
+                <td>{{ nbPlats }}</td>
+                <td><a href="{{ path('app_admin_plat_index') }}">Gérer les plats</a></td>
+            </tr>
+            <tr>
+                <th scope="row">Ingrédients</th>
+                <td>{{ nbIngredients }}</td>
+                <td><a href="{{ path('app_admin_ingredient_index') }}">Gérer les ingrédients</a></td>
+            </tr>
+            <tr>
+                <th scope="row">Allergènes</th>
+                <td>{{ nbAllergenes }}</td>
+                <td><a href="{{ path('app_admin_allergene_index') }}">Gérer les allergènes</a></td>
+            </tr>
+            <tr>
+                <th scope="row">Thèmes</th>
+                <td>{{ nbThemes }}</td>
+                <td><a href="{{ path('app_admin_theme_index') }}">Gérer les thèmes</a></td>
+            </tr>
+            <tr>
+                <th scope="row">Régimes</th>
+                <td>{{ nbRegimes }}</td>
+                <td><a href="{{ path('app_admin_regime_index') }}">Gérer les régimes</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% if nbThemes == 0 or nbRegimes == 0 %}
+        <p role="alert">
+            <strong>À faire en premier :</strong> un menu exige obligatoirement un thème et un régime.
+            Tant qu'il n'en existe aucun, la création de menu est impossible.
+        </p>
+    {% endif %}
+
+    <h2>Activité</h2>
     <ul>
-        <li><strong>{{ nbMenus }}</strong> menu(s)</li>
-        <li><strong>{{ nbPlats }}</strong> plat(s)</li>
-        <li><strong>{{ nbUtilisateurs }}</strong> utilisateur(s)</li>
+        <li><strong>{{ nbUtilisateurs }}</strong> utilisateur(s) — <a href="{{ path('app_admin_utilisateur_index') }}">gérer les comptes</a></li>
+        <li><strong>{{ nbHoraires }}</strong> jour(s) d'ouverture renseigné(s) — <a href="{{ path('app_admin_horaire_index') }}">gérer les horaires</a></li>
+        <li><strong>{{ nbZones }}</strong> commune(s) desservie(s) — <a href="{{ path('app_admin_zone_index') }}">gérer les zones de livraison</a></li>
         <li><strong>{{ nbCommandes }}</strong> commande(s)</li>
     </ul>
-
-    <p><a href="{{ path('app_admin_menu_index') }}">Gérer les menus</a></p>
 {% endblock %}

@@ -70,7 +70,11 @@ class CreerAdminCommandTest extends WebTestCase
 
         $this->client->request('GET', '/mon-compte');
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('dl', 'ROLE_ADMIN');
+
+        // Le rôle se vérifie par ce qu'il ouvre, pas par son affichage : la
+        // page de compte n'a pas à exposer des libellés techniques.
+        $this->client->request('GET', '/admin');
+        self::assertResponseIsSuccessful();
     }
 
     public function testElleRefuseUnMotDePasseTropFaible(): void

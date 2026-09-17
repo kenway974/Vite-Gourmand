@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Matériel prêté — Espace employé{% endblock %}
+
+{% block body %}
+    <h1>Matériel prêté</h1>
+
+    <p>
+        Plats et présentoirs sont à restituer sous
+        {{ constant('App\\Entity\\Commande::DELAI_RESTITUTION_JOURS_OUVRES') }} jours ouvrés
+        après la prestation. Passé ce délai, une indemnité de
+        {{ constant('App\\Entity\\Commande::INDEMNITE_MATERIEL') }} € s'applique.
+    </p>
+
+    <p>
+        {% if restitue %}
+            <a href="{{ path('app_employe_materiel') }}">Voir le matériel non rendu ({{ enAttente }})</a>
+        {% else %}
+            <a href="{{ path('app_employe_materiel', {rendus: 1}) }}">Voir le matériel rendu</a>
+        {% endif %}
+    </p>
+
+    {% if commandes is empty %}
+        <p>{{ restitue ? 'Aucun retour enregistré pour le moment.' : 'Tout le matériel prêté est revenu.' }}</p>
+    {% else %}
+        <table>
+            <caption>
+                {{ restitue ? 'Matériel rendu' : 'Matériel en attente de retour' }}
+                ({{ commandes|length }})
+            </caption>
+            <thead>
+                <tr>
+                    <th scope="col">Commande</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">Menu</th>
+                    <th scope="col">Prestation</th>
+                    <th scope="col">À rendre avant le</th>
+                    <th scope="col">État</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for commande in commandes %}
+                    {% set enRetard = commande.materielEstEnRetard %}
+                    <tr>
+                        <th scope="row">n° {{ commande.id }}</th>
+                        <td>{{ commande.utilisateur.prenom }} {{ commande.utilisateur.nom }}</td>
+                        <td>{{ commande.menu.titre }}</td>
+                        <td>{{ commande.datePrestation|date('d/m/Y') }}</td>
+                        <td>{{ commande.dateLimiteRestitution ? commande.dateLimiteRestitution|date('d/m/Y') : '—' }}</td>
+                        <td>
+                            {% if commande.dateRestitutionMateriel %}
+                                Rendu le {{ commande.dateRestitutionMateriel|date('d/m/Y') }}
+                                {%- if enRetard %} (en retard){% endif %}
+                            {% elseif enRetard %}
+                                <strong>En retard</strong>
+                            {% else %}
+                                En cours
+                            {% endif %}
+
+                            {% if commande.indemniteEstFacturee %}
+                                <br>Indemnité facturée : {{ commande.indemniteMateriel }} €
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" action="{{ path('app_employe_materiel_restitution', {id: commande.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('restitution-materiel-' ~ commande.id) }}">
+                                {% if restitue %}<input type="hidden" name="rendus" value="1">{% endif %}
+                                <button type="submit">
+                                    {{ commande.dateRestitutionMateriel ? 'Annuler le retour' : 'Enregistrer le retour' }}
+                                    <span class="sr-only"> de la commande n° {{ commande.id }}</span>
+                                </button>
+                            </form>
+
+                            {% if enRetard and not commande.indemniteEstFacturee %}
+                                <form method="post"
+                                      action="{{ path('app_employe_materiel_indemnite', {id: commande.id}) }}"
+                                      onsubmit="return confirm('Facturer {{ constant('App\\Entity\\Commande::INDEMNITE_MATERIEL') }} € au client ?')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('indemnite-materiel-' ~ commande.id) }}">
+                                    {% if restitue %}<input type="hidden" name="rendus" value="1">{% endif %}
+                                    <button type="submit">
+                                        Appliquer l'indemnité
+                                        <span class="sr-only"> sur la commande n° {{ commande.id }}</span>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <p><a href="{{ path('app_employe') }}">Retour à l'espace employé</a></p>
+{% endblock %}

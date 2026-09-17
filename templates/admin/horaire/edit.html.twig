@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier les horaires du {{ element.jour|lower }} — Administration{% endblock %}
+
+{% block body %}
+    <h1>Horaires du {{ element.jour|lower }}</h1>
+
+    {{ include('admin/horaire/_form.html.twig', {bouton: 'Enregistrer les modifications'}) }}
+{% endblock %}

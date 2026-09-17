@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mes coordonnées — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Modifier mes coordonnées</h1>
+
+    {{ form_errors(form) }}
+
+    {{ form_start(form) }}
+        {{ form_row(form.prenom) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.gsm) }}
+        {{ form_row(form.adressePostale) }}
+        <button type="submit">Enregistrer</button>
+    {{ form_end(form) }}
+
+    <p><a href="{{ path('app_compte') }}">Retour à mon compte</a></p>
+{% endblock %}

@@ -65,6 +65,16 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $actif = null;
 
     /**
+     * Empreinte SHA-256 du jeton de réinitialisation, jamais le jeton lui-même :
+     * une fuite de la base ne doit pas permettre de prendre les comptes.
+     */
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $jetonReinitialisation = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $jetonExpiration = null;
+
+    /**
      * @var Collection<int, Commande>
      */
     #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'utilisateur')]
@@ -226,6 +236,49 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Commande>
      */
+    public function getJetonReinitialisation(): ?string
+    {
+        return $this->jetonReinitialisation;
+    }
+
+    public function getJetonExpiration(): ?\DateTime
+    {
+        return $this->jetonExpiration;
+    }
+
+    /**
+     * Enregistre une demande de réinitialisation.
+     *
+     * Le jeton en clair n'est pas conservé : il part par courriel, seul son
+     * empreinte reste en base.
+     */
+    public function demanderReinitialisation(string $empreinte, \DateTimeInterface $expiration): static
+    {
+        $this->jetonReinitialisation = $empreinte;
+        $this->jetonExpiration = \DateTime::createFromInterface($expiration);
+
+        return $this;
+    }
+
+    /**
+     * Un jeton ne sert qu'une fois : il est effacé dès qu'il a rempli son
+     * office, ou dès que la demande est abandonnée.
+     */
+    public function oublierReinitialisation(): static
+    {
+        $this->jetonReinitialisation = null;
+        $this->jetonExpiration = null;
+
+        return $this;
+    }
+
+    public function reinitialisationEnCours(?\DateTimeInterface $date = null): bool
+    {
+        return null !== $this->jetonReinitialisation
+            && null !== $this->jetonExpiration
+            && $this->jetonExpiration > ($date ?? new \DateTime());
+    }
+
     public function getCommandes(): Collection
     {
         return $this->commandes;

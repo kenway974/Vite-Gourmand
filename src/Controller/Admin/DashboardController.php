@@ -2,10 +2,16 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Allergene;
 use App\Entity\Commande;
+use App\Entity\Horaire;
+use App\Entity\Ingredient;
 use App\Entity\Menu;
 use App\Entity\Plat;
+use App\Entity\Regime;
+use App\Entity\Theme;
 use App\Entity\Utilisateur;
+use App\Entity\ZoneLivraison;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,8 +35,14 @@ class DashboardController extends AbstractController
         return $this->render('admin/dashboard.html.twig', [
             'nbMenus' => $em->getRepository(Menu::class)->count([]),
             'nbPlats' => $em->getRepository(Plat::class)->count([]),
+            'nbIngredients' => $em->getRepository(Ingredient::class)->count([]),
+            'nbAllergenes' => $em->getRepository(Allergene::class)->count([]),
+            'nbThemes' => $em->getRepository(Theme::class)->count([]),
+            'nbRegimes' => $em->getRepository(Regime::class)->count([]),
             'nbUtilisateurs' => $em->getRepository(Utilisateur::class)->count([]),
             'nbCommandes' => $em->getRepository(Commande::class)->count([]),
+            'nbHoraires' => $em->getRepository(Horaire::class)->count([]),
+            'nbZones' => $em->getRepository(ZoneLivraison::class)->count([]),
         ]);
     }
 }

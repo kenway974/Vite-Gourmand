@@ -40,4 +40,28 @@ class ThemeRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    /**
+     * Liste des thèmes avec leur nombre de menus.
+     *
+     * Les compteurs sont calculés par la base en une seule requête. Les lire
+     * depuis les collections dans le gabarit déclencherait une requête par
+     * ligne affichée (N+1), et le coût grandirait avec le catalogue.
+     *
+     * COUNT(DISTINCT) est indispensable : sans lui, plusieurs jointures sur
+     * des collections différentes multiplient les lignes entre elles et
+     * faussent les totaux.
+     *
+     * @return array<int, array{entite: Theme, nbMenus: int}>
+     */
+    public function findPourAdministration(): array
+    {
+        return $this->createQueryBuilder('t')
+            ->select('t AS entite', 'COUNT(DISTINCT m.id) AS nbMenus')
+            ->leftJoin('t.menus', 'm')
+            ->groupBy('t.id')
+            ->orderBy('t.libelle', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

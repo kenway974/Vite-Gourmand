@@ -63,10 +63,15 @@ security:
         # sinon la connexion et l'inscription deviennent impossibles.
         - { path: ^/connexion$, roles: PUBLIC_ACCESS }
         - { path: ^/inscription$, roles: PUBLIC_ACCESS }
+        # S'adresse par définition à quelqu'un qui ne peut pas se connecter.
+        - { path: ^/mot-de-passe-oublie, roles: PUBLIC_ACCESS }
 
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/employe, roles: ROLE_EMPLOYE }
         - { path: ^/mon-compte, roles: ROLE_USER }
+        - { path: ^/commander, roles: ROLE_USER }
+        - { path: ^/commande/, roles: ROLE_USER }
+        - { path: ^/mes-commandes, roles: ROLE_USER }
 
 when@test:
     security:

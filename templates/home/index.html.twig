@@ -6,4 +6,14 @@
     {# Gabarit provisoire — à remplacer par la vraie page d'accueil (phase front-end). #}
     <h1>Vite &amp; Gourmand</h1>
     <p>Votre traiteur en ligne.</p>
+
+    {% if notation.moyenne is not null %}
+        {# « Vérifiés » : seuls les avis validés par un employé sont comptés. #}
+        <p>
+            <strong>{{ notation.moyenne|number_format(1, ',') }} sur 5</strong>
+            — {{ notation.nombre }} avis vérifié{{ notation.nombre > 1 ? 's' : '' }}
+        </p>
+    {% endif %}
+
+    <p><a href="{{ path('app_catalogue') }}">Découvrir nos menus</a></p>
 {% endblock %}

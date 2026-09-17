@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes commandes — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Mes commandes</h1>
+
+    {% if commandes is empty %}
+        <p>Vous n'avez pas encore passé de commande.</p>
+    {% else %}
+        <table>
+            <caption>Vos commandes ({{ commandes|length }})</caption>
+            <thead>
+                <tr>
+                    <th scope="col">N°</th>
+                    <th scope="col">Menu</th>
+                    <th scope="col">Prestation</th>
+                    <th scope="col">Convives</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for commande in commandes %}
+                    <tr>
+                        <th scope="row"><a href="{{ path('app_client_commande', {id: commande.id}) }}">{{ commande.id }}</a></th>
+                        <td>{{ commande.menu.titre }}</td>
+                        <td>{{ commande.datePrestation|date('d/m/Y') }}</td>
+                        <td>{{ commande.nbPersonnes }}</td>
+                        <td>{{ commande.prixTotal|number_format(2, ',', ' ') }} €</td>
+                        <td>{{ commande.statut }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

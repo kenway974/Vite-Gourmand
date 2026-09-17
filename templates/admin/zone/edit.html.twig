@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier {{ element.commune }} — Administration{% endblock %}
+
+{% block body %}
+    <h1>{{ element.libelle }}</h1>
+
+    {{ include('admin/zone/_form.html.twig', {bouton: 'Enregistrer les modifications'}) }}
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Suivi des commandes — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Suivi des commandes</h1>
+
+    <nav aria-label="Filtrer par statut">
+        <ul>
+            <li><a href="{{ path('app_employe_commandes') }}">Toutes</a></li>
+            {% for statut in statuts %}
+                <li>
+                    <a href="{{ path('app_employe_commandes', {statut: statut}) }}"
+                       {% if statut == statutActif %}aria-current="page"{% endif %}>{{ statut }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+
+    {% if commandes is empty %}
+        <p>Aucune commande{% if statutActif %} au statut « {{ statutActif }} »{% endif %}.</p>
+    {% else %}
+        <table>
+            <caption>Commandes ({{ commandes|length }})</caption>
+            <thead>
+                <tr>
+                    <th scope="col">N°</th>
+                    <th scope="col">Prestation</th>
+                    <th scope="col">Menu</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">Convives</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Statut</th>
+                    <th scope="col">Faire avancer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for commande in commandes %}
+                    <tr>
+                        <th scope="row">{{ commande.id }}</th>
+                        <td>{{ commande.datePrestation|date('d/m/Y') }} {{ commande.heureLivraison|date('H\\hi') }}</td>
+                        <td>{{ commande.menu.titre }}</td>
+                        <td>{{ commande.utilisateur.prenom }} {{ commande.utilisateur.nom }}</td>
+                        <td>{{ commande.nbPersonnes }}</td>
+                        <td>{{ commande.prixTotal|number_format(2, ',', ' ') }} €</td>
+                        <td>{{ commande.statut }}</td>
+                        <td>
+                            {% if commande.estTerminee %}
+                                <span class="sr-only">Commande terminée</span>—
+                            {% else %}
+                                <form method="post" action="{{ path('app_employe_commande_statut', {id: commande.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('statut-commande-' ~ commande.id) }}">
+                                    <label for="statut-{{ commande.id }}" class="sr-only">Nouveau statut de la commande {{ commande.id }}</label>
+                                    <select name="statut" id="statut-{{ commande.id }}">
+                                        {% for statut in statuts %}
+                                            <option value="{{ statut }}" {% if statut == commande.statut %}selected{% endif %}>{{ statut }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="motif-{{ commande.id }}" class="sr-only">Motif</label>
+                                    <input type="text" name="motif" id="motif-{{ commande.id }}" placeholder="Motif (facultatif)">
+                                    <button type="submit">Enregistrer</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

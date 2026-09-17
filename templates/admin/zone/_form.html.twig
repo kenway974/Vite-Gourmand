@@ -1,0 +1,10 @@
+{{ form_errors(form) }}
+
+{{ form_start(form) }}
+    {{ form_row(form.commune) }}
+    {{ form_row(form.codePostal) }}
+    {{ form_row(form.frais) }}
+    <button type="submit">{{ bouton }}</button>
+{{ form_end(form) }}
+
+<p><a href="{{ path('app_admin_zone_index') }}">Retour à la liste</a></p>

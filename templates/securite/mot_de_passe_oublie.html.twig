@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mot de passe oublié — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Mot de passe oublié</h1>
+
+    <p>
+        Indiquez l'adresse e-mail de votre compte. Si elle nous est connue,
+        vous recevrez un lien pour choisir un nouveau mot de passe.
+    </p>
+
+    {{ form_errors(form) }}
+
+    {{ form_start(form) }}
+        {{ form_row(form.email) }}
+        <button type="submit">Envoyer le lien</button>
+    {{ form_end(form) }}
+
+    <p><a href="{{ path('app_login') }}">Retour à la connexion</a></p>
+{% endblock %}
