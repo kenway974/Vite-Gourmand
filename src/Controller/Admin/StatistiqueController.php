@@ -32,7 +32,7 @@ class StatistiqueController extends AbstractController
         $disponible = $depot->disponible();
 
         return $this->render('admin/statistiques.html.twig', [
-            'aujourdhui' => $calculateur->calculer(),
+            'cumul' => $calculateur->calculer(),
             // Une base de statistiques injoignable ne doit pas fermer l'écran :
             // les chiffres du jour restent lisibles, seul l'historique manque.
             'historique' => $disponible ? $depot->historique(15) : [],

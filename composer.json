@@ -54,7 +54,10 @@
             "symfony/runtime": true
         },
         "bump-after-update": true,
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "ext-mongodb": "2.4.0"
+        }
     },
     "autoload": {
         "psr-4": {

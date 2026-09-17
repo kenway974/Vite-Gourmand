@@ -260,4 +260,8 @@ Le calcul lit MySQL, seul dépositaire des commandes. MongoDB conserve les
 relevés successifs : c'est l'accumulation dans le temps qu'une requête sur
 MySQL ne saurait pas reconstituer après coup.
 
+Les totaux affichés sont **cumulés depuis la première commande**, sans filtre
+de date : chaque relevé est un cumul, et l'activité d'une période se lit dans
+l'écart entre deux relevés.
+
 Réservé à `ROLE_ADMIN`.

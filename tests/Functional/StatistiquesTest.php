@@ -9,6 +9,10 @@ use App\Entity\Theme;
 use App\Entity\Utilisateur;
 use App\Statistiques\CalculateurStatistiques;
 use App\Statistiques\DepotEnMemoire;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 use App\Statistiques\DepotStatistiques;
 use App\Statistiques\FabriqueDepot;
 use App\Statistiques\Instantane;
@@ -208,8 +212,27 @@ class StatistiquesTest extends WebTestCase
     {
         $depot = static::getContainer()->get(DepotStatistiques::class);
 
-        self::assertTrue($depot->disponible());
+        // Utilisable — aucun appel ne jette — mais il annonce franchement
+        // qu'il ne conserve rien : la mémoire du processus n'est pas un
+        // stockage. C'est ce qui fait échouer la commande de nuit au lieu de
+        // lui faire annoncer un relevé enregistré qui n'aura pas survécu.
+        self::assertFalse($depot->disponible());
         self::assertNull($depot->dernier());
+        self::assertSame([], $depot->historique());
+    }
+
+    public function testLaCommandeDeReleveEchoueQuandRienNeConserve(): void
+    {
+        $sortie = new BufferedOutput();
+
+        $code = (new Application(static::createKernel()))
+            ->find('app:calculer-statistiques')
+            ->run(new ArrayInput([]), $sortie);
+
+        // Sans stockage joignable, la commande doit refuser et le dire, plutôt
+        // que de rendre SUCCESS sur un relevé volatil.
+        self::assertSame(Command::FAILURE, $code);
+        self::assertStringContainsString('injoignable', $sortie->fetch());
     }
 
     // --- Accès ------------------------------------------------------------

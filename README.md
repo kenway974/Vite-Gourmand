@@ -127,11 +127,16 @@ MongoDB pour les statistiques**. Les relevés d'activité y sont conservés sous
 forme de documents : chacun porte une ventilation par menu de taille variable,
 et ajouter une métrique ne demandera aucune migration.
 
-L'extension PHP est nécessaire :
+L'extension PHP est nécessaire **en production** :
 
 ```bash
 sudo apt install php8.4-mongodb     # ou : pecl install mongodb
 ```
+
+Elle n'est pas nécessaire pour installer le projet ni pour lancer les tests :
+`composer.json` la déclare dans `config.platform`, ce qui laisse
+`composer install` aboutir sur une machine qui ne l'a pas. Sans elle, le code
+qui parle à Mongo n'est simplement jamais instancié.
 
 Les relevés sont produits par une commande, à faire tourner une fois par nuit :
 
@@ -140,9 +145,13 @@ php bin/console app:calculer-statistiques
 ```
 
 Si `MONGODB_URL` est vide ou l'extension absente, l'application démarre quand
-même : les chiffres du jour restent calculés depuis MySQL, seul l'historique
-est indisponible. C'est ce qui permet de développer et de lancer les tests
-sans serveur NoSQL.
+même : les totaux restent calculés depuis MySQL, seul l'historique est
+indisponible. C'est ce qui permet de développer et de lancer les tests sans
+serveur NoSQL.
+
+Dans ce cas le dépôt de secours **annonce franchement qu'il ne conserve rien** :
+la page d'administration l'affiche, et `app:calculer-statistiques` échoue au
+lieu de rendre un succès sur un relevé qui n'aura pas survécu au processus.
 
 ---
 

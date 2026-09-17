@@ -7,22 +7,25 @@
 
     {% if not depotDisponible %}
         <p role="alert">
-            La base de statistiques est injoignable : les chiffres ci-dessous
-            restent à jour, mais l'historique n'est pas consultable.
+            Aucune base de statistiques n'est joignable : les totaux ci-dessous
+            restent à jour, mais l'historique n'est pas consultable et les
+            relevés de nuit ne sont conservés nulle part.
         </p>
     {% endif %}
 
-    <h2>Aujourd'hui</h2>
+    <h2>Depuis l'ouverture</h2>
+
+    <p>Totaux cumulés sur l'ensemble des commandes, recalculés à l'instant.</p>
 
     <dl>
         <dt>Chiffre d'affaires</dt>
-        <dd><strong>{{ aujourdhui.chiffreAffaires }} €</strong> sur {{ aujourdhui.nbCommandesLivrees }} commande(s) livrée(s)</dd>
+        <dd><strong>{{ cumul.chiffreAffaires }} €</strong> sur {{ cumul.nbCommandesLivrees }} commande(s) livrée(s)</dd>
 
         <dt>Commandes</dt>
-        <dd>{{ aujourdhui.nbCommandes }} hors annulations</dd>
+        <dd>{{ cumul.nbCommandes }} hors annulations</dd>
 
         <dt>Panier moyen</dt>
-        <dd>{{ aujourdhui.panierMoyen }} €</dd>
+        <dd>{{ cumul.panierMoyen }} €</dd>
     </dl>
 
     {# Le chiffre d'affaires ne compte que le livré : une commande en attente
@@ -31,7 +34,7 @@
 
     <h2>Par menu</h2>
 
-    {% if aujourdhui.parMenu is empty %}
+    {% if cumul.parMenu is empty %}
         <p>Aucune commande enregistrée.</p>
     {% else %}
         <table>
@@ -44,7 +47,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for ligne in aujourdhui.parMenu %}
+                {% for ligne in cumul.parMenu %}
                     <tr>
                         <th scope="row">{{ ligne.menu }}</th>
                         <td>{{ ligne.commandes }}</td>
@@ -58,7 +61,7 @@
     <h2>Répartition par statut</h2>
 
     <ul>
-        {% for statut, nombre in aujourdhui.parStatut %}
+        {% for statut, nombre in cumul.parStatut %}
             <li>{{ statut|capitalize }} : {{ nombre }}</li>
         {% endfor %}
     </ul>
@@ -73,7 +76,10 @@
         </p>
     {% else %}
         <table>
-            <caption>Les {{ historique|length }} derniers relevés</caption>
+            <caption>
+                Les {{ historique|length }} derniers relevés. Chaque ligne est un
+                cumul : l'activité d'une période se lit dans l'écart entre deux lignes.
+            </caption>
             <thead>
                 <tr>
                     <th scope="col">Relevé le</th>
