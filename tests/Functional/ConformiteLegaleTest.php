@@ -89,6 +89,88 @@ class ConformiteLegaleTest extends WebTestCase
 
     // --- Effacement RGPD --------------------------------------------------
 
+    public function testLeDernierAdministrateurNeSeVoitPasProposerLEffacement(): void
+    {
+        $admin = $this->utilisateur('admin@example.fr');
+        $admin->setRoles(['ROLE_ADMIN']);
+        $this->em->flush();
+
+        $this->connecter('admin@example.fr');
+        $crawler = $this->client->request('GET', '/mon-compte/suppression');
+
+        self::assertSelectorTextContains('body', 'dernier administrateur actif');
+        self::assertCount(0, $crawler->filter('form button'), 'Le bouton ne doit pas être proposé.');
+    }
+
+    public function testLeServeurRefuseLEffacementDuDernierAdministrateur(): void
+    {
+        // Deux administrateurs : la page s'affiche donc avec son formulaire et
+        // son jeton. Le second est ensuite désactivé entre l'affichage et la
+        // soumission — exactement la course que le garde-fou serveur doit
+        // rattraper, une fois la page déjà ouverte.
+        $admin = $this->utilisateur('admin@example.fr');
+        $admin->setRoles(['ROLE_ADMIN']);
+        $second = $this->utilisateur('second@example.fr');
+        $second->setRoles(['ROLE_ADMIN']);
+        $this->em->flush();
+        $id = $admin->getId();
+
+        $this->connecter('admin@example.fr');
+        $crawler = $this->client->request('GET', '/mon-compte/suppression');
+        $formulaire = $crawler->filter('form button')->form();
+
+        // Le noyau a redémarré depuis setUp() : l'entité chargée plus haut est
+        // détachée, il faut la relire dans le gestionnaire courant.
+        $em = $this->em();
+        $em->getRepository(Utilisateur::class)
+            ->findOneBy(['email' => 'second@example.fr'])
+            ->setActif(false);
+        $em->flush();
+
+        $this->client->submit($formulaire);
+        $this->client->followRedirect();
+
+        self::assertSelectorTextContains('body', 'dernier administrateur actif');
+
+        $this->em->clear();
+        self::assertFalse($this->em->getRepository(Utilisateur::class)->find($id)->estAnonymise());
+    }
+
+    public function testLeServeurRefuseLEffacementAvecUneCommandeEnCours(): void
+    {
+        // Même principe : la commande est passée après l'ouverture de la page.
+        $client = $this->utilisateur('camille@example.fr');
+        $id = $client->getId();
+
+        $this->connecter('camille@example.fr');
+        $crawler = $this->client->request('GET', '/mon-compte/suppression');
+        $formulaire = $crawler->filter('form button')->form();
+
+        $this->commande($this->em()->getRepository(Utilisateur::class)->find($id), Commande::EN_PREPARATION);
+
+        $this->client->submit($formulaire);
+        $this->client->followRedirect();
+
+        // Sans coordonnées, la prestation ne peut plus être livrée : le droit
+        // à l'effacement cède devant l'exécution du contrat (art. 17-3-b).
+        self::assertSelectorTextContains('body', 'commandes en cours');
+
+        $this->em->clear();
+        self::assertFalse($this->em->getRepository(Utilisateur::class)->find($id)->estAnonymise());
+    }
+
+    public function testUneCommandeEnCoursMasqueLeBouton(): void
+    {
+        $client = $this->utilisateur('camille@example.fr');
+        $this->commande($client, Commande::EN_PREPARATION);
+
+        $this->connecter('camille@example.fr');
+        $crawler = $this->client->request('GET', '/mon-compte/suppression');
+
+        self::assertSelectorTextContains('body', 'commande en cours');
+        self::assertCount(0, $crawler->filter('form button'));
+    }
+
     public function testLEffacementRetireLIdentiteEtGardeLesCommandes(): void
     {
         $client = $this->utilisateur('camille@example.fr');
@@ -179,11 +261,36 @@ class ConformiteLegaleTest extends WebTestCase
 
     // --- Pages d'erreur ---------------------------------------------------
 
-    public function testUnePageIntrouvableEstPresentable(): void
+    public function testLesGabaritsDErreurSontReellementRendus(): void
     {
-        $this->client->request('GET', '/cette-page-nexiste-pas');
+        // En mode debug, Symfony affiche sa page de mise au point et ne rend
+        // jamais nos gabarits : le test ne prouverait rien. On redémarre donc
+        // le noyau sans debug, comme en production.
+        self::ensureKernelShutdown();
+        $client = static::createClient(['debug' => false]);
+
+        $client->request('GET', '/cette-page-nexiste-pas');
 
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        self::assertStringContainsString(
+            "Cette page n'existe pas",
+            $client->getResponse()->getContent(),
+        );
+    }
+
+    public function testLesPagesDErreurNInterrogentPasLaBase(): void
+    {
+        self::ensureKernelShutdown();
+        $client = static::createClient(['debug' => false]);
+
+        $crawler = $client->request('GET', '/cette-page-nexiste-pas');
+
+        // Le cas d'usage principal d'une erreur, c'est une base injoignable :
+        // une page qui en dépend lèverait sa propre exception. On vérifie donc
+        // qu'elle n'hérite pas du gabarit qui interroge les horaires.
+        self::assertCount(0, $crawler->filter('footer'), 'La page d\'erreur ne doit pas porter le pied de page.');
+        self::assertCount(0, $crawler->filter('nav'), 'La page d\'erreur ne doit pas porter la navigation.');
+        self::assertStringNotContainsString('Horaires', $client->getResponse()->getContent());
     }
 
     // --- Fixtures ---------------------------------------------------------
@@ -195,19 +302,31 @@ class ConformiteLegaleTest extends WebTestCase
         }
     }
 
-    private function commande(Utilisateur $client): void
+    /**
+     * Le gestionnaire d'entités du noyau courant.
+     *
+     * Chaque requête du client redémarre le noyau : celui obtenu dans setUp()
+     * devient périmé, et les entités qu'il portait sont détachées.
+     */
+    private function em(): EntityManagerInterface
+    {
+        return static::getContainer()->get(EntityManagerInterface::class);
+    }
+
+    private function commande(Utilisateur $client, string $statut = Commande::LIVREE): void
     {
         $theme = (new Theme())->setLibelle('Bistrot');
         $regime = (new Regime())->setLibelle('Standard');
-        $this->em->persist($theme);
-        $this->em->persist($regime);
+        $em = $this->em();
+        $em->persist($theme);
+        $em->persist($regime);
 
         $menu = (new Menu())
             ->setTitre('Buffet')->setDescription('Une formule.')
             ->setTheme($theme)->setRegime($regime)
             ->setPrixMin('40.00')->setNbMinPersonnes(10)
             ->setDelaiCommandeJours(3)->setStock(20);
-        $this->em->persist($menu);
+        $em->persist($menu);
 
         $commande = (new Commande())
             ->setUtilisateur($client)->setMenu($menu)
@@ -216,9 +335,9 @@ class ConformiteLegaleTest extends WebTestCase
             ->setHeureLivraison(new \DateTime('12:00'))
             ->setLieuLivraison('Bordeaux')->setCodePostalLivraison('33000')
             ->setNbPersonnes(10)->setPrixTotal('400.00')
-            ->setStatut(Commande::LIVREE)->setPretMateriel(false);
-        $this->em->persist($commande);
-        $this->em->flush();
+            ->setStatut($statut)->setPretMateriel(false);
+        $em->persist($commande);
+        $em->flush();
     }
 
     private function utilisateur(string $email): Utilisateur

@@ -1,24 +1,21 @@
-{% extends 'base.html.twig' %}
+{% extends 'bundles/TwigBundle/Exception/_socle.html.twig' %}
 
 {% block title %}Accès refusé — Vite &amp; Gourmand{% endblock %}
 
 {% block body %}
     <h1>Vous n'avez pas accès à cette page</h1>
 
+    {# Pas de app.user ici : lire l'utilisateur le recharge depuis la base,
+       ce qu'une page d'erreur ne doit pas se permettre. #}
     <p>
-        {% if app.user %}
-            Votre compte ne dispose pas des droits nécessaires. Si vous pensez
-            que c'est une erreur, écrivez-nous.
-        {% else %}
-            Cette page demande d'être connecté.
-        {% endif %}
+        Soit cette page demande d'être connecté, soit votre compte ne dispose
+        pas des droits nécessaires. Si vous pensez que c'est une erreur,
+        écrivez-nous.
     </p>
 
     <ul>
-        {% if not app.user %}
-            <li><a href="{{ path('app_login') }}">Se connecter</a></li>
-        {% endif %}
-        <li><a href="{{ path('app_home') }}">Retour à l'accueil</a></li>
-        <li><a href="{{ path('app_contact') }}">Nous écrire</a></li>
+        <li><a href="/connexion">Se connecter</a></li>
+        <li><a href="/">Retour à l'accueil</a></li>
+        <li><a href="/contact">Nous écrire</a></li>
     </ul>
 {% endblock %}

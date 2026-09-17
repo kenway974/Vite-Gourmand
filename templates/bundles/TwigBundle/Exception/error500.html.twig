@@ -1,11 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'bundles/TwigBundle/Exception/_socle.html.twig' %}
 
 {% block title %}Une erreur est survenue — Vite &amp; Gourmand{% endblock %}
 
 {% block body %}
     <h1>Une erreur est survenue de notre côté</h1>
 
-    {# Aucun détail technique : le message d'exception peut révéler la
+    {# Aucun détail technique : un message d'exception peut révéler la
        structure de la base ou des chemins de fichiers. #}
     <p>
         Le problème vient de nous, pas de vous. Il a été enregistré et nous
@@ -18,7 +18,7 @@
     </p>
 
     <ul>
-        <li><a href="{{ path('app_home') }}">Retour à l'accueil</a></li>
-        <li><a href="{{ path('app_contact') }}">Nous décrire ce qui s'est passé</a></li>
+        <li><a href="/">Retour à l'accueil</a></li>
+        <li><a href="/contact">Nous décrire ce qui s'est passé</a></li>
     </ul>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'bundles/TwigBundle/Exception/_socle.html.twig' %}
 
 {% block title %}Page introuvable — Vite &amp; Gourmand{% endblock %}
 
@@ -11,9 +11,11 @@
         fois sa période passée.
     </p>
 
+    {# Adresses en dur et non path() : le routeur peut faire partie de ce qui
+       est cassé, et une page d'erreur ne doit dépendre de rien. #}
     <ul>
-        <li><a href="{{ path('app_catalogue') }}">Voir nos menus</a></li>
-        <li><a href="{{ path('app_home') }}">Retour à l'accueil</a></li>
-        <li><a href="{{ path('app_contact') }}">Nous signaler le problème</a></li>
+        <li><a href="/menus">Voir nos menus</a></li>
+        <li><a href="/">Retour à l'accueil</a></li>
+        <li><a href="/contact">Nous signaler le problème</a></li>
     </ul>
 {% endblock %}
