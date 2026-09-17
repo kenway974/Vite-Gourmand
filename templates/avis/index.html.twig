@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Avis clients — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Avis clients</h1>
+
+    {% if notation.moyenne %}
+        {# Même formulation qu'en accueil et sur la fiche menu : « vérifiés »
+           dit que l'avis vient d'un client dont la commande a été livrée, pas
+           d'un visiteur de passage. #}
+        <p>
+            <strong>{{ notation.moyenne }} sur 5</strong>
+            — {{ notation.nombre }} avis vérifié{{ notation.nombre > 1 ? 's' : '' }}
+        </p>
+    {% endif %}
+
+    <p>
+        Seuls les avis de clients ayant reçu leur commande sont publiés, après
+        relecture par notre équipe.
+    </p>
+
+    {% if avis|length == 0 %}
+        {# Deux situations distinctes : aucun avis du tout, ou une page vide
+           parce que l'adresse demandée dépasse le nombre de pages. Renvoyer
+           « aucun avis » dans le second cas laisserait croire le site vide. #}
+        {% if total > 0 %}
+            <p>
+                Cette page ne contient aucun avis.
+                <a href="{{ path('app_avis') }}">Revenir au premier avis</a>.
+            </p>
+        {% else %}
+            <p>Aucun avis n'a encore été publié.</p>
+        {% endif %}
+    {% else %}
+        <ul>
+            {% for un_avis in avis %}
+                <li>
+                    <article>
+                        <p>
+                            <strong>{{ un_avis.note }} / 5</strong> —
+                            {{ un_avis.utilisateur.prenom }}
+                            {%- if un_avis.contexte %} · {{ un_avis.contexte }}{% endif %}
+                        </p>
+
+                        <p>
+                            Menu :
+                            <a href="{{ path('app_catalogue_menu', {id: un_avis.commande.menu.id}) }}">
+                                {{ un_avis.commande.menu.titre }}
+                            </a>
+                        </p>
+
+                        <p>{{ un_avis.commentaire }}</p>
+
+                        <p>
+                            <time datetime="{{ un_avis.dateCreation|date('Y-m-d') }}">
+                                Publié le {{ un_avis.dateCreation|date('d/m/Y') }}
+                            </time>
+                        </p>
+                    </article>
+                </li>
+            {% endfor %}
+        </ul>
+
+        {% if nbPages > 1 %}
+            <nav aria-label="Pagination des avis">
+                <p>Page {{ page }} sur {{ nbPages }}</p>
+                <ul>
+                    {% if page > 1 %}
+                        <li><a href="{{ path('app_avis', app.request.query.all|merge({page: page - 1})) }}"
+                               rel="prev">Page précédente</a></li>
+                    {% endif %}
+                    {% if page < nbPages %}
+                        <li><a href="{{ path('app_avis', app.request.query.all|merge({page: page + 1})) }}"
+                               rel="next">Page suivante</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% endif %}
+
+    <p><a href="{{ path('app_catalogue') }}">Découvrir nos menus</a></p>
+{% endblock %}

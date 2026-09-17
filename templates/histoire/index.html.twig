@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Notre histoire — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    <h1>Notre histoire</h1>
+
+    {# Les valeurs entre crochets ne peuvent venir que du client : année de
+       création, parcours, effectif. Elles restent visibles plutôt que
+       remplies au hasard, pour qu'on ne puisse pas les oublier — même
+       convention que les mentions légales. #}
+
+    <p>
+        Vite &amp; Gourmand est une maison de traiteur bordelaise fondée par
+        Julie et José, qui exercent le métier depuis vingt-cinq ans. L'atelier
+        se tient rue des Faussets, à quelques pas du Grand Théâtre.
+    </p>
+
+    <h2>Deux parcours, une table</h2>
+
+    <p>
+        [Parcours de Julie à compléter : formation, maisons traversées, ce qui
+        l'a menée à la cuisine de réception.]
+    </p>
+
+    <p>
+        [Parcours de José à compléter.]
+    </p>
+
+    <p>
+        Ils se sont associés en [année à compléter] pour monter une maison qui
+        leur ressemble : une cuisine de produit, servie chez les gens.
+    </p>
+
+    <h2>Ce que nous faisons</h2>
+
+    <p>
+        Nous composons des menus complets pour les réceptions privées et
+        professionnelles : mariages, anniversaires, repas d'entreprise,
+        cocktails. Chaque menu est pensé pour un nombre de convives et se
+        commande au moins <strong>quinze jours à l'avance</strong>, le temps de
+        sourcer les produits et d'organiser le service.
+    </p>
+
+    <p>
+        Le prix annoncé est un prix par personne. Il comprend la livraison, le
+        dressage sur place et la reprise du matériel dans Bordeaux
+        intra-muros. Au-delà, un supplément s'applique selon la commune ; il
+        est affiché avant la validation de la commande, jamais après.
+    </p>
+
+    <h2>Nos produits</h2>
+
+    <p>
+        [Fournisseurs et circuits d'approvisionnement à compléter : marchés,
+        producteurs, éventuelles certifications.]
+    </p>
+
+    <p>
+        Les allergènes de chaque plat sont indiqués sur la fiche du menu, et
+        les régimes alimentaires sont proposés en filtre au catalogue. Si une
+        contrainte n'y figure pas, écrivez-nous : nous répondons sous
+        quarante-huit heures ouvrées.
+    </p>
+
+    <h2>L'équipe</h2>
+
+    <p>
+        [Composition de l'équipe à compléter : cuisine, service, nombre de
+        personnes en renfort selon les réceptions.]
+    </p>
+
+    <h2>Nous rencontrer</h2>
+
+    <p>
+        L'atelier se visite sur rendez-vous, 12 rue des Faussets à Bordeaux.
+        Pour un devis ou une question, passez par
+        <a href="{{ path('app_contact') }}">le formulaire de contact</a> ou
+        appelez le 05 56 00 00 00.
+    </p>
+
+    <p>
+        <a href="{{ path('app_catalogue') }}">Voir nos menus</a>
+        —
+        <a href="{{ path('app_avis') }}">Lire les avis de nos clients</a>
+    </p>
+{% endblock %}
