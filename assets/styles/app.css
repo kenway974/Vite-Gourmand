@@ -1,11 +1,1420 @@
+/*
+ * Vite & Gourmand — socle de styles
+ *
+ * Source : docs/charte-graphique/ (direction « Grand Théâtre ») et les six
+ * maquettes de docs/maquettes/.
+ *
+ * Organisation du fichier :
+ *   1. Polices          — hébergées au dépôt, aucune requête vers un tiers
+ *   2. Jetons           — couleurs, typographie, espacements, rayons
+ *   3. Socle            — remise à zéro et éléments HTML nus
+ *   4. Mise en page     — conteneur, bandes, grilles
+ *   5. Typographie      — titres, surtitres, signature, ornement
+ *   6. Composants       — en-tête, pied, boutons, cartes, formulaires…
+ *   7. Utilitaires      — accessibilité
+ *
+ * Les gabarits n'écrivent aucune couleur en dur : tout passe par les jetons
+ * de la section 2. Changer une teinte de la charte se fait à un seul endroit.
+ */
+
+/* ========================================================================
+   1. POLICES
+   Hébergées au dépôt plutôt que servies par Google : une page publique ne
+   doit pas envoyer l'adresse IP de ses visiteurs à un tiers, surtout quand
+   le site publie par ailleurs une politique de confidentialité.
+   Inter et Playfair Display sont des polices variables : un seul fichier
+   couvre toutes les graisses.
+   ======================================================================== */
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('../fonts/inter-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+        U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+        U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('../fonts/inter-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+        U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+        U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 400 900;
+    font-display: swap;
+    src: url('../fonts/playfair-display-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+        U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+        U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 400 900;
+    font-display: swap;
+    src: url('../fonts/playfair-display-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+        U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+        U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/cormorant-garamond-italic-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+        U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+        U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Cormorant Garamond';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/cormorant-garamond-italic-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+        U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+        U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* ========================================================================
+   2. JETONS
+   ======================================================================== */
+
+:root {
+    /* --- Couleurs de la charte ------------------------------------------ */
+    --lie-de-vin: #5e1f2e;
+    --grenat: #40131f;
+    --laiton: #a9803e;
+    --pierre: #ede3d2;
+    --calcaire: #faf6ef;
+    --encre: #241e1b;
+
+    /*
+     * Deux déclinaisons du laiton, et ce n'est pas de la coquetterie.
+     *
+     * Le laiton de la charte tient 3,34:1 sur calcaire — mesuré, pas supposé.
+     * C'est en dessous des 4,5:1 exigés par le RGAA pour du texte, d'où la
+     * règle « jamais en texte fin sur fond clair ». Il reste donc réservé aux
+     * filets, bordures et badges.
+     *
+     * Pour les surtitres, qui sont bien du texte, il faut une teinte qui
+     * passe :
+     *   --laiton-fonce sur calcaire : 5,84:1   sur pierre : 4,94:1   → AA
+     *   --laiton-clair sur lie      : 5,59:1   sur grenat : 7,19:1   → AA/AAA
+     */
+    --laiton-fonce: #775c24;
+    --laiton-clair: #d4a85f;
+    --laiton-vif: #e0b771;
+
+    /* Teintes dérivées, pour les fonds discrets et les filets. */
+    --encre-doux: #6b625c;
+    --filet: #e2d7c4;
+    --filet-sombre: rgb(255 255 255 / 14%);
+    --blanc: #fff;
+
+    /* --- Rôles ---------------------------------------------------------- */
+    --fond-page: var(--calcaire);
+    --fond-carte: var(--blanc);
+    --texte: var(--encre);
+    --texte-doux: var(--encre-doux);
+    --accent: var(--lie-de-vin);
+    --accent-fonce: var(--grenat);
+
+    /* --- Typographie ---------------------------------------------------- */
+    --titre: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --corps: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --accent-typo: 'Cormorant Garamond', Garamond, Georgia, serif;
+
+    /* Échelle fluide : la même variable sert du mobile au grand écran. */
+    --t-xs: 0.75rem;
+    --t-sm: 0.875rem;
+    --t-base: 1rem;
+    --t-md: 1.125rem;
+    --t-lg: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+    --t-xl: clamp(1.5rem, 1.25rem + 1.1vw, 2rem);
+    --t-2xl: clamp(1.875rem, 1.4rem + 2vw, 2.75rem);
+    --t-3xl: clamp(2.25rem, 1.5rem + 3.2vw, 3.75rem);
+
+    /* --- Espacements ---------------------------------------------------- */
+    --e-1: 0.25rem;
+    --e-2: 0.5rem;
+    --e-3: 0.75rem;
+    --e-4: 1rem;
+    --e-5: 1.5rem;
+    --e-6: 2rem;
+    --e-7: 3rem;
+    --e-8: clamp(3rem, 2rem + 4vw, 5.5rem);
+
+    /* --- Divers --------------------------------------------------------- */
+    --rayon: 4px;
+    --rayon-lg: 10px;
+    --rayon-plein: 999px;
+    --ombre: 0 1px 2px rgb(36 30 27 / 6%), 0 8px 24px rgb(36 30 27 / 8%);
+    --largeur: 1180px;
+    --largeur-texte: 68ch;
+    --transition: 150ms ease;
+}
+
+/* ========================================================================
+   3. SOCLE
+   ======================================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
 body {
-    background-color: skyblue;
+    margin: 0;
+    background-color: var(--fond-page);
+    color: var(--texte);
+    font-family: var(--corps);
+    font-size: var(--t-base);
+    line-height: 1.6;
+    /* Sur un écran clair, la graisse par défaut d'Inter paraît épaisse. */
+    -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    color: var(--accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+
+a:hover {
+    color: var(--accent-fonce);
 }
 
 /*
- * Accessibilité (RGAA).
- * .sr-only : texte réservé aux lecteurs d'écran, retiré de l'affichage sans
- * être masqué au sens de display:none, qui le rendrait aussi invisible pour eux.
+ * Un anneau de focus visible partout, y compris sur fond sombre.
+ * :focus-visible plutôt que :focus : la souris ne déclenche pas l'anneau,
+ * le clavier si.
+ */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.bande--sombre :focus-visible,
+.entete-site :focus-visible,
+.pied-site :focus-visible {
+    outline-color: var(--laiton-clair);
+}
+
+h1,
+h2,
+h3,
+h4 {
+    margin: 0 0 var(--e-4);
+    font-family: var(--titre);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    color: var(--accent);
+}
+
+h1 {
+    font-size: var(--t-3xl);
+}
+
+h2 {
+    font-size: var(--t-2xl);
+}
+
+h3 {
+    font-size: var(--t-lg);
+}
+
+h4 {
+    font-size: var(--t-md);
+}
+
+p,
+ul,
+ol,
+dl {
+    margin: 0 0 var(--e-4);
+}
+
+ul,
+ol {
+    padding-left: 1.25em;
+}
+
+/*
+ * Les listes qui servent de navigation ou de grille ne doivent pas porter
+ * de puces : elles restent des listes pour les lecteurs d'écran, sans le
+ * décor.
+ */
+.liste-nue {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid var(--filet);
+    margin: var(--e-6) 0;
+}
+
+blockquote {
+    margin: 0;
+}
+
+::selection {
+    background: var(--lie-de-vin);
+    color: var(--calcaire);
+}
+
+/* ========================================================================
+   4. MISE EN PAGE
+   ======================================================================== */
+
+.conteneur {
+    width: 100%;
+    max-width: var(--largeur);
+    margin-inline: auto;
+    padding-inline: var(--e-5);
+}
+
+.conteneur--etroit {
+    max-width: 780px;
+}
+
+/*
+ * Les bandes découpent la page en pleine largeur, comme les maquettes :
+ * un aplat de couleur d'un bord à l'autre, le contenu recentré à
+ * l'intérieur.
+ */
+.bande {
+    padding-block: var(--e-8);
+}
+
+.bande--pierre {
+    background: var(--pierre);
+}
+
+.bande--blanche {
+    background: var(--blanc);
+}
+
+.bande--serree {
+    padding-block: var(--e-7);
+}
+
+/*
+ * Bande sombre : dégradé grenat → lie-de-vin, plus une trame de fines
+ * diagonales. La trame est purement décorative, d'où le très faible
+ * contraste : elle ne doit jamais gêner la lecture du texte posé dessus.
+ */
+.bande--sombre {
+    position: relative;
+    background:
+        repeating-linear-gradient(
+            135deg,
+            rgb(255 255 255 / 3.5%) 0 1px,
+            transparent 1px 7px
+        ),
+        linear-gradient(120deg, var(--grenat) 0%, var(--lie-de-vin) 62%, var(--grenat) 100%);
+    color: var(--calcaire);
+}
+
+.bande--sombre h1,
+.bande--sombre h2,
+.bande--sombre h3,
+.bande--sombre h4,
+.entete-site h1,
+.entete-site h2,
+.entete-site h3,
+.entete-site h4,
+.pied-site h3,
+.pied-site h4 {
+    color: var(--calcaire);
+}
+
+.bande--sombre a {
+    color: var(--laiton-clair);
+}
+
+.bande--sombre a:hover {
+    color: var(--blanc);
+}
+
+.bande--sombre .texte-doux,
+.entete-site .texte-doux,
+.pied-site .texte-doux {
+    color: rgb(250 246 239 / 72%);
+}
+
+/* Grilles réutilisables. `auto-fit` évite une colonne vide en fin de ligne. */
+.grille {
+    display: grid;
+    gap: var(--e-5);
+}
+
+.grille--2 {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.grille--3 {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.grille--4 {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+/* Catalogue et fiche menu : une colonne latérale et le contenu. */
+.grille--aside {
+    grid-template-columns: minmax(200px, 250px) 1fr;
+    gap: var(--e-7);
+    align-items: start;
+}
+
+.grille--contenu-aside {
+    grid-template-columns: 1fr minmax(260px, 340px);
+    gap: var(--e-7);
+    align-items: start;
+}
+
+@media (max-width: 820px) {
+    .grille--aside,
+    .grille--contenu-aside {
+        grid-template-columns: 1fr;
+    }
+}
+
+.pile > * + * {
+    margin-top: var(--e-4);
+}
+
+/* ========================================================================
+   5. TYPOGRAPHIE
+   ======================================================================== */
+
+/*
+ * Surtitre : la petite ligne en capitales espacées au-dessus des titres
+ * (« LA CARTE », « CE QU'ON AIME FAIRE »). En laiton foncé sur fond clair
+ * pour rester lisible, en laiton clair sur fond sombre.
+ */
+.surtitre {
+    display: block;
+    margin-bottom: var(--e-3);
+    font-family: var(--corps);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--laiton-fonce);
+}
+
+.bande--sombre .surtitre,
+.entete-site .surtitre {
+    color: var(--laiton-clair);
+}
+
+/*
+ * Signature : Cormorant italique. La charte la réserve à « Julie & José »
+ * et aux intitulés de menus. Ne pas l'employer ailleurs.
+ */
+.signature {
+    font-family: var(--accent-typo);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--t-xl);
+    line-height: 1.25;
+    color: var(--laiton-fonce);
+}
+
+.bande--sombre .signature,
+.entete-site .signature,
+.pied-site .signature {
+    color: var(--laiton-clair);
+}
+
+.titre-section {
+    max-width: 22ch;
+}
+
+.chapeau {
+    max-width: var(--largeur-texte);
+    font-size: var(--t-md);
+    color: var(--texte-doux);
+}
+
+.bande--sombre .chapeau,
+.entete-site .chapeau {
+    color: rgb(250 246 239 / 82%);
+}
+
+.texte-doux {
+    color: var(--texte-doux);
+}
+
+.petit {
+    font-size: var(--t-sm);
+}
+
+.tres-petit {
+    font-size: var(--t-xs);
+}
+
+/* Ornement « · ◆ · » des séparateurs de la fiche menu. */
+.ornement {
+    display: flex;
+    align-items: center;
+    gap: var(--e-2);
+    margin-block: var(--e-6);
+    color: var(--laiton);
+    font-size: var(--t-xs);
+    line-height: 1;
+}
+
+.ornement::before,
+.ornement::after {
+    content: '·';
+}
+
+.ornement span {
+    font-size: 0.6em;
+}
+
+/* ========================================================================
+   6. COMPOSANTS
+   ======================================================================== */
+
+/* --- En-tête ---------------------------------------------------------- */
+
+.entete-site {
+    position: relative;
+    z-index: 2;
+    background:
+        repeating-linear-gradient(
+            135deg,
+            rgb(255 255 255 / 3.5%) 0 1px,
+            transparent 1px 7px
+        ),
+        linear-gradient(120deg, var(--grenat) 0%, var(--lie-de-vin) 70%, var(--grenat) 100%);
+    color: var(--calcaire);
+}
+
+/* L'en-tête se fond dans la bannière quand elle le suit immédiatement. */
+.entete-site + .banniere {
+    margin-top: -1px;
+}
+
+.entete-site__barre {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--e-5);
+    padding-block: var(--e-4);
+}
+
+.marque {
+    font-family: var(--titre);
+    font-size: var(--t-lg);
+    font-weight: 700;
+    color: var(--calcaire);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.marque:hover {
+    color: var(--blanc);
+}
+
+.nav-principale ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--e-5);
+}
+
+.nav-principale a {
+    font-size: var(--t-sm);
+    font-weight: 500;
+    color: var(--calcaire);
+    text-decoration: none;
+}
+
+.nav-principale a:hover {
+    color: var(--laiton-clair);
+}
+
+/*
+ * Lien de la page courante : signalé par la couleur ET par un filet, parce
+ * que la couleur seule ne suffit pas (RGAA 3.1).
+ */
+.nav-principale a[aria-current='page'] {
+    color: var(--laiton-clair);
+    border-bottom: 1px solid currentcolor;
+    padding-bottom: 2px;
+}
+
+/* Bascule du menu mobile : masquée tant que le rail tient en largeur. */
+.bascule-menu {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--filet-sombre);
+    border-radius: var(--rayon);
+    color: var(--calcaire);
+    cursor: pointer;
+}
+
+.bascule-menu:hover {
+    border-color: var(--laiton-clair);
+}
+
+/* --- Bannière --------------------------------------------------------- */
+
+.banniere {
+    padding-block: clamp(3.5rem, 2rem + 7vw, 7rem);
+    text-align: center;
+}
+
+.banniere__contenu {
+    max-width: 620px;
+    margin-inline: auto;
+}
+
+.banniere h1 {
+    margin-bottom: var(--e-3);
+}
+
+.banniere .signature {
+    margin-bottom: var(--e-4);
+}
+
+.banniere__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--e-3);
+    margin-top: var(--e-6);
+}
+
+/* --- Boutons ---------------------------------------------------------- */
+
+.bouton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--e-2);
+    padding: 0.7em 1.6em;
+    border: 1px solid transparent;
+    border-radius: var(--rayon);
+    font-family: var(--corps);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--transition), border-color var(--transition),
+        color var(--transition);
+}
+
+/*
+ * Bouton principal : lie-de-vin au repos, grenat au survol. Le texte est en
+ * calcaire dans les deux cas — 11,4:1 puis 14,7:1, donc AAA à chaque état,
+ * ce qu'exige la charte.
+ */
+.bouton--principal {
+    background: var(--lie-de-vin);
+    color: var(--calcaire);
+}
+
+.bouton--principal:hover {
+    background: var(--grenat);
+    color: var(--calcaire);
+}
+
+/*
+ * Bouton laiton : l'appel principal des bandes sombres.
+ *
+ * Le laiton de la charte ne convient PAS comme fond de bouton : du texte
+ * grenat dessus ne tient que 4,39:1, sous le seuil de 4,5:1 — mesuré. D'où
+ * le laiton clair au repos (7,19:1) et un laiton plus vif au survol
+ * (8,40:1). Le survol éclaircit au lieu d'assombrir, faute de quoi le
+ * contraste retomberait.
+ */
+.bouton--laiton {
+    background: var(--laiton-clair);
+    color: var(--grenat);
+}
+
+.bouton--laiton:hover {
+    background: var(--laiton-vif);
+    color: var(--grenat);
+}
+
+.bouton--contour {
+    background: transparent;
+    border-color: var(--lie-de-vin);
+    color: var(--lie-de-vin);
+}
+
+.bouton--contour:hover {
+    background: var(--lie-de-vin);
+    color: var(--calcaire);
+}
+
+/* Contour clair : sur fond sombre uniquement. */
+.bouton--contour-clair {
+    background: transparent;
+    border-color: rgb(250 246 239 / 55%);
+    color: var(--calcaire);
+}
+
+.bouton--contour-clair:hover {
+    background: var(--calcaire);
+    border-color: var(--calcaire);
+    color: var(--grenat);
+}
+
+/* Pilule « Espace client » de l'en-tête. */
+.bouton--pilule {
+    border-radius: var(--rayon-plein);
+    padding-inline: 1.4em;
+}
+
+.bouton--large {
+    width: 100%;
+}
+
+.bouton--majuscules {
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: var(--t-xs);
+}
+
+.bouton[disabled],
+.bouton[aria-disabled='true'] {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* Lien souligné discret, pour « Réinitialiser les filtres ». */
+.lien-discret {
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    font-size: var(--t-sm);
+    color: var(--laiton-fonce);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.lien-discret:hover {
+    color: var(--accent);
+}
+
+/* --- Cartes ----------------------------------------------------------- */
+
+.carte {
+    background: var(--fond-carte);
+    border: 1px solid var(--filet);
+    border-radius: var(--rayon-lg);
+    padding: var(--e-5);
+}
+
+.carte--plate {
+    box-shadow: none;
+}
+
+.carte--relief {
+    border-color: transparent;
+    box-shadow: var(--ombre);
+}
+
+/*
+ * Carte menu du catalogue : visuel, catégorie, titre et prix sur la même
+ * ligne, description, puis une ligne de contraintes séparée par un filet.
+ */
+.carte-menu {
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+    border: 0;
+    padding: 0;
+}
+
+.carte-menu__visuel {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--rayon-lg);
+    /* Fond de remplacement tant qu'aucune photo n'est fournie. */
+    background: linear-gradient(135deg, #d9c4a8 0%, #cbb193 55%, #e6d6c0 100%);
+}
+
+.carte-menu__visuel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carte-menu__corps {
+    padding-top: var(--e-4);
+}
+
+.carte-menu__ligne {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--e-4);
+}
+
+.carte-menu__titre {
+    margin: 0;
+    font-size: var(--t-lg);
+}
+
+.carte-menu__titre a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.carte-menu__titre a:hover {
+    text-decoration: underline;
+}
+
+.carte-menu__prix {
+    font-family: var(--titre);
+    font-weight: 700;
+    font-size: var(--t-md);
+    color: var(--accent);
+    white-space: nowrap;
+}
+
+.carte-menu__prix small {
+    font-family: var(--corps);
+    font-weight: 400;
+    font-size: var(--t-xs);
+    color: var(--texte-doux);
+}
+
+.carte-menu__description {
+    margin: var(--e-2) 0 var(--e-3);
+    font-family: var(--accent-typo);
+    font-style: italic;
+    font-size: var(--t-md);
+    color: var(--texte);
+}
+
+.carte-menu__meta {
+    margin: 0;
+    padding-top: var(--e-3);
+    border-top: 1px solid var(--filet);
+    font-size: var(--t-xs);
+    color: var(--texte-doux);
+}
+
+/* Carte photo de l'accueil : badge en haut, légende en bas sur voile sombre. */
+.carte-photo {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: var(--rayon-lg);
+    background: linear-gradient(135deg, #d9c4a8 0%, #cbb193 55%, #e6d6c0 100%);
+    color: var(--blanc);
+    text-decoration: none;
+}
+
+.carte-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carte-photo__legende {
+    position: absolute;
+    inset: auto 0 0;
+    padding: var(--e-5) var(--e-4) var(--e-4);
+    /* Voile : le texte blanc doit rester lisible quelle que soit la photo. */
+    background: linear-gradient(to top, rgb(36 30 27 / 88%), rgb(36 30 27 / 0%));
+    font-size: var(--t-sm);
+    font-weight: 500;
+}
+
+/* --- Puces et étiquettes ---------------------------------------------- */
+
+/* Puce posée sur une image : fond blanc opaque, texte encre. */
+.puce {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--e-2);
+    padding: 0.35em 0.8em;
+    border-radius: var(--rayon-plein);
+    background: var(--blanc);
+    color: var(--encre);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.carte-photo .puce {
+    position: absolute;
+    top: var(--e-3);
+    left: var(--e-3);
+}
+
+/* Étiquette d'état : bordure laiton, fond transparent. */
+.etiquette {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--e-2);
+    padding: 0.25em 0.7em;
+    border: 1px solid var(--laiton);
+    border-radius: var(--rayon-plein);
+    font-size: var(--t-xs);
+    font-weight: 500;
+    color: var(--laiton-fonce);
+}
+
+.etiquette--accent {
+    border-color: var(--lie-de-vin);
+    color: var(--lie-de-vin);
+}
+
+.etiquette--sourde {
+    border-color: var(--filet);
+    color: var(--texte-doux);
+}
+
+/* Filtre actif : étiquette avec son bouton de retrait. */
+.filtre-actif {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--e-2);
+    font-size: var(--t-sm);
+    color: var(--texte-doux);
+}
+
+/* --- Formulaires ------------------------------------------------------ */
+
+.champ {
+    margin-bottom: var(--e-4);
+}
+
+.champ label,
+.etiquette-champ {
+    display: block;
+    margin-bottom: var(--e-2);
+    font-size: var(--t-sm);
+    font-weight: 500;
+    color: var(--texte);
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='tel'],
+input[type='search'],
+input[type='number'],
+input[type='date'],
+input[type='time'],
+input[type='url'],
+select,
+textarea {
+    width: 100%;
+    padding: 0.65em 0.85em;
+    background: var(--blanc);
+    border: 1px solid var(--filet);
+    border-radius: var(--rayon);
+    font-family: var(--corps);
+    font-size: var(--t-base);
+    color: var(--texte);
+    transition: border-color var(--transition);
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+    border-color: var(--laiton);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--lie-de-vin);
+}
+
+textarea {
+    min-height: 8rem;
+    resize: vertical;
+}
+
+/* Champ de recherche à filet simple, comme la colonne de filtres. */
+.champ-recherche {
+    display: flex;
+    align-items: center;
+    gap: var(--e-2);
+    border-bottom: 1px solid var(--filet);
+    padding-bottom: var(--e-2);
+}
+
+.champ-recherche input[type='search'] {
+    border: 0;
+    background: transparent;
+    padding: 0;
+}
+
+.champ-recherche input[type='search']:focus {
+    outline: none;
+}
+
+.champ-recherche:focus-within {
+    border-bottom-color: var(--lie-de-vin);
+}
+
+/* Cases et boutons radio : une taille confortable au doigt. */
+.choix {
+    display: flex;
+    align-items: center;
+    gap: var(--e-3);
+    padding-block: var(--e-2);
+    font-size: var(--t-sm);
+    cursor: pointer;
+}
+
+.choix input {
+    width: 1.05rem;
+    height: 1.05rem;
+    margin: 0;
+    accent-color: var(--lie-de-vin);
+    flex: none;
+}
+
+/* Groupe de filtres de la colonne latérale. */
+.groupe-filtres {
+    margin-bottom: var(--e-6);
+    border: 0;
+    padding: 0;
+}
+
+.groupe-filtres legend {
+    padding: 0;
+    margin-bottom: var(--e-2);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--laiton-fonce);
+}
+
+/*
+ * Message d'erreur de validation : jamais la couleur seule. Le texte dit
+ * ce qui ne va pas, et le champ reçoit aria-invalid côté gabarit.
+ */
+.erreur-champ {
+    display: block;
+    margin-top: var(--e-2);
+    font-size: var(--t-sm);
+    font-weight: 500;
+    color: #9a1d2e;
+}
+
+input[aria-invalid='true'],
+select[aria-invalid='true'],
+textarea[aria-invalid='true'] {
+    border-color: #9a1d2e;
+}
+
+.aide-champ {
+    display: block;
+    margin-top: var(--e-1);
+    font-size: var(--t-xs);
+    color: var(--texte-doux);
+}
+
+/* --- Messages flash --------------------------------------------------- */
+
+.flash {
+    display: flex;
+    gap: var(--e-3);
+    max-width: var(--largeur);
+    margin: var(--e-5) auto 0;
+    padding: var(--e-4) var(--e-5);
+    border: 1px solid var(--filet);
+    border-left: 3px solid var(--laiton);
+    border-radius: var(--rayon);
+    background: var(--blanc);
+    font-size: var(--t-sm);
+}
+
+.flash-success {
+    border-left-color: #2f6b45;
+}
+
+.flash-error,
+.flash-danger {
+    border-left-color: #9a1d2e;
+}
+
+.flash-warning {
+    border-left-color: var(--laiton);
+}
+
+/* --- Tableaux --------------------------------------------------------- */
+
+/*
+ * Les 37 écrans d'administration sont des tableaux : ils héritent tous de
+ * ce style, sans classe à poser.
+ */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--t-sm);
+}
+
+caption {
+    margin-bottom: var(--e-3);
+    text-align: left;
+    font-size: var(--t-sm);
+    color: var(--texte-doux);
+}
+
+th,
+td {
+    padding: var(--e-3) var(--e-3);
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--filet);
+}
+
+thead th {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--texte-doux);
+    border-bottom-color: var(--laiton);
+}
+
+tbody tr:hover {
+    background: rgb(169 128 62 / 6%);
+}
+
+/* Sur petit écran, le tableau défile plutôt que de déborder de la page. */
+.tableau-defilant {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* --- Pagination ------------------------------------------------------- */
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--e-2);
+    margin-top: var(--e-7);
+}
+
+.pagination ul {
+    display: flex;
+    align-items: center;
+    gap: var(--e-2);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination a,
+.pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding-inline: var(--e-2);
+    border-radius: var(--rayon-plein);
+    font-size: var(--t-sm);
+    text-decoration: none;
+    color: var(--texte);
+}
+
+.pagination a:hover {
+    background: var(--pierre);
+}
+
+.pagination [aria-current='page'] {
+    background: var(--lie-de-vin);
+    color: var(--calcaire);
+    font-weight: 600;
+}
+
+/* --- Notation --------------------------------------------------------- */
+
+.notation {
+    display: flex;
+    align-items: baseline;
+    gap: var(--e-3);
+}
+
+.notation__valeur {
+    font-family: var(--titre);
+    font-size: var(--t-2xl);
+    font-weight: 700;
+    color: var(--laiton-fonce);
+    line-height: 1;
+}
+
+.bande--sombre .notation__valeur,
+.entete-site .notation__valeur {
+    color: var(--laiton-clair);
+}
+
+.notation__detail {
+    font-size: var(--t-sm);
+    color: var(--texte-doux);
+}
+
+.bande--sombre .notation__detail,
+.entete-site .notation__detail {
+    color: rgb(250 246 239 / 72%);
+}
+
+/* --- Témoignages ------------------------------------------------------ */
+
+.temoignage {
+    padding-right: var(--e-5);
+}
+
+.temoignage__texte {
+    font-family: var(--accent-typo);
+    font-style: italic;
+    font-size: var(--t-md);
+    line-height: 1.5;
+}
+
+.temoignage__auteur {
+    margin: var(--e-4) 0 var(--e-1);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.temoignage__meta {
+    margin: 0;
+    font-size: var(--t-xs);
+    color: var(--texte-doux);
+}
+
+.bande--sombre .temoignage__meta,
+.entete-site .temoignage__meta {
+    color: rgb(250 246 239 / 60%);
+}
+
+/* Séparateur vertical entre témoignages, sur grand écran seulement. */
+@media (min-width: 821px) {
+    .temoignages > * + * {
+        border-left: 1px solid var(--filet-sombre);
+        padding-left: var(--e-5);
+    }
+}
+
+/* --- Liste numérotée -------------------------------------------------- */
+
+/*
+ * Les blocs « 01 / 02 / 03 » de l'accueil et de la fiche menu. Le numéro
+ * est décoratif : il est déjà porté par l'ordre de la liste, donc marqué
+ * aria-hidden côté gabarit.
+ */
+.liste-numerotee {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: etape;
+}
+
+.liste-numerotee > li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--e-4);
+    padding-block: var(--e-5);
+    border-top: 1px solid var(--filet);
+}
+
+.liste-numerotee > li:last-child {
+    border-bottom: 1px solid var(--filet);
+}
+
+.liste-numerotee__numero {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--laiton-fonce);
+}
+
+.liste-numerotee h3 {
+    margin-bottom: var(--e-2);
+    font-family: var(--corps);
+    font-size: var(--t-base);
+    font-weight: 600;
+    color: var(--texte);
+}
+
+.liste-numerotee p {
+    margin: 0;
+    font-size: var(--t-sm);
+    color: var(--texte-doux);
+}
+
+/* --- Bloc statistique ------------------------------------------------- */
+
+.stat__valeur {
+    font-family: var(--titre);
+    font-size: var(--t-xl);
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.1;
+}
+
+.stat__libelle {
+    font-size: var(--t-xs);
+    color: var(--texte-doux);
+}
+
+/* --- Pied de page ----------------------------------------------------- */
+
+.pied-site {
+    background: var(--grenat);
+    color: var(--calcaire);
+    padding-block: var(--e-7) var(--e-5);
+    margin-top: var(--e-8);
+}
+
+/* Une bande sombre juste avant le pied : pas de double respiration. */
+.bande--sombre + .pied-site {
+    margin-top: 0;
+}
+
+.pied-site a {
+    color: rgb(250 246 239 / 88%);
+    text-decoration: none;
+}
+
+.pied-site a:hover {
+    color: var(--laiton-clair);
+    text-decoration: underline;
+}
+
+.pied-site h2 {
+    font-family: var(--corps);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--laiton-clair);
+    margin-bottom: var(--e-4);
+}
+
+.pied-site__colonnes {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(auto-fit, minmax(170px, 1fr));
+    gap: var(--e-6);
+}
+
+.pied-site__marque {
+    font-family: var(--titre);
+    font-size: var(--t-lg);
+    font-weight: 700;
+    margin-bottom: var(--e-1);
+}
+
+.pied-site dl {
+    margin: 0;
+    font-size: var(--t-sm);
+}
+
+.pied-site dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--e-4);
+    padding-block: var(--e-1);
+}
+
+.pied-site dt,
+.pied-site dd {
+    margin: 0;
+}
+
+.pied-site dd {
+    color: rgb(250 246 239 / 72%);
+    white-space: nowrap;
+}
+
+.pied-site__bas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--e-3);
+    margin-top: var(--e-6);
+    padding-top: var(--e-4);
+    border-top: 1px solid var(--filet-sombre);
+    font-size: var(--t-xs);
+    color: rgb(250 246 239 / 60%);
+}
+
+/* État d'ouverture : la pastille est décorative, le texte porte le sens. */
+.pastille {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: currentcolor;
+    margin-right: var(--e-2);
+}
+
+/* ========================================================================
+   7. UTILITAIRES
+   ======================================================================== */
+
+/*
+ * Texte réservé aux lecteurs d'écran : retiré de l'affichage sans être
+ * masqué au sens de display:none, qui le rendrait aussi invisible pour eux.
  */
 .sr-only {
     position: absolute;
@@ -24,12 +1433,126 @@ body {
     position: absolute;
     left: -9999px;
     top: 0;
+    z-index: 100;
 }
 
 .skip-link:focus {
-    left: 0;
-    z-index: 100;
-    padding: 8px 16px;
-    background: #fff;
-    color: #000;
+    left: var(--e-4);
+    top: var(--e-4);
+    padding: var(--e-3) var(--e-4);
+    background: var(--calcaire);
+    color: var(--grenat);
+    border-radius: var(--rayon);
+    box-shadow: var(--ombre);
+}
+
+.centre {
+    text-align: center;
+}
+
+.entre-deux {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--e-4);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--e-3);
+    margin-top: var(--e-5);
+}
+
+/* ========================================================================
+   RESPONSIF
+   ======================================================================== */
+
+@media (max-width: 860px) {
+    /*
+     * La navigation passe derrière une bascule — mais seulement si le script
+     * a pris la main. C'est lui qui pose .menu-js sur la barre au démarrage.
+     *
+     * Sans JavaScript, ni .menu-js ni data-ouvert n'existent : le bouton
+     * reste masqué et la navigation s'affiche dépliée. Une page qui cache
+     * son menu derrière un bouton inerte n'est plus navigable du tout, et
+     * c'est exactement le scénario d'un script qui n'a pas chargé.
+     */
+    .menu-js .bascule-menu {
+        display: inline-flex;
+    }
+
+    .nav-principale {
+        width: 100%;
+        padding-bottom: var(--e-4);
+    }
+
+    .menu-js .nav-principale[data-ouvert='false'] {
+        display: none;
+    }
+
+    .nav-principale ul {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+    }
+
+    .nav-principale li {
+        border-top: 1px solid var(--filet-sombre);
+    }
+
+    .nav-principale a {
+        display: block;
+        padding-block: var(--e-3);
+        font-size: var(--t-base);
+    }
+
+    .entete-site__barre {
+        flex-wrap: wrap;
+    }
+
+    .entete-site__actions {
+        order: 2;
+    }
+
+    .pied-site__colonnes {
+        grid-template-columns: 1fr;
+    }
+
+    .temoignage {
+        padding-right: 0;
+    }
+}
+
+/* Respecter le réglage système de réduction des animations. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Impression : pas d'aplats sombres, pas de navigation. */
+@media print {
+    .entete-site,
+    .pied-site,
+    .bascule-menu,
+    .skip-link,
+    .pagination {
+        display: none;
+    }
+
+    body {
+        background: #fff;
+        color: #000;
+    }
+
+    .bande {
+        padding-block: 0;
+    }
 }

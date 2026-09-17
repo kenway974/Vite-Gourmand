@@ -16,7 +16,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        return $this->render('security/login.html.twig', [
+        return $this->render('securite/connexion.html.twig', [
             // Dernier e-mail saisi, pour le pré-remplir après un échec.
             'last_username' => $authenticationUtils->getLastUsername(),
             'error' => $authenticationUtils->getLastAuthenticationError(),
