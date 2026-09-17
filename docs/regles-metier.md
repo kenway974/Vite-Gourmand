@@ -237,3 +237,31 @@ sorte que deux effacements ne violent pas l'index unique.
 404, 403 et 500 personnalisées. La 500 n'affiche **aucun détail technique** :
 un message d'exception peut révéler la structure de la base ou des chemins de
 fichiers.
+
+---
+
+# Statistiques (cahier des charges § 4 et § 5)
+
+> « pour l'admin : […] voir les statistiques (commandes et chiffre d'affaires
+> par menu) » — « une base MySQL […] et une base MongoDB pour les statistiques »
+
+Deux comptes distincts, et la distinction n'est pas cosmétique :
+
+- le **chiffre d'affaires** ne retient que les commandes **livrées**. Une
+  commande en attente n'est pas un encaissement, une commande annulée ne le
+  sera jamais.
+- le **nombre de commandes** retient tout sauf les annulées : c'est l'activité,
+  pas la recette.
+- le **panier moyen** se rapporte aux seules commandes livrées. Diviser la
+  recette par des commandes qui n'ont rien rapporté la tirerait artificiellement
+  vers le bas.
+
+Le calcul lit MySQL, seul dépositaire des commandes. MongoDB conserve les
+relevés successifs : c'est l'accumulation dans le temps qu'une requête sur
+MySQL ne saurait pas reconstituer après coup.
+
+Les totaux affichés sont **cumulés depuis la première commande**, sans filtre
+de date : chaque relevé est un cumul, et l'activité d'une période se lit dans
+l'écart entre deux relevés.
+
+Réservé à `ROLE_ADMIN`.

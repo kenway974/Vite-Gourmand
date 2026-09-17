@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques — Administration{% endblock %}
+
+{% block body %}
+    <h1>Statistiques d'activité</h1>
+
+    {% if not depotDisponible %}
+        <p role="alert">
+            Aucune base de statistiques n'est joignable : les totaux ci-dessous
+            restent à jour, mais l'historique n'est pas consultable et les
+            relevés de nuit ne sont conservés nulle part.
+        </p>
+    {% endif %}
+
+    <h2>Depuis l'ouverture</h2>
+
+    <p>Totaux cumulés sur l'ensemble des commandes, recalculés à l'instant.</p>
+
+    <dl>
+        <dt>Chiffre d'affaires</dt>
+        <dd><strong>{{ cumul.chiffreAffaires }} €</strong> sur {{ cumul.nbCommandesLivrees }} commande(s) livrée(s)</dd>
+
+        <dt>Commandes</dt>
+        <dd>{{ cumul.nbCommandes }} hors annulations</dd>
+
+        <dt>Panier moyen</dt>
+        <dd>{{ cumul.panierMoyen }} €</dd>
+    </dl>
+
+    {# Le chiffre d'affaires ne compte que le livré : une commande en attente
+       n'est pas un encaissement, une commande annulée ne le sera jamais. #}
+    <p>Le chiffre d'affaires ne retient que les commandes livrées.</p>
+
+    <h2>Par menu</h2>
+
+    {% if cumul.parMenu is empty %}
+        <p>Aucune commande enregistrée.</p>
+    {% else %}
+        <table>
+            <caption>Commandes et chiffre d'affaires par menu</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Menu</th>
+                    <th scope="col">Commandes</th>
+                    <th scope="col">Chiffre d'affaires</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ligne in cumul.parMenu %}
+                    <tr>
+                        <th scope="row">{{ ligne.menu }}</th>
+                        <td>{{ ligne.commandes }}</td>
+                        <td>{{ ligne.chiffreAffaires }} €</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <h2>Répartition par statut</h2>
+
+    <ul>
+        {% for statut, nombre in cumul.parStatut %}
+            <li>{{ statut|capitalize }} : {{ nombre }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Évolution</h2>
+
+    {% if historique is empty %}
+        <p>
+            Aucun relevé enregistré. Les relevés sont produits par
+            <code>php bin/console app:calculer-statistiques</code>, à faire
+            tourner une fois par nuit.
+        </p>
+    {% else %}
+        <table>
+            <caption>
+                Les {{ historique|length }} derniers relevés. Chaque ligne est un
+                cumul : l'activité d'une période se lit dans l'écart entre deux lignes.
+            </caption>
+            <thead>
+                <tr>
+                    <th scope="col">Relevé le</th>
+                    <th scope="col">Commandes</th>
+                    <th scope="col">Chiffre d'affaires</th>
+                    <th scope="col">Panier moyen</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for releve in historique %}
+                    <tr>
+                        <th scope="row">{{ releve.releveLe|date('d/m/Y à H:i') }}</th>
+                        <td>{{ releve.nbCommandes }}</td>
+                        <td>{{ releve.chiffreAffaires }} €</td>
+                        <td>{{ releve.panierMoyen }} €</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <p><a href="{{ path('app_admin') }}">Retour à l'administration</a></p>
+{% endblock %}

@@ -10,6 +10,10 @@ parameters:
     # Adresse d'expédition des courriels transactionnels (réinitialisation de
     # mot de passe). Surchargeable par environnement via .env.local.
     app.courriel_expediteur: '%env(COURRIEL_EXPEDITEUR)%'
+    # Base NoSQL des relevés d'activité. Vide = dépôt en mémoire, l'application
+    # démarre quand même et seul l'historique manque.
+    app.mongodb_url: '%env(MONGODB_URL)%'
+    app.mongodb_base: '%env(MONGODB_BASE)%'
 
 services:
     # default configuration for services in *this* file
@@ -26,3 +30,11 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    # Le dépôt est choisi au démarrage : MongoDB s'il est joignable et que
+    # l'extension PHP est là, sinon un dépôt en mémoire.
+    App\Statistiques\DepotStatistiques:
+        factory: ['App\Statistiques\FabriqueDepot', 'creer']
+        arguments:
+            - '%app.mongodb_url%'
+            - '%app.mongodb_base%'
