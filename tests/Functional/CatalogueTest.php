@@ -323,8 +323,9 @@ class CatalogueTest extends WebTestCase
         self::assertStringContainsString('Parfait du début à la fin.', $texte);
         self::assertStringNotContainsString('encore en modération', $texte);
         self::assertStringNotContainsString('Commentaire refusé', $texte);
-        // Seul l'avis validé compte dans la moyenne.
-        self::assertStringContainsString('5 / 5 sur 1 avis', $texte);
+        // Seul l'avis validé compte dans la moyenne : en comptant les deux
+        // autres, notés 1, elle tomberait à 2,3 et la chaîne ne collerait plus.
+        self::assertStringContainsString('5 sur 5 — 1 avis vérifié', $texte);
     }
 
     public function testChaqueAvisAfficheLeContexteDeSaCommande(): void
@@ -415,7 +416,7 @@ class CatalogueTest extends WebTestCase
         // La moyenne globale garde toujours une décimale, comme « 4,8 sur 5 ».
         self::assertStringContainsString('3,0 sur 5', $this->client->request('GET', '/')->filter('body')->text());
         self::assertStringContainsString(
-            '5 / 5 sur 1 avis',
+            '5 sur 5 — 1 avis vérifié',
             $this->client->request('GET', '/menus/'.$premier->getId())->filter('body')->text(),
         );
     }

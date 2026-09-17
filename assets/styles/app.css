@@ -418,7 +418,7 @@ main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
 
 /* Catalogue et fiche menu : une colonne latérale et le contenu. */
 .grille--aside {
-    grid-template-columns: minmax(200px, 250px) 1fr;
+    grid-template-columns: minmax(240px, 290px) 1fr;
     gap: var(--e-7);
     align-items: start;
 }
@@ -835,8 +835,25 @@ main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
     object-fit: cover;
 }
 
+/*
+ * La vignette occupe toute la hauteur de sa case et pousse sa ligne de
+ * contraintes vers le bas. Sans cela, un titre qui passe sur deux lignes
+ * décale tout ce qui suit, et les pieds de vignette d'une même rangée ne
+ * s'alignent plus.
+ */
+.carte-menu {
+    height: 100%;
+}
+
 .carte-menu__corps {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
     padding-top: var(--e-4);
+}
+
+.carte-menu__meta {
+    margin-top: auto;
 }
 
 .carte-menu__ligne {
@@ -967,6 +984,181 @@ main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
     );
     font-size: var(--t-sm);
     font-weight: 500;
+}
+
+/* --- Blocs propres aux pages publiques -------------------------------- */
+
+/* Bannière d'une page intérieure : plus courte que celle de l'accueil, qui
+   doit, elle, tenir le premier écran. */
+.banniere--courte {
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.5rem);
+}
+
+/* État posé sur la vignette d'un menu non commandable. */
+.carte-menu__etat {
+    position: absolute;
+    top: var(--e-3);
+    left: var(--e-3);
+    padding: 0.35em 0.8em;
+    border-radius: var(--rayon);
+    background: var(--grenat);
+    color: var(--calcaire);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/*
+ * Colonne de filtres : elle reste visible pendant qu'on parcourt la liste.
+ *
+ * Elle se déclare conteneur de requête : ses paires de champs doivent se
+ * ranger selon la place dont elles disposent, pas selon la largeur de
+ * l'écran. La même colonne fait 290 px en aside sur grand écran et toute la
+ * largeur sur téléphone — une règle fondée sur la fenêtre se tromperait
+ * dans les deux cas.
+ */
+.filtres {
+    container-type: inline-size;
+}
+
+@media (min-width: 821px) {
+    .filtres {
+        position: sticky;
+        top: var(--e-5);
+    }
+}
+
+/* Sous 330 px de colonne, deux champs côte à côte tronquent leur contenu. */
+@container (max-width: 330px) {
+    .filtres .grille--paire {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Composition d'un menu : un visuel, puis le texte. */
+.plats > li + li {
+    margin-top: var(--e-7);
+    padding-top: var(--e-7);
+    border-top: 1px solid var(--filet);
+}
+
+.plat {
+    display: grid;
+    grid-template-columns: minmax(0, 13rem) 1fr;
+    gap: var(--e-5);
+    align-items: start;
+}
+
+.plat h3 {
+    margin-bottom: var(--e-2);
+}
+
+.plat__visuel {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--rayon-lg);
+    background: linear-gradient(135deg, #d9c4a8 0%, #cbb193 55%, #e6d6c0 100%);
+}
+
+.plat__visuel img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@media (max-width: 640px) {
+    .plat {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Ingrédients : une pastille ronde et son nom, comme sur la maquette. */
+.ingredients {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--e-4);
+    margin-top: var(--e-4);
+}
+
+.ingredients li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--e-2);
+    width: 4.5rem;
+    text-align: center;
+    font-size: var(--t-xs);
+    color: var(--texte-doux);
+}
+
+.ingredient__pastille {
+    position: relative;
+    display: block;
+    width: 3rem;
+    height: 3rem;
+    overflow: hidden;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d9c4a8 0%, #cbb193 100%);
+}
+
+.ingredient__pastille img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Encart de prix de la fiche menu. */
+.encart-prix__chiffres {
+    padding-bottom: var(--e-4);
+    margin-bottom: var(--e-4);
+    border-bottom: 1px solid var(--filet);
+    text-align: center;
+}
+
+/* Un filet sépare les deux chiffres, comme sur la maquette. */
+.encart-prix__chiffres > * + * {
+    border-left: 1px solid var(--filet);
+}
+
+.encart-prix__chiffres .stat__valeur small {
+    font-family: var(--corps);
+    font-size: var(--t-xs);
+    font-weight: 400;
+    color: var(--texte-doux);
+}
+
+.encart-prix__montant {
+    font-size: var(--t-2xl);
+}
+
+/* Le lien de commande produit par le partiel de disponibilité devient le
+   bouton d'appel de l'encart. */
+.encart-prix a[href^='/commander/'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: var(--e-4);
+    padding: 0.8em 1.6em;
+    border-radius: var(--rayon);
+    background: var(--lie-de-vin);
+    color: var(--calcaire);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.encart-prix a[href^='/commander/']:hover {
+    background: var(--grenat);
+    color: var(--calcaire);
 }
 
 /* --- Puces et étiquettes ---------------------------------------------- */
@@ -1380,10 +1572,17 @@ tbody tr:hover {
 
 .pagination {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: var(--e-2);
+    gap: var(--e-2) var(--e-4);
     margin-top: var(--e-7);
+}
+
+.pagination__compteur {
+    margin: 0;
+    font-size: var(--t-sm);
+    color: var(--texte-doux);
 }
 
 .pagination ul {

@@ -113,10 +113,19 @@
     route et parametres servent à reconstruire l'URL : les filtres en cours
     doivent survivre au changement de page, sinon tourner la page réinitialise
     la recherche.
+
+    Le compteur « Page X sur Y » est affiché et non réservé aux lecteurs
+    d'écran : sur une liste longue, savoir où l'on en est vaut autant pour
+    tout le monde.
+
+    intitule nomme la zone — une page peut en porter plusieurs, et « Pagination »
+    seul ne dirait pas laquelle.
 #}
-{% macro pagination(page, nbPages, route, parametres = {}) %}
+{% macro pagination(page, nbPages, route, parametres = {}, intitule = 'Pagination') %}
     {% if nbPages > 1 %}
-        <nav class="pagination" aria-label="Pagination">
+        <nav class="pagination" aria-label="{{ intitule }}">
+            <p class="pagination__compteur">Page {{ page }} sur {{ nbPages }}</p>
+
             <ul>
                 {% if page > 1 %}
                     <li>
