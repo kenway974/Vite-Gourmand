@@ -279,6 +279,48 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
             && $this->jetonExpiration > ($date ?? new \DateTime());
     }
 
+    /**
+     * Efface l'identité tout en conservant les commandes.
+     *
+     * Le droit à l'effacement (art. 17 RGPD) ne peut pas s'exercer par un
+     * simple DELETE : le code de commerce impose de conserver les pièces
+     * comptables dix ans, et les commandes en sont. Supprimer la ligne
+     * emporterait aussi les avis et le suivi, et laisserait la comptabilité
+     * avec des montants sans origine.
+     *
+     * On efface donc ce qui identifie, et on garde ce qui compte : le compte
+     * reste, vidé de toute donnée personnelle, désactivé, et ne peut plus
+     * servir à se connecter.
+     */
+    public function anonymiser(): static
+    {
+        // Un identifiant unique et stable, pour ne pas violer l'index sur
+        // l'e-mail si plusieurs comptes sont anonymisés.
+        $this->email = sprintf('anonyme-%s@invalide.local', bin2hex(random_bytes(8)));
+        $this->nom = 'Compte supprimé';
+        $this->prenom = 'Anonyme';
+        $this->gsm = null;
+        $this->adressePostale = null;
+        $this->actif = false;
+        $this->roles = [];
+
+        // Un mot de passe aléatoire que personne ne connaît : plus court
+        // qu'un vrai hachage, il rendrait la connexion impossible de toute
+        // façon, mais autant ne rien laisser deviner.
+        $this->password = bin2hex(random_bytes(32));
+
+        // Une réinitialisation en cours rouvrirait une porte sur un compte
+        // qu'on vient de fermer.
+        $this->oublierReinitialisation();
+
+        return $this;
+    }
+
+    public function estAnonymise(): bool
+    {
+        return str_ends_with((string) $this->email, '@invalide.local');
+    }
+
     public function getCommandes(): Collection
     {
         return $this->commandes;

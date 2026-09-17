@@ -106,6 +106,24 @@ class CommandeRepository extends ServiceEntityRepository
     }
 
     /**
+     * Commandes d'un client qui ne sont ni livrées ni annulées.
+     *
+     * Sert à refuser l'effacement d'un compte tant qu'une prestation est
+     * engagée : sans coordonnées, elle ne peut plus être livrée.
+     */
+    public function compterEnCoursPourClient(Utilisateur $client): int
+    {
+        return (int) $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->andWhere('c.utilisateur = :client')
+            ->andWhere('c.statut NOT IN (:termines)')
+            ->setParameter('client', $client)
+            ->setParameter('termines', Commande::STATUTS_FINAUX)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * Commandes encore à honorer vers un code postal donné.
      *
      * Sert à prévenir avant de retirer une zone de livraison : livrée ou
