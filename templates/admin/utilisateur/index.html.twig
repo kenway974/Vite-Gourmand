@@ -5,6 +5,8 @@
 {% block body %}
     <h1>Utilisateurs</h1>
 
+    <p><a href="{{ path('app_admin_utilisateur_new') }}">Créer un compte employé ou administrateur</a></p>
+
     <form method="get" action="{{ path('app_admin_utilisateur_index') }}">
         <label for="recherche">Rechercher un compte</label>
         <input type="search" name="recherche" id="recherche" value="{{ recherche }}" placeholder="Nom, prénom ou e-mail">

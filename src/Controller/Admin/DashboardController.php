@@ -26,7 +26,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  * pare-feu évoluerait.
  */
 #[Route('/admin')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_EMPLOYE')]
 class DashboardController extends AbstractController
 {
     #[Route('', name: 'app_admin', methods: ['GET'])]
