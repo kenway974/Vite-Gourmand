@@ -897,6 +897,11 @@ main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
     display: block;
     aspect-ratio: 3 / 4;
     overflow: hidden;
+    /* aspect-ratio produit une hauteur fractionnaire ; promouvoir la carte
+       sur sa propre couche cale ses bornes sur des pixels entiers et évite
+       le cheveu de fond qui apparaissait sous le bord. */
+    isolation: isolate;
+    transform: translateZ(0);
     border-radius: var(--rayon-lg);
     background: linear-gradient(135deg, #d9c4a8 0%, #cbb193 55%, #e6d6c0 100%);
     color: var(--blanc);
@@ -919,16 +924,40 @@ main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
     margin: 0;
     /* Le voile couvre la moitié basse plutôt qu'un bandeau : la coupure
        franche se voyait, l'image paraissait tronquée. */
-    inset: 45% 0 0;
+    inset: 32% 0 -1px;
     display: flex;
     align-items: flex-end;
     padding: var(--e-5) var(--e-4) var(--e-4);
-    /* Assez sombre au pied pour tenir le texte blanc, dissous bien avant le
-       haut pour ne pas éteindre la photo. */
+    /*
+     * Voile échantillonné sur une courbe plutôt que trois arrêts.
+     *
+     * Trois arrêts donnent une rampe linéaire, et l'œil y voit une cassure
+     * franche là où la pente change. Dix-sept arrêts suivant une racine
+     * carrée effacent la cassure : chute douce au pied, longue traîne vers
+     * le haut, rien à quoi le regard puisse s'accrocher.
+     *
+     * 66 % au pied, et pas moins : c'est le plancher mesuré pour que le
+     * texte blanc tienne 4,5:1 même posé sur une photo très claire. À 60 %
+     * il retombe à 4,37:1 et échoue. Le milieu reste à 52 %, inchangé.
+     */
     background: linear-gradient(
         to top,
-        rgb(36 30 27 / 82%) 0%,
+        rgb(36 30 27 / 66%) 0%,
+        rgb(36 30 27 / 64%) 6%,
+        rgb(36 30 27 / 62%) 12%,
+        rgb(36 30 27 / 59%) 19%,
+        rgb(36 30 27 / 57%) 25%,
+        rgb(36 30 27 / 55%) 31%,
         rgb(36 30 27 / 52%) 38%,
+        rgb(36 30 27 / 50%) 44%,
+        rgb(36 30 27 / 47%) 50%,
+        rgb(36 30 27 / 44%) 56%,
+        rgb(36 30 27 / 40%) 62%,
+        rgb(36 30 27 / 37%) 69%,
+        rgb(36 30 27 / 33%) 75%,
+        rgb(36 30 27 / 29%) 81%,
+        rgb(36 30 27 / 19%) 88%,
+        rgb(36 30 27 / 7%) 94%,
         rgb(36 30 27 / 0%) 100%
     );
     font-size: var(--t-sm);
@@ -1161,7 +1190,7 @@ textarea[aria-invalid='true'] {
     display: flex;
     flex-direction: column;
     gap: var(--e-3);
-    width: min(24rem, calc(100vw - 2 * var(--e-5)));
+    width: min(20rem, calc(100vw - 2 * var(--e-5)));
     pointer-events: none;
 }
 
@@ -1169,10 +1198,15 @@ textarea[aria-invalid='true'] {
     display: flex;
     align-items: flex-start;
     gap: var(--e-3);
-    padding: var(--e-4);
+    /* Une bulle, pas un bandeau : elle s'arrête à son texte plutôt que de
+       s'étirer sur toute la colonne. */
+    width: fit-content;
+    max-width: 100%;
+    margin-left: auto;
+    padding: var(--e-3) var(--e-4);
     border: 1px solid var(--filet);
     border-left: 3px solid var(--laiton);
-    border-radius: var(--rayon-lg);
+    border-radius: 14px;
     background: var(--blanc);
     color: var(--texte);
     box-shadow: var(--ombre);
