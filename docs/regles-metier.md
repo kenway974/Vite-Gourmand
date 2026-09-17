@@ -178,8 +178,22 @@ Confirme la saisonnalité ajoutée sur la branche `saisonnalite-menus` :
 
     Accueil · Nos menus · Notre histoire · Avis · Contact · Espace client
 
-« Notre histoire » et « Avis » sont deux pages publiques que rien ne couvre
-aujourd'hui.
+Toutes servies.
+
+**« Avis »** (`/avis`) liste les avis publiés, tous menus confondus, dix par
+page. Seuls les avis dont `statutValidation` vaut `validé` en sortent : un avis
+en attente de modération ou refusé ne doit jamais atteindre un visiteur. La
+moyenne affichée porte sur l'ensemble des avis publiés et non sur la page
+courante — une note qui changerait en tournant la page ne voudrait rien dire.
+
+Le tri se fait sur la date **puis sur l'identifiant** : sans ce second critère,
+deux avis déposés à la même seconde pourraient permuter d'une page à l'autre,
+et un même avis apparaître deux fois ou disparaître.
+
+**« Notre histoire »** (`/notre-histoire`) est une page éditoriale à contenu
+fixe. Ce que seul le client peut fournir — année d'association, parcours,
+fournisseurs, effectif — reste marqué `[à compléter]`, même convention que les
+mentions légales.
 
 ---
 

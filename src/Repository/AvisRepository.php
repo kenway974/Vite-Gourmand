@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Avis;
 use App\Entity\Menu;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -146,5 +147,41 @@ class AvisRepository extends ServiceEntityRepository
             'moyenne' => null !== $ligne['moyenne'] ? round((float) $ligne['moyenne'], 1) : null,
             'nombre' => (int) $ligne['nombre'],
         ];
+    }
+
+    /**
+     * Tous les avis publiés, du plus récent au plus ancien, page par page.
+     *
+     * L'auteur, la commande et son menu sont ramenés dans la même requête :
+     * le gabarit affiche pour chaque avis le prénom, le contexte du repas et
+     * le menu concerné. Sans ces jointures, une page de dix avis coûterait
+     * trente requêtes de plus.
+     *
+     * @return Paginator<Avis>
+     */
+    public function findPublies(int $page = 1, int $parPage = 10): Paginator
+    {
+        // Borné des deux côtés : un appelant qui passerait un numéro
+        // démesuré ferait déborder le calcul du décalage en flottant, que
+        // setFirstResult() refuse.
+        $page = max(1, min($page, 1_000_000));
+
+        $requete = $this->createQueryBuilder('a')
+            ->addSelect('u', 'c', 'm')
+            ->join('a.utilisateur', 'u')
+            ->join('a.commande', 'c')
+            ->join('c.menu', 'm')
+            ->andWhere('a.statutValidation = :valide')
+            ->setParameter('valide', Avis::VALIDE)
+            ->orderBy('a.dateCreation', 'DESC')
+            // Départage les avis déposés à la même seconde : sans second
+            // critère, leur ordre varierait d'une page à l'autre et un même
+            // avis pourrait apparaître deux fois ou pas du tout.
+            ->addOrderBy('a.id', 'DESC')
+            ->setFirstResult(($page - 1) * $parPage)
+            ->setMaxResults($parPage)
+            ->getQuery();
+
+        return new Paginator($requete, fetchJoinCollection: false);
     }
 }
