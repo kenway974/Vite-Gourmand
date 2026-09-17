@@ -121,19 +121,21 @@
                     <textarea id="demo-zone" rows="3"></textarea>
                 </div>
 
-                <fieldset class="groupe-filtres">
-                    <legend>Régime</legend>
-                    <label class="choix"><input type="checkbox" checked> Végétarien</label>
-                    <label class="choix"><input type="checkbox"> Vegan</label>
-                    <label class="choix"><input type="checkbox"> Sans gluten</label>
-                </fieldset>
+                <div class="grille grille--paire">
+                    <fieldset class="groupe-filtres">
+                        <legend>Régime</legend>
+                        <label class="choix"><input type="checkbox" checked> Végétarien</label>
+                        <label class="choix"><input type="checkbox"> Vegan</label>
+                        <label class="choix"><input type="checkbox"> Sans gluten</label>
+                    </fieldset>
 
-                <fieldset class="groupe-filtres">
-                    <legend>Nombre de convives</legend>
-                    <label class="choix"><input type="radio" name="demo-convives" checked> 4 et plus</label>
-                    <label class="choix"><input type="radio" name="demo-convives"> 6 et plus</label>
-                    <label class="choix"><input type="radio" name="demo-convives"> 20 et plus</label>
-                </fieldset>
+                    <fieldset class="groupe-filtres">
+                        <legend>Convives</legend>
+                        <label class="choix"><input type="radio" name="demo-convives" checked> 4 et plus</label>
+                        <label class="choix"><input type="radio" name="demo-convives"> 6 et plus</label>
+                        <label class="choix"><input type="radio" name="demo-convives"> 20 et plus</label>
+                    </fieldset>
+                </div>
 
                 <div class="champ-recherche">
                     <span aria-hidden="true">&#9906;</span>
@@ -143,6 +145,9 @@
             </div>
 
             <aside class="carte carte--relief">
+                {# Menu::image existe au schéma (nullable). Les fixtures ne le
+                   remplissent pas encore : ce bloc montre l'emplacement. #}
+                <div class="carte__visuel"></div>
                 {{ ui.surtitre('Encart') }}
                 <p class="stat__valeur">48 €</p>
                 <p class="stat__libelle">par personne, dès 6 convives</p>
@@ -213,6 +218,11 @@
         {{ ui.ornement() }}
 
         <h2>Messages</h2>
+        <p class="petit texte-doux">
+            En usage réel, ils s'affichent juste sous la barre de navigation,
+            avant le contenu de la page. Ils sont reproduits ici pour montrer
+            les trois variantes.
+        </p>
         <p class="flash flash-success" role="status">Votre demande a bien été enregistrée.</p>
         <p class="flash flash-error" role="status">Le code postal saisi n'est pas desservi.</p>
         <p class="flash flash-warning" role="status">Ce menu demande un délai de dix jours.</p>

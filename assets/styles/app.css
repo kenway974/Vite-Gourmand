@@ -300,6 +300,18 @@ blockquote {
    4. MISE EN PAGE
    ======================================================================== */
 
+/*
+ * Gouttière de repli.
+ *
+ * Un gabarit qui n'a pas encore reçu sa mise en page n'a pas de .conteneur,
+ * et son texte venait alors se coller au bord de l'écran — le titre de
+ * l'accueil était même tronqué. Cette marge le rend lisible en attendant ;
+ * .conteneur, qui porte sa propre gouttière, l'écrase dès qu'il est posé.
+ */
+main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
+    padding-inline: var(--e-5);
+}
+
 .conteneur {
     width: 100%;
     max-width: var(--largeur);
@@ -394,6 +406,16 @@ blockquote {
     grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
 }
 
+/*
+ * Paire qui ne se casse pas : contrairement à .grille--2, ces deux colonnes
+ * restent côte à côte même sur téléphone. Réservé à du contenu court —
+ * deux groupes de filtres, deux chiffres — jamais à des paragraphes.
+ */
+.grille--paire {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--e-5);
+}
+
 /* Catalogue et fiche menu : une colonne latérale et le contenu. */
 .grille--aside {
     grid-template-columns: minmax(200px, 250px) 1fr;
@@ -402,7 +424,7 @@ blockquote {
 }
 
 .grille--contenu-aside {
-    grid-template-columns: 1fr minmax(260px, 340px);
+    grid-template-columns: 1fr minmax(230px, 290px);
     gap: var(--e-7);
     align-items: start;
 }
@@ -766,6 +788,27 @@ blockquote {
 }
 
 /*
+ * Visuel en tête de carte. Il déborde du rembourrage pour toucher les bords,
+ * d'où les marges négatives : une image encadrée de blanc ferait vignette.
+ */
+.carte__visuel {
+    position: relative;
+    margin: calc(var(--e-5) * -1) calc(var(--e-5) * -1) var(--e-5);
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: var(--rayon-lg) var(--rayon-lg) 0 0;
+    background: linear-gradient(135deg, #d9c4a8 0%, #cbb193 55%, #e6d6c0 100%);
+}
+
+.carte__visuel img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/*
  * Carte menu du catalogue : visuel, catégorie, titre et prix sur la même
  * ligne, description, puis une ligne de contraintes séparée par un filet.
  */
@@ -861,6 +904,8 @@ blockquote {
 }
 
 .carte-photo img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -868,27 +913,45 @@ blockquote {
 
 .carte-photo__legende {
     position: absolute;
-    inset: auto 0 0;
+    /* Le voile couvre la moitié basse plutôt qu'un bandeau : la coupure
+       franche se voyait, l'image paraissait tronquée. */
+    inset: 45% 0 0;
+    display: flex;
+    align-items: flex-end;
     padding: var(--e-5) var(--e-4) var(--e-4);
-    /* Voile : le texte blanc doit rester lisible quelle que soit la photo. */
-    background: linear-gradient(to top, rgb(36 30 27 / 88%), rgb(36 30 27 / 0%));
+    /* Assez sombre au pied pour tenir le texte blanc, dissous bien avant le
+       haut pour ne pas éteindre la photo. */
+    background: linear-gradient(
+        to top,
+        rgb(36 30 27 / 82%) 0%,
+        rgb(36 30 27 / 52%) 38%,
+        rgb(36 30 27 / 0%) 100%
+    );
     font-size: var(--t-sm);
     font-weight: 500;
 }
 
 /* --- Puces et étiquettes ---------------------------------------------- */
 
-/* Puce posée sur une image : fond blanc opaque, texte encre. */
+/*
+ * Puce posée sur une image.
+ *
+ * Fond blanc opaque et non translucide : le texte doit rester lisible quelle
+ * que soit la photo dessous. Capitales espacées plutôt que gras, pour que la
+ * puce se lise comme une mention et non comme une pastille d'application.
+ */
 .puce {
     display: inline-flex;
     align-items: center;
     gap: var(--e-2);
-    padding: 0.35em 0.8em;
-    border-radius: var(--rayon-plein);
+    padding: 0.4em 0.9em;
+    border-radius: var(--rayon);
     background: var(--blanc);
     color: var(--encre);
     font-size: var(--t-xs);
     font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     line-height: 1.3;
 }
 
@@ -898,16 +961,23 @@ blockquote {
     left: var(--e-3);
 }
 
-/* Étiquette d'état : bordure laiton, fond transparent. */
+/*
+ * Étiquette d'état.
+ *
+ * Un filet à gauche plutôt qu'un contour fermé : les vignettes en portent
+ * souvent plusieurs, et autant de pilules cerclées faisaient bavard. Le
+ * filet suffit à séparer, le texte porte le sens.
+ */
 .etiquette {
     display: inline-flex;
     align-items: center;
     gap: var(--e-2);
-    padding: 0.25em 0.7em;
-    border: 1px solid var(--laiton);
-    border-radius: var(--rayon-plein);
+    padding-left: var(--e-3);
+    border-left: 2px solid var(--laiton);
     font-size: var(--t-xs);
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--laiton-fonce);
 }
 
@@ -1266,6 +1336,8 @@ tbody tr:hover {
     list-style: none;
     padding: 0;
     margin: 0;
+    /* Une ligne trop longue se lit mal : on borne comme un paragraphe. */
+    max-width: 58ch;
     counter-reset: etape;
 }
 
@@ -1351,10 +1423,21 @@ tbody tr:hover {
     margin-bottom: var(--e-4);
 }
 
+/*
+ * Colonnes explicites plutôt qu'un auto-fit : mêlé à une première colonne
+ * plus large, l'auto-fit ne trouvait qu'une seule répétition et tout
+ * s'empilait sur desktop.
+ */
 .pied-site__colonnes {
     display: grid;
-    grid-template-columns: 1.4fr repeat(auto-fit, minmax(170px, 1fr));
+    grid-template-columns: 1.6fr 1fr 1fr 1fr;
     gap: var(--e-6);
+}
+
+@media (max-width: 1000px) {
+    .pied-site__colonnes {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 .pied-site__marque {
