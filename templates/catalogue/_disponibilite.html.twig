@@ -1,9 +1,11 @@
+{% import 'composants/macros.html.twig' as ui %}
+
 {# Un menu reste affiché hors saison ou en rupture : c'est ce qui fait savoir
    au visiteur qu'on le propose. Seule la commandabilité change. #}
 {% set etat = menu.disponibilite %}
 
 {% if etat == 'disponible' %}
-    <p><a href="{{ path('app_commande_nouvelle', {id: menu.id}) }}">Commander ce menu</a></p>
+    <p>{{ ui.bouton('Commander ce menu', path('app_commande_nouvelle', {id: menu.id}), 'principal', {large: true}) }}</p>
 {% elseif etat == 'bientot' %}
     <p role="status">
         Bientôt disponible{% if menu.dateDebut %}, à partir du {{ menu.dateDebut|date('d/m/Y') }}{% endif %}.

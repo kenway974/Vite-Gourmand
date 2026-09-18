@@ -1413,6 +1413,9 @@ textarea {
     gap: var(--e-2);
     border-bottom: 1px solid var(--filet);
     padding-bottom: var(--e-2);
+    /* Sans elle, le filet du champ touchait presque la légende du premier
+       groupe de filtres juste en dessous. */
+    margin-bottom: var(--e-6);
 }
 
 .champ-recherche input[type='search'] {
