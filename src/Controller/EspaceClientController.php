@@ -16,20 +16,16 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * Espace client : suivi des commandes et dépôt d'avis.
+ * Espace client : suivi d'une commande et dépôt d'avis.
+ *
+ * La liste des commandes s'affiche sur /mon-compte (CompteController) : ces
+ * routes ne portent plus que le détail d'une commande précise, désignée par
+ * son identifiant.
  */
 #[Route('/mes-commandes')]
 #[IsGranted('ROLE_USER')]
 class EspaceClientController extends AbstractController
 {
-    #[Route('', name: 'app_client_commandes', methods: ['GET'])]
-    public function index(CommandeRepository $commandes): Response
-    {
-        return $this->render('espace_client/index.html.twig', [
-            'commandes' => $commandes->findPourClient($this->client()),
-        ]);
-    }
-
     #[Route('/{id}', name: 'app_client_commande', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function detail(int $id, CommandeRepository $commandes): Response
     {

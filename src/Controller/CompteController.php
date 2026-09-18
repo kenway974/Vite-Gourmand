@@ -29,9 +29,14 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class CompteController extends AbstractController
 {
     #[Route('', name: 'app_compte', methods: ['GET'])]
-    public function index(): Response
+    public function index(CommandeRepository $commandes): Response
     {
-        return $this->render('compte/index.html.twig');
+        /** @var Utilisateur $utilisateur */
+        $utilisateur = $this->getUser();
+
+        return $this->render('compte/index.html.twig', [
+            'commandes' => $commandes->findPourClient($utilisateur),
+        ]);
     }
 
     #[Route('/modifier', name: 'app_compte_modifier', methods: ['GET', 'POST'])]
