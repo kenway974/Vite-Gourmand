@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Connexion — Vite &amp; Gourmand{% endblock %}
+
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Espace client') }}
+            <h1>Connexion</h1>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="bande conteneur conteneur--etroit">
+        <div class="carte carte--relief">
+            {% if error %}
+                <div class="encart-alerte" role="alert">
+                    <p>{{ error.messageKey|trans(error.messageData, 'security') }}</p>
+                </div>
+            {% endif %}
+
+            <form method="post">
+                <div class="champ">
+                    <label for="inputEmail">Adresse e-mail</label>
+                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail"
+                           autocomplete="email" required autofocus>
+                </div>
+
+                <div class="champ">
+                    <label for="inputPassword">Mot de passe</label>
+                    <input type="password" name="password" id="inputPassword"
+                           autocomplete="current-password" required>
+                </div>
+
+                {# Protection CSRF : le pare-feu vérifie ce jeton (enable_csrf: true). #}
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <div class="champ champ--case">
+                    <label class="choix">
+                        <input type="checkbox" name="_remember_me">
+                        Rester connecté
+                    </label>
+                </div>
+
+                {{ ui.bouton('Se connecter', null, 'principal', {large: true, type: 'submit'}) }}
+            </form>
+        </div>
+
+        <p class="centre" style="margin-top: 1.5rem">
+            <a href="{{ path('app_mot_de_passe_oublie') }}">Mot de passe oublié ?</a>
+        </p>
+        <p class="centre">
+            Pas encore de compte ? <a href="{{ path('app_register') }}">Créer un compte</a>
+        </p>
+    </div>
+{% endblock %}

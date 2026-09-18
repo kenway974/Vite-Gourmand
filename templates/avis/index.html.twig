@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Avis clients — Vite &amp; Gourmand{% endblock %}
+
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Leurs mots') }}
+            <h1>Avis clients</h1>
+            {% if notation.moyenne %}
+                {{ ui.notation(notation.moyenne|number_format(1, ','), notation.nombre) }}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="bande conteneur">
+        <p class="texte-doux">
+            Seuls les avis de clients ayant reçu leur commande sont publiés,
+            après relecture par notre équipe.
+        </p>
+
+        {% if avis|length == 0 %}
+            {# Deux situations distinctes : aucun avis du tout, ou une page vide
+               parce que l'adresse demandée dépasse le nombre de pages. Renvoyer
+               « aucun avis » dans le second cas laisserait croire le site vide. #}
+            {% if total > 0 %}
+                <p class="carte">
+                    Cette page ne contient aucun avis.
+                    <a href="{{ path('app_avis') }}">Revenir au premier avis</a>.
+                </p>
+            {% else %}
+                <p class="carte">Aucun avis n'a encore été publié.</p>
+            {% endif %}
+        {% else %}
+            <ul class="liste-nue grille grille--3" style="margin-top: 2rem">
+                {% for un_avis in avis %}
+                    <li>
+                        <article class="carte">
+                            <div class="entre-deux">
+                                <p class="temoignage__auteur" style="margin: 0">
+                                    {{ un_avis.utilisateur.prenom }}
+                                </p>
+                                {{ ui.etiquette(un_avis.note ~ ' / 5', 'accent') }}
+                            </div>
+
+                            {% if un_avis.contexte %}
+                                <p class="petit texte-doux" style="margin-top: 0.25rem">
+                                    {{ un_avis.contexte }}
+                                </p>
+                            {% endif %}
+
+                            <blockquote class="temoignage__texte" style="margin-top: 1rem">
+                                &laquo;&nbsp;{{ un_avis.commentaire }}&nbsp;&raquo;
+                            </blockquote>
+
+                            <p class="petit texte-doux" style="margin-top: 1rem; margin-bottom: 0">
+                                <a href="{{ path('app_catalogue_menu', {id: un_avis.commande.menu.id}) }}">
+                                    {{ un_avis.commande.menu.titre }}
+                                </a>
+                                ·
+                                <time datetime="{{ un_avis.dateCreation|date('Y-m-d') }}">
+                                    {{ un_avis.dateCreation|date('d/m/Y') }}
+                                </time>
+                            </p>
+                        </article>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            {{ ui.pagination(
+                page,
+                nbPages,
+                'app_avis',
+                app.request.query.all,
+                'Pagination des avis'
+            ) }}
+        {% endif %}
+
+        <p class="centre" style="margin-top: 2.5rem">
+            <a href="{{ path('app_catalogue') }}">Découvrir nos menus</a>
+        </p>
+    </div>
+{% endblock %}

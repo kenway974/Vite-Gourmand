@@ -1,0 +1,52 @@
+{% extends 'admin/_layout.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Plats — Administration{% endblock %}
+
+{% block corps_admin %}
+    <h1>Plats</h1>
+
+    <p>{{ ui.bouton('Ajouter un plat', path('app_admin_plat_new'), 'principal') }}</p>
+
+    {% if elements is empty %}
+        <p>Aucun plat pour le moment.</p>
+    {% else %}
+        <div class="tableau-defilant">
+            <table>
+            <caption>Liste des plats ({{ elements|length }})</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Ingrédients</th>
+                    <th scope="col">Menus</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ligne in elements %}
+                    {% set element = ligne.entite %}
+                    <tr>
+                        <th scope="row">{{ element.nom }}</th>
+                        <td>{{ element.type }}</td>
+                        <td>{{ ligne.nbIngredients }}</td>
+                        <td>{{ ligne.nbMenus }}</td>
+                        <td>
+                            <a href="{{ path('app_admin_plat_edit', {id: element.id}) }}">Modifier</a>
+
+                            <form method="post"
+                                  action="{{ path('app_admin_plat_delete', {id: element.id}) }}"
+                                  onsubmit="return confirm('Supprimer définitivement « {{ element.nom|e('js') }} » ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('supprimer-plat-' ~ element.id) }}">
+                                <button type="submit">Supprimer<span class="sr-only"> plat {{ element.nom }}</span></button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    {% endif %}
+
+    <p><a href="{{ path('app_admin') }}">Retour à l'administration</a></p>
+{% endblock %}

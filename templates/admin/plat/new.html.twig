@@ -1,0 +1,9 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% block title %}Ajouter un plat — Administration{% endblock %}
+
+{% block corps_admin %}
+    <h1>Ajouter un plat</h1>
+
+    {{ include('admin/plat/_form.html.twig', {bouton: 'Enregistrer'}) }}
+{% endblock %}

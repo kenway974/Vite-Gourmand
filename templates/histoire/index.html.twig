@@ -1,0 +1,145 @@
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Notre histoire — Vite &amp; Gourmand{% endblock %}
+
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Traiteur à Bordeaux') }}
+            <h1>Notre histoire</h1>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="bande conteneur conteneur--etroit">
+        <p class="chapeau" style="margin-inline: auto; text-align: center">
+            Vite &amp; Gourmand est une maison de traiteur bordelaise fondée
+            par Julie et José, qui exercent le métier depuis vingt-cinq ans.
+            L'atelier se tient rue des Faussets, à quelques pas du Grand
+            Théâtre.
+        </p>
+
+        {#
+            Image d'appel : l'atelier ou l'équipe au travail. Le cadre garde
+            son fond dégradé tant qu'aucun fichier n'existe à ce chemin — le
+            déposer dans public/images/histoire/ suffit à le faire apparaître,
+            sans rien à changer ici.
+        #}
+        <div class="cadre-photo cadre-photo--large" style="margin-top: 2rem">
+            <img src="{{ asset('images/histoire/atelier.jpg') }}"
+                 alt="L'atelier de Vite &amp; Gourmand, rue des Faussets à Bordeaux"
+                 loading="lazy">
+        </div>
+    </div>
+
+    <div class="bande conteneur">
+        {{ ui.signature('Deux parcours') }}
+        <h2 class="titre-section">Une table à quatre mains</h2>
+
+        <div class="grille grille--2" style="margin-top: 2rem">
+            <div>
+                <div class="cadre-photo cadre-photo--portrait">
+                    <img src="{{ asset('images/histoire/julie.jpg') }}"
+                         alt="Julie, cofondatrice de Vite &amp; Gourmand"
+                         loading="lazy">
+                </div>
+                <h3 style="margin-top: 1.5rem">Julie</h3>
+                <p class="texte-doux">
+                    Formée à la pâtisserie, Julie a fait ses classes dans
+                    plusieurs maisons bordelaises avant de se spécialiser
+                    dans le dressage et les desserts de réception. Les
+                    canelés et les macarons de Saint-Émilion qui terminent
+                    nos menus, c'est elle.
+                </p>
+            </div>
+
+            <div>
+                <div class="cadre-photo cadre-photo--portrait">
+                    <img src="{{ asset('images/histoire/jose.jpg') }}"
+                         alt="José, cofondateur de Vite &amp; Gourmand"
+                         loading="lazy">
+                </div>
+                <h3 style="margin-top: 1.5rem">José</h3>
+                <p class="texte-doux">
+                    José vient de la cuisine traditionnelle du Sud-Ouest :
+                    lamproie, entrecôte à la bordelaise, confit — les plats
+                    qui demandent du temps et qu'on ne presse pas. C'est lui
+                    qui tient les cuissons le jour d'une grande réception.
+                </p>
+            </div>
+        </div>
+
+        <p class="texte-doux" style="margin-top: 2rem; max-width: var(--largeur-texte)">
+            Ils se sont rencontrés en travaillant tous les deux pour une
+            maison de traiteur bordelaise, et ont ouvert leur propre atelier
+            ensemble en 2011 : une cuisine de produit, servie chez les gens,
+            sans détour.
+        </p>
+    </div>
+
+    <div class="bande conteneur conteneur--etroit">
+        <h2 class="titre-section">Ce que nous faisons</h2>
+
+        <p>
+            Nous composons des menus complets pour les réceptions privées et
+            professionnelles : mariages, anniversaires, repas d'entreprise,
+            cocktails. Chaque menu impose un <strong>nombre minimum de
+            convives</strong> et un <strong>délai de préparation qui lui est
+            propre</strong>, tous deux indiqués sur sa fiche : certaines
+            pièces sont réservées auprès de nos producteurs.
+        </p>
+
+        <p>
+            Le prix annoncé est un prix par personne. Il comprend la
+            livraison, le dressage sur place et la reprise du matériel dans
+            Bordeaux intra-muros. Nous livrons également un ensemble de
+            communes alentour, chacune avec son supplément, affiché avant la
+            validation de la commande et jamais après. Une adresse située
+            hors de ces communes ne peut pas être servie : le formulaire
+            vous le signale avant que vous ne validiez.
+        </p>
+
+        <h2 class="titre-section">Nos produits</h2>
+
+        <p>
+            Julie et José achètent au Marché des Capucins et auprès de
+            producteurs de la région, au rythme des saisons : un poissonnier
+            du Bassin d'Arcachon pour les huîtres et les Saint-Jacques, un
+            éleveur du Sud-Ouest pour le canard, une boulangerie du quartier
+            pour le pain. Rien n'est acheté tout préparé.
+        </p>
+
+        <p>
+            Les allergènes de chaque plat sont indiqués sur la fiche du
+            menu, et les régimes alimentaires sont proposés en filtre au
+            catalogue. Si une contrainte n'y figure pas, écrivez-nous : nous
+            répondons sous quarante-huit heures, comme nous nous y engageons
+            dans nos conditions générales de vente.
+        </p>
+
+        <h2 class="titre-section">L'équipe</h2>
+
+        <p>
+            Cinq personnes travaillent à l'atelier à l'année, entre cuisine
+            et dressage. Les jours de grande réception, l'équipe s'agrandit
+            avec des extras formés aux mêmes standards d'hygiène et de
+            présentation — jamais improvisés le jour même.
+        </p>
+
+        <h2 class="titre-section">Nous rencontrer</h2>
+
+        <p>
+            L'atelier se visite sur rendez-vous, 12 rue des Faussets à
+            Bordeaux. Pour un devis ou une question, passez par
+            <a href="{{ path('app_contact') }}">le formulaire de contact</a>
+            ou appelez le 05 56 00 00 00.
+        </p>
+
+        <div class="banniere__actions" style="justify-content: flex-start">
+            {{ ui.bouton('Voir nos menus', path('app_catalogue'), 'principal') }}
+            {{ ui.bouton('Lire les avis de nos clients', path('app_avis'), 'contour') }}
+        </div>
+    </div>
+{% endblock %}

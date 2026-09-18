@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Mot de passe oublié — Vite &amp; Gourmand{% endblock %}
+
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Espace client') }}
+            <h1>Mot de passe oublié</h1>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="bande conteneur conteneur--etroit">
+        <p class="chapeau" style="margin-inline: auto; text-align: center">
+            Indiquez l'adresse e-mail de votre compte. Si elle nous est
+            connue, vous recevrez un lien pour choisir un nouveau mot de
+            passe.
+        </p>
+
+        <div class="carte carte--relief" style="margin-top: 2rem">
+            {{ form_errors(form) }}
+
+            {{ form_start(form) }}
+                {{ form_row(form.email) }}
+                {{ ui.bouton('Envoyer le lien', null, 'principal', {large: true, type: 'submit'}) }}
+            {{ form_end(form) }}
+        </div>
+
+        <p class="centre" style="margin-top: 1.5rem">
+            <a href="{{ path('app_login') }}">Retour à la connexion</a>
+        </p>
+    </div>
+{% endblock %}

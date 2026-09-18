@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\SuiviCommandeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SuiviCommandeRepository::class)]
 class SuiviCommande
@@ -18,6 +19,7 @@ class SuiviCommande
     private ?Commande $commande = null;
 
     #[ORM\Column(length: 30)]
+    #[Assert\Choice(choices: Commande::STATUTS, message: 'Statut de commande inconnu.')]
     private ?string $statut = null;
 
     #[ORM\Column]

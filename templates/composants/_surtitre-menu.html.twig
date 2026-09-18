@@ -1,0 +1,13 @@
+{#
+    Ligne de catégorie d'un menu : « NOËL · VÉGÉTARIEN ».
+
+    Le régime n'est affiché que s'il apporte une information. « Omnivore »
+    n'en apporte aucune — c'est le cas par défaut — et alourdirait chaque
+    vignette pour rien.
+#}
+{% set regimeUtile = menu.regime and menu.regime.libelle|lower not in ['omnivore', 'standard', 'classique'] %}
+
+<span class="surtitre">
+    {{- menu.theme.libelle -}}
+    {%- if regimeUtile %} · {{ menu.regime.libelle }}{% endif -%}
+</span>

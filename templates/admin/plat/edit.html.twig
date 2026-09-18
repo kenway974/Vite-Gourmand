@@ -1,0 +1,9 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% block title %}Modifier {{ element.nom }} — Administration{% endblock %}
+
+{% block corps_admin %}
+    <h1>Modifier « {{ element.nom }} »</h1>
+
+    {{ include('admin/plat/_form.html.twig', {bouton: 'Enregistrer les modifications'}) }}
+{% endblock %}

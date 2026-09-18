@@ -40,4 +40,29 @@ class PlatRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    /**
+     * Liste des plats avec, pour chacun, son nombre d'ingrédients et de menus.
+     *
+     * Les compteurs sont calculés par la base en une seule requête. Les lire
+     * depuis les collections dans le gabarit déclencherait une requête par
+     * ligne affichée (N+1), et le coût grandirait avec le catalogue.
+     *
+     * COUNT(DISTINCT) est indispensable : sans lui, plusieurs jointures sur
+     * des collections différentes multiplient les lignes entre elles et
+     * faussent les totaux.
+     *
+     * @return array<int, array{entite: Plat, nbIngredients: int, nbMenus: int}>
+     */
+    public function findPourAdministration(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p AS entite', 'COUNT(DISTINCT i.id) AS nbIngredients', 'COUNT(DISTINCT m.id) AS nbMenus')
+            ->leftJoin('p.ingredients', 'i')
+            ->leftJoin('p.menus', 'm')
+            ->groupBy('p.id')
+            ->orderBy('p.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

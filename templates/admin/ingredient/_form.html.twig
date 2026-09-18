@@ -1,0 +1,10 @@
+{{ form_errors(form) }}
+
+{{ form_start(form) }}
+    {{ form_row(form.nom) }}
+    {{ form_row(form.image) }}
+    {{ form_row(form.allergenes) }}
+    <button type="submit">{{ bouton }}</button>
+{{ form_end(form) }}
+
+<p><a href="{{ path('app_admin_ingredient_index') }}">Retour à la liste</a></p>

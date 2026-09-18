@@ -1,0 +1,57 @@
+{#
+    Vignette d'un menu au catalogue.
+
+    Attend :
+      menu : App\Entity\Menu
+      note : {moyenne, nombre} ou null
+
+    Le titre porte le lien plutôt que la vignette entière : la carte contient
+    déjà un second lien — « Commander ce menu » — et imbriquer deux liens
+    n'est pas valide et déroute la navigation au clavier.
+#}
+<li>
+    <article class="carte-menu">
+        <div class="carte-menu__visuel">
+            {% if menu.image %}
+                <img src="{{ asset('images/menus/' ~ menu.image) }}" alt="" loading="lazy">
+            {% endif %}
+
+            {# Un état à signaler se voit sur la vignette : inutile d'ouvrir la
+               fiche pour découvrir qu'un menu n'est pas commandable. #}
+            {% set etat = menu.disponibilite %}
+            {% if etat != 'disponible' %}
+                <span class="carte-menu__etat">
+                    {{- {
+                        'bientot': 'Bientôt',
+                        'epuise': 'Épuisé',
+                    }[etat]|default('Non proposé') -}}
+                </span>
+            {% endif %}
+        </div>
+
+        <div class="carte-menu__corps">
+            {{ include('composants/_surtitre-menu.html.twig', {menu: menu}) }}
+
+            <div class="carte-menu__ligne">
+                <h2 class="carte-menu__titre">
+                    <a href="{{ path('app_catalogue_menu', {id: menu.id}) }}">{{ menu.titre }}</a>
+                </h2>
+                <p class="carte-menu__prix">
+                    {{ menu.prixMin }} €<small> /pers.</small>
+                </p>
+            </div>
+
+            <p class="carte-menu__description">{{ menu.description }}</p>
+
+            <p class="carte-menu__meta">
+                Dès {{ menu.nbMinPersonnes }} personnes
+                · Commande {{ menu.delaiCommandeJours }} jour{{ menu.delaiCommandeJours > 1 ? 's' : '' }} avant
+                {%- if note %}
+                    · {{ note.moyenne }}/5 sur {{ note.nombre }} avis
+                {%- endif %}
+            </p>
+
+            {{ include('catalogue/_disponibilite.html.twig') }}
+        </div>
+    </article>
+</li>

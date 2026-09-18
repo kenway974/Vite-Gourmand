@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Mon compte — Vite &amp; Gourmand{% endblock %}
+
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Espace client') }}
+            <h1>Mon compte</h1>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="bande conteneur conteneur--etroit">
+        <div class="carte">
+            <dl class="fiche">
+                <div>
+                    <dt>Nom</dt>
+                    <dd>{{ app.user.prenom }} {{ app.user.nom }}</dd>
+                </div>
+                <div>
+                    <dt>Adresse e-mail</dt>
+                    <dd>{{ app.user.userIdentifier }}</dd>
+                </div>
+                <div>
+                    <dt>Téléphone</dt>
+                    <dd>{{ app.user.gsm|default('Non renseigné') }}</dd>
+                </div>
+                <div>
+                    <dt>Adresse postale</dt>
+                    <dd>{{ app.user.adressePostale|default('Non renseignée') }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="actions">
+            {{ ui.bouton('Modifier mes coordonnées', path('app_compte_modifier'), 'contour') }}
+            {{ ui.bouton('Changer mon mot de passe', path('app_compte_mot_de_passe'), 'contour') }}
+        </div>
+
+        <h2 class="titre-section" style="margin-top: 2.5rem">Mes commandes</h2>
+
+        {% if commandes is empty %}
+            <p class="carte">
+                Vous n'avez pas encore passé de commande.
+                <a href="{{ path('app_catalogue') }}">Découvrir nos menus</a>.
+            </p>
+        {% else %}
+            <div class="tableau-defilant">
+                <table>
+                    <caption>Vos commandes ({{ commandes|length }})</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">N°</th>
+                            <th scope="col">Menu</th>
+                            <th scope="col">Prestation</th>
+                            <th scope="col">Convives</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for commande in commandes %}
+                            <tr>
+                                <th scope="row"><a href="{{ path('app_client_commande', {id: commande.id}) }}">{{ commande.id }}</a></th>
+                                <td>{{ commande.menu.titre }}</td>
+                                <td>{{ commande.datePrestation|date('d/m/Y') }}</td>
+                                <td>{{ commande.nbPersonnes }}</td>
+                                <td>{{ commande.prixTotal|number_format(2, ',', ' ') }} €</td>
+                                <td>{{ ui.etiquetteCommande(commande.statut) }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        <p style="margin-top: 2rem">
+            <a href="{{ path('app_compte_suppression') }}" class="lien-discret">Supprimer mon compte</a>
+        </p>
+    </div>
+{% endblock %}

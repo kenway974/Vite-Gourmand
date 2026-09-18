@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Créer un compte — Vite &amp; Gourmand{% endblock %}
+
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Rejoindre') }}
+            <h1>Créer un compte</h1>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="bande conteneur conteneur--etroit">
+        <div class="carte carte--relief">
+            {{ form_errors(registrationForm) }}
+
+            {{ form_start(registrationForm) }}
+                {{ form_row(registrationForm.prenom) }}
+                {{ form_row(registrationForm.nom) }}
+                {{ form_row(registrationForm.email) }}
+                {{ form_row(registrationForm.gsm) }}
+                {{ form_row(registrationForm.adressePostale) }}
+                {{ form_row(registrationForm.plainPassword.first) }}
+                {{ form_row(registrationForm.plainPassword.second) }}
+                {{ form_row(registrationForm.agreeTerms) }}
+
+                {{ ui.bouton('Créer mon compte', null, 'principal', {large: true, type: 'submit'}) }}
+            {{ form_end(registrationForm) }}
+        </div>
+
+        <p class="centre" style="margin-top: 1.5rem">
+            Déjà inscrit ? <a href="{{ path('app_login') }}">Se connecter</a>
+        </p>
+    </div>
+{% endblock %}

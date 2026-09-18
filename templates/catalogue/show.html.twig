@@ -1,0 +1,162 @@
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}{{ menu.titre }} — Vite &amp; Gourmand{% endblock %}
+
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ include('composants/_surtitre-menu.html.twig', {menu: menu}) }}
+            <h1>{{ menu.titre }}</h1>
+            <p class="signature">{{ menu.description }}</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="bande conteneur grille grille--contenu-aside">
+        <div>
+            <p class="petit">
+                <a href="{{ path('app_catalogue') }}">&larr; Retour aux menus</a>
+            </p>
+
+            <h2 class="titre-section">Ce que vous trouverez dans le plat</h2>
+
+            {% if menu.plats is empty %}
+                <p class="texte-doux">La composition de ce menu sera précisée prochainement.</p>
+            {% else %}
+                <ol class="liste-nue plats">
+                    {% for plat in menu.plats %}
+                        <li class="plat">
+                            <div class="plat__visuel">
+                                {% if plat.image %}
+                                    <img src="{{ asset('images/plats/' ~ plat.image) }}" alt="" loading="lazy">
+                                {% endif %}
+                            </div>
+
+                            <div>
+                                {# Le rang est décoratif : l'ordre est déjà porté
+                                   par la liste ordonnée. #}
+                                <span class="surtitre" aria-hidden="true">{{ loop.index }}</span>
+                                <h3>{{ plat.nom }}</h3>
+
+                                {% if plat.description %}
+                                    <p class="texte-doux">{{ plat.description }}</p>
+                                {% endif %}
+
+                                {% if plat.ingredients is not empty %}
+                                    <ul class="liste-nue ingredients">
+                                        {% for ingredient in plat.ingredients %}
+                                            <li>
+                                                <span class="ingredient__pastille" aria-hidden="true">
+                                                    {% if ingredient.image %}
+                                                        <img src="{{ asset('images/ingredients/' ~ ingredient.image) }}"
+                                                             alt="" loading="lazy">
+                                                    {% endif %}
+                                                </span>
+                                                {{ ingredient.nom }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% endif %}
+
+            {{ ui.ornement() }}
+
+            <h2>Allergènes</h2>
+            {% if allergenes is empty %}
+                <p class="texte-doux">
+                    Aucun des 14 allergènes à déclaration obligatoire n'a été
+                    relevé dans ce menu.
+                </p>
+            {% else %}
+                {# Liste déduite des ingrédients, jamais saisie à la main : une
+                   liste recopiée dériverait du contenu réel des plats. #}
+                <p class="actions">
+                    {% for allergene in allergenes %}
+                        {{ ui.etiquette(allergene.libelle) }}
+                    {% endfor %}
+                </p>
+                <p class="petit texte-doux">
+                    Ces informations sont données à titre indicatif. En cas
+                    d'allergie, signalez-la lors de la commande.
+                </p>
+            {% endif %}
+
+            {% if menu.precautions %}
+                <h2>Bon à savoir</h2>
+                <p>{{ menu.precautions }}</p>
+            {% endif %}
+        </div>
+
+        <aside class="carte carte--relief encart-prix">
+            <div class="grille grille--paire encart-prix__chiffres">
+                <div>
+                    <span class="surtitre">Convives</span>
+                    <p class="stat__valeur">{{ menu.nbMinPersonnes }}<small> min.</small></p>
+                </div>
+                <div>
+                    <span class="surtitre">Délai</span>
+                    <p class="stat__valeur">{{ menu.delaiCommandeJours }}<small> jours</small></p>
+                </div>
+            </div>
+
+            <p class="stat__valeur encart-prix__montant">{{ menu.prixMin }} €</p>
+            <p class="stat__libelle">par personne, dès {{ menu.nbMinPersonnes }} convives</p>
+
+            <p class="petit texte-doux">
+                Le prix inclut la livraison, le dressage et la reprise du matériel
+                dans un rayon de Bordeaux intra-muros.
+            </p>
+
+            <p class="petit texte-doux">
+                Une remise de 10 % s'applique à partir de
+                {{ menu.nbMinPersonnes + 5 }} convives.
+            </p>
+
+            {% if menu.dateDebut or menu.dateFin %}
+                <p class="petit texte-doux">
+                    Proposé
+                    {%- if menu.dateDebut %} du {{ menu.dateDebut|date('d/m/Y') }}{% endif %}
+                    {%- if menu.dateFin %} au {{ menu.dateFin|date('d/m/Y') }}{% endif %}.
+                </p>
+            {% endif %}
+
+            {{ include('catalogue/_disponibilite.html.twig') }}
+        </aside>
+    </div>
+
+    <section class="bande bande--sombre">
+        <div class="conteneur">
+            <div class="entre-deux">
+                <div>
+                    {{ ui.signature('Leurs mots') }}
+                    <h2>Ils ont commandé ce menu</h2>
+                </div>
+                {% if note %}
+                    {{ ui.notation(note.moyenne, note.nombre) }}
+                {% endif %}
+            </div>
+
+            {% if avis is empty %}
+                <p class="chapeau" style="margin-top: 1.5rem">
+                    Ce menu n'a pas encore reçu d'avis.
+                </p>
+            {% else %}
+                <div class="grille grille--3 temoignages" style="margin-top: 2.5rem">
+                    {% for un_avis in avis %}
+                        {{ ui.temoignage(
+                            un_avis.commentaire,
+                            un_avis.utilisateur.prenom,
+                            un_avis.contexte
+                        ) }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

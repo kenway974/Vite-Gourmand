@@ -1,0 +1,39 @@
+{% extends 'employe/_layout.html.twig' %}
+
+{% block title %}Modération des avis — Vite &amp; Gourmand{% endblock %}
+
+{% block corps_employe %}
+    <h1>Modération des avis</h1>
+
+    <p>
+        {% if statistiques.moyenne %}
+            Note moyenne publiée : <strong>{{ statistiques.moyenne }} sur 5</strong>
+            — {{ statistiques.nombre }} avis vérifié(s).
+        {% else %}
+            Aucun avis publié pour le moment.
+        {% endif %}
+    </p>
+
+    {% if avis is empty %}
+        <p>Aucun avis en attente de relecture.</p>
+    {% else %}
+        <ul>
+            {% for a in avis %}
+                <li>
+                    <p>
+                        <strong>{{ a.note }}/5</strong> — {{ a.utilisateur.prenom }} {{ a.utilisateur.nom }},
+                        {{ a.dateCreation|date('d/m/Y') }}, sur « {{ a.commande.menu.titre }} »
+                        ({{ a.commande.nbPersonnes }} convives)
+                    </p>
+                    <blockquote>{{ a.commentaire }}</blockquote>
+
+                    <form method="post" action="{{ path('app_employe_avis_moderer', {id: a.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('moderer-avis-' ~ a.id) }}">
+                        <button type="submit" name="decision" value="validé">Publier</button>
+                        <button type="submit" name="decision" value="refusé">Refuser</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

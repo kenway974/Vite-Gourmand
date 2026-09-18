@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Changer mon mot de passe — Vite &amp; Gourmand{% endblock %}
+
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Espace client') }}
+            <h1>Changer mon mot de passe</h1>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="bande conteneur conteneur--etroit">
+        <div class="carte carte--relief">
+            {{ form_errors(form) }}
+
+            {{ form_start(form) }}
+                {{ form_row(form.actuel) }}
+                {{ form_row(form.nouveau.first) }}
+                {{ form_row(form.nouveau.second) }}
+                {{ ui.bouton('Changer le mot de passe', null, 'principal', {large: true, type: 'submit'}) }}
+            {{ form_end(form) }}
+        </div>
+
+        <p class="centre" style="margin-top: 1.5rem">
+            <a href="{{ path('app_compte') }}">Retour à mon compte</a>
+        </p>
+    </div>
+{% endblock %}

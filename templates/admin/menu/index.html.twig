@@ -1,0 +1,66 @@
+{% extends 'admin/_layout.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Menus — Administration{% endblock %}
+
+{% block corps_admin %}
+    <h1>Menus</h1>
+
+    <p>{{ ui.bouton('Créer un menu', path('app_admin_menu_new'), 'principal') }}</p>
+
+    {% if menus is empty %}
+        <p>Aucun menu pour le moment.</p>
+    {% else %}
+        <div class="tableau-defilant">
+            <table>
+            <caption>Liste des menus ({{ menus|length }})</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Titre</th>
+                    <th scope="col">Thème</th>
+                    <th scope="col">Régime</th>
+                    <th scope="col">À partir de</th>
+                    <th scope="col">Min. pers.</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Disponibilité</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for menu in menus %}
+                    <tr>
+                        <th scope="row"><a href="{{ path('app_admin_menu_show', {id: menu.id}) }}">{{ menu.titre }}</a></th>
+                        <td>{{ menu.theme.libelle }}</td>
+                        <td>{{ menu.regime.libelle }}</td>
+                        <td>{{ menu.prixMin }} €</td>
+                        <td>{{ menu.nbMinPersonnes }}</td>
+                        <td>{{ menu.stock }}</td>
+                        <td>
+                            {% set etat = menu.disponibilite %}
+                            {% if etat == 'disponible' %}
+                                Commandable
+                            {% elseif etat == 'bientot' %}
+                                À partir du {{ menu.dateDebut|date('d/m/Y') }}
+                            {% elseif etat == 'termine' %}
+                                Terminé le {{ menu.dateFin|date('d/m/Y') }}
+                            {% else %}
+                                Épuisé
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('app_admin_menu_edit', {id: menu.id}) }}">Modifier</a>
+
+                            <form method="post"
+                                  action="{{ path('app_admin_menu_delete', {id: menu.id}) }}"
+                                  onsubmit="return confirm('Supprimer définitivement le menu « {{ menu.titre|e('js') }} » ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('supprimer-menu-' ~ menu.id) }}">
+                                <button type="submit">Supprimer<span class="sr-only"> le menu {{ menu.titre }}</span></button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    {% endif %}
+{% endblock %}

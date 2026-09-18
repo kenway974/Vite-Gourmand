@@ -1,0 +1,23 @@
+{% extends 'bundles/TwigBundle/Exception/_socle.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Accès refusé — Vite &amp; Gourmand{% endblock %}
+
+{% block body %}
+    {{ ui.surtitre('Erreur 403') }}
+    <h1>Vous n'avez pas accès à cette page</h1>
+
+    {# Pas de app.user ici : lire l'utilisateur le recharge depuis la base,
+       ce qu'une page d'erreur ne doit pas se permettre. #}
+    <p class="chapeau" style="margin-inline: auto">
+        Soit cette page demande d'être connecté, soit votre compte ne dispose
+        pas des droits nécessaires. Si vous pensez que c'est une erreur,
+        écrivez-nous.
+    </p>
+
+    <div class="banniere__actions">
+        {{ ui.bouton('Se connecter', '/connexion', 'principal') }}
+        {{ ui.bouton('Retour à l\'accueil', '/', 'contour') }}
+        {{ ui.bouton('Nous écrire', '/contact', 'contour') }}
+    </div>
+{% endblock %}

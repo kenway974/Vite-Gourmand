@@ -1,0 +1,175 @@
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Nos menus — Vite &amp; Gourmand{% endblock %}
+
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('La carte') }}
+            <h1>Nos menus</h1>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="bande conteneur grille grille--aside">
+        {#
+            Un seul formulaire pour toute la colonne, soumis par son bouton.
+            Les filtres restent donc utilisables sans JavaScript : c'est la
+            seule porte d'entrée vers un menu, elle ne peut pas dépendre d'un
+            script.
+        #}
+        {#
+            Compte les filtres repliés sur petit écran, pour que la bascule
+            annonce ce qu'elle cache. Le tri par défaut n'en fait pas partie :
+            il est renvoyé par le formulaire à chaque recherche, et le compter
+            replierait un panneau que le visiteur n'a jamais restreint.
+        #}
+        {% set filtresSecondairesActifs =
+            (filtres.regime ? 1 : 0)
+            + (filtres.nbPersonnes ? 1 : 0)
+            + (filtres.seulementCommandables ? 1 : 0)
+            + (filtres.tri and filtres.tri != triDefaut ? 1 : 0) %}
+
+        <form method="get" action="{{ path('app_catalogue') }}"
+              class="filtres"
+              data-controller="filtres"
+              data-filtres-actifs-value="{{ filtresSecondairesActifs }}">
+            <div class="champ-recherche">
+                <span aria-hidden="true">&#9906;</span>
+                <label class="sr-only" for="q">Rechercher un menu</label>
+                <input type="search" id="q" name="q"
+                       value="{{ filtres.recherche|default('') }}"
+                       placeholder="Rechercher un menu…">
+            </div>
+
+            {#
+                Les thèmes restent toujours visibles : c'est le tri d'entrée le
+                plus courant. Sur petit écran, le CSS les range en bandeau
+                défilant plutôt qu'en colonne — même balisage, autre mise en
+                page.
+            #}
+            <fieldset class="groupe-filtres groupe-filtres--themes">
+                <legend>Thème</legend>
+                <div class="choix-rail">
+                    <label class="choix">
+                        <input type="radio" name="theme" value="" {{ filtres.theme ? '' : 'checked' }}>
+                        Tous
+                    </label>
+                    {% for theme in themes %}
+                        <label class="choix">
+                            <input type="radio" name="theme" value="{{ theme.id }}"
+                                   {{ filtres.theme and filtres.theme.id == theme.id ? 'checked' : '' }}>
+                            {{ theme.libelle }}
+                        </label>
+                    {% endfor %}
+                </div>
+            </fieldset>
+
+            <button type="button"
+                    class="bascule-filtres"
+                    data-filtres-target="bascule"
+                    data-action="filtres#basculer"
+                    aria-expanded="true"
+                    aria-controls="filtres-secondaires">
+                Filtrer
+                {%- if filtresSecondairesActifs %}
+                    <span class="bascule-filtres__compteur">{{ filtresSecondairesActifs }}</span>
+                {%- endif %}
+            </button>
+
+            <div id="filtres-secondaires"
+                 class="filtres__secondaires"
+                 data-filtres-target="panneau"
+                 data-ouvert="true">
+                <div class="grille grille--paire">
+                    <fieldset class="groupe-filtres">
+                        <legend>Régime</legend>
+                        <label class="choix">
+                            <input type="radio" name="regime" value="" {{ filtres.regime ? '' : 'checked' }}>
+                            Tous
+                        </label>
+                        {% for regime in regimes %}
+                            <label class="choix">
+                                <input type="radio" name="regime" value="{{ regime.id }}"
+                                       {{ filtres.regime and filtres.regime.id == regime.id ? 'checked' : '' }}>
+                                {{ regime.libelle }}
+                            </label>
+                        {% endfor %}
+                    </fieldset>
+
+                    {#
+                        Le sélecteur garde son id et ses options : c'est un champ
+                        à choix fermé, et les paliers viennent du dépôt. Une valeur
+                        hors palier est ignorée côté contrôleur.
+                    #}
+                    <fieldset class="groupe-filtres">
+                        <legend><label for="convives">Convives</label></legend>
+                        <select id="convives" name="convives">
+                            <option value="">Peu importe</option>
+                            {% for palier in paliers %}
+                                <option value="{{ palier }}" {{ filtres.nbPersonnes == palier ? 'selected' : '' }}>
+                                    {{ palier }} et plus
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </fieldset>
+                </div>
+
+                <label class="choix">
+                    <input type="checkbox" name="commandables" value="1"
+                           {{ filtres.seulementCommandables ? 'checked' : '' }}>
+                    Commandables aujourd'hui
+                </label>
+
+                <div class="champ">
+                    <label for="tri">Trier par</label>
+                    <select id="tri" name="tri">
+                        {% for cle, libelle in tris %}
+                            <option value="{{ cle }}" {{ filtres.tri == cle ? 'selected' : '' }}>{{ libelle }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="actions">
+                {{ ui.bouton('Rechercher', null, 'principal', {large: true}) }}
+            </div>
+
+            <p><a class="lien-discret" href="{{ path('app_catalogue') }}">Réinitialiser les filtres</a></p>
+        </form>
+
+        <div>
+            <p class="entre-deux" role="status">
+                <span class="surtitre" style="margin: 0">
+                    {{ total }} menu{{ total > 1 ? 's' : '' }}
+                </span>
+            </p>
+
+            {% if menus is empty %}
+                <p class="carte">
+                    Aucun menu ne correspond à ces critères.
+                    <a href="{{ path('app_catalogue') }}">Élargir la recherche</a>.
+                </p>
+            {% else %}
+                <ul class="liste-nue grille grille--2 catalogue">
+                    {% for menu in menus %}
+                        {{ include('catalogue/_carte.html.twig', {
+                            menu: menu,
+                            note: notes[menu.id]|default(null),
+                        }) }}
+                    {% endfor %}
+                </ul>
+
+                {{ ui.pagination(
+                    page,
+                    nbPages,
+                    'app_catalogue',
+                    app.request.query.all,
+                    'Pagination du catalogue'
+                ) }}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

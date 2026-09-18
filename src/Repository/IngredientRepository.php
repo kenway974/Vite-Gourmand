@@ -40,4 +40,29 @@ class IngredientRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    /**
+     * Liste des ingrédients avec leur nombre d'allergènes et de plats.
+     *
+     * Les compteurs sont calculés par la base en une seule requête. Les lire
+     * depuis les collections dans le gabarit déclencherait une requête par
+     * ligne affichée (N+1), et le coût grandirait avec le catalogue.
+     *
+     * COUNT(DISTINCT) est indispensable : sans lui, plusieurs jointures sur
+     * des collections différentes multiplient les lignes entre elles et
+     * faussent les totaux.
+     *
+     * @return array<int, array{entite: Ingredient, nbAllergenes: int, nbPlats: int}>
+     */
+    public function findPourAdministration(): array
+    {
+        return $this->createQueryBuilder('i')
+            ->select('i AS entite', 'COUNT(DISTINCT a.id) AS nbAllergenes', 'COUNT(DISTINCT p.id) AS nbPlats')
+            ->leftJoin('i.allergenes', 'a')
+            ->leftJoin('i.plats', 'p')
+            ->groupBy('i.id')
+            ->orderBy('i.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

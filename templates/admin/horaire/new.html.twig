@@ -1,0 +1,9 @@
+{% extends 'admin/_layout.html.twig' %}
+
+{% block title %}Renseigner un jour — Administration{% endblock %}
+
+{% block corps_admin %}
+    <h1>Renseigner un jour</h1>
+
+    {{ include('admin/horaire/_form.html.twig', {bouton: 'Enregistrer'}) }}
+{% endblock %}

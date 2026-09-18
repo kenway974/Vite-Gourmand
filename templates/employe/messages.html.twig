@@ -1,0 +1,41 @@
+{% extends 'employe/_layout.html.twig' %}
+
+{% block title %}Messages — Vite &amp; Gourmand{% endblock %}
+
+{% block corps_employe %}
+    <h1>Messages de contact</h1>
+
+    <nav aria-label="Filtrer les messages">
+        <ul>
+            <li><a href="{{ path('app_employe_messages') }}" {% if not traites %}aria-current="page"{% endif %}>En attente ({{ enAttente }})</a></li>
+            <li><a href="{{ path('app_employe_messages', {traites: 1}) }}" {% if traites %}aria-current="page"{% endif %}>Traités</a></li>
+        </ul>
+    </nav>
+
+    {% if messages is empty %}
+        <p>Aucun message {{ traites ? 'traité' : 'en attente' }}.</p>
+    {% else %}
+        <ul>
+            {% for message in messages %}
+                <li>
+                    <h2>{{ message.titre }}</h2>
+                    <p>
+                        De {{ message.email }}, le {{ message.dateCreation|date('d/m/Y à H\\hi') }}
+                        {% if message.estEnRetard %}
+                            — <strong role="alert">délai de 48 h dépassé</strong>
+                        {% endif %}
+                        {% if message.traite %}
+                            — traité le {{ message.dateTraitement|date('d/m/Y') }}
+                        {% endif %}
+                    </p>
+                    <blockquote>{{ message.message|nl2br }}</blockquote>
+
+                    <form method="post" action="{{ path('app_employe_message_traitement', {id: message.id, traites: traites ? 1 : 0}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('traitement-message-' ~ message.id) }}">
+                        <button type="submit">{{ message.traite ? 'Rouvrir' : 'Marquer comme traité' }}</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

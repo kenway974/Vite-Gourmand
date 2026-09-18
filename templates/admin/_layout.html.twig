@@ -1,0 +1,50 @@
+{#
+    Gabarit commun des 37 écrans d'administration.
+
+    Chaque écran l'étend et remplit le bloc corps_admin — un h1 suivi de son
+    contenu, exactement ce qu'il écrivait déjà dans body avant ce gabarit.
+    Rien d'autre ne change : les tableaux, les formulaires et les boutons nus
+    héritent du style global du socle sans une classe à poser.
+#}
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block body %}
+    {% set route = app.request.attributes.get('_route') %}
+
+    <div class="bande conteneur grille grille--aside">
+        <nav class="tableau-de-bord__nav" aria-label="Administration">
+            {{ ui.surtitre('Tableau de bord') }}
+            <ul class="liste-nue pile">
+                <li><a href="{{ path('app_admin') }}"{{ route == 'app_admin' ? ' aria-current="page"' : '' }}>Vue d'ensemble</a></li>
+            </ul>
+
+            {{ ui.surtitre('Catalogue') }}
+            <ul class="liste-nue pile">
+                <li><a href="{{ path('app_admin_menu_index') }}"{{ route starts with 'app_admin_menu' ? ' aria-current="page"' : '' }}>Menus</a></li>
+                <li><a href="{{ path('app_admin_plat_index') }}"{{ route starts with 'app_admin_plat' ? ' aria-current="page"' : '' }}>Plats</a></li>
+                <li><a href="{{ path('app_admin_ingredient_index') }}"{{ route starts with 'app_admin_ingredient' ? ' aria-current="page"' : '' }}>Ingrédients</a></li>
+                <li><a href="{{ path('app_admin_allergene_index') }}"{{ route starts with 'app_admin_allergene' ? ' aria-current="page"' : '' }}>Allergènes</a></li>
+                <li><a href="{{ path('app_admin_theme_index') }}"{{ route starts with 'app_admin_theme' ? ' aria-current="page"' : '' }}>Thèmes</a></li>
+                <li><a href="{{ path('app_admin_regime_index') }}"{{ route starts with 'app_admin_regime' ? ' aria-current="page"' : '' }}>Régimes</a></li>
+                <li><a href="{{ path('app_admin_horaire_index') }}"{{ route starts with 'app_admin_horaire' ? ' aria-current="page"' : '' }}>Horaires</a></li>
+            </ul>
+
+            {# Comptes, zones de livraison et statistiques ne sont pas du
+               ressort du personnel : afficher le lien sans le droit d'entrer
+               ne ferait que promettre un 403. #}
+            {% if is_granted('ROLE_ADMIN') %}
+                {{ ui.surtitre('Administration') }}
+                <ul class="liste-nue pile">
+                    <li><a href="{{ path('app_admin_utilisateur_index') }}"{{ route starts with 'app_admin_utilisateur' ? ' aria-current="page"' : '' }}>Utilisateurs</a></li>
+                    <li><a href="{{ path('app_admin_zone_index') }}"{{ route starts with 'app_admin_zone' ? ' aria-current="page"' : '' }}>Zones de livraison</a></li>
+                    <li><a href="{{ path('app_admin_statistiques') }}"{{ route == 'app_admin_statistiques' ? ' aria-current="page"' : '' }}>Statistiques</a></li>
+                </ul>
+            {% endif %}
+        </nav>
+
+        <div class="tableau-de-bord__contenu">
+            {% block corps_admin %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,207 @@
+{#
+    Composants réutilisables du socle.
+    Tirés des maquettes (docs/maquettes/) et de la charte (docs/charte-graphique/).
+
+    Emploi :
+        {% import 'composants/macros.html.twig' as ui %}
+        {{ ui.bouton('Commander', path('...'), 'principal') }}
+
+    Ces macros ne servent qu'à ce qui se répète d'un écran à l'autre. Un bloc
+    propre à une seule page reste dans son gabarit : l'abstraire ferait payer
+    un détour pour rien.
+#}
+
+{#
+    Bouton ou lien d'action.
+
+    Le rendu est identique dans les deux cas, mais l'élément change : un lien
+    quand il mène quelque part, un <button> quand il agit. Les confondre casse
+    la navigation au clavier et le comportement attendu du clic milieu.
+
+    variante : principal | laiton | contour | contour-clair
+    options  : { pilule, large, majuscules, type, nom, valeur, attributs }
+#}
+{% macro bouton(libelle, lien = null, variante = 'principal', options = {}) %}
+    {%- set classes = ['bouton', 'bouton--' ~ variante] -%}
+    {%- if options.pilule|default(false) %}{% set classes = classes|merge(['bouton--pilule']) %}{% endif -%}
+    {%- if options.large|default(false) %}{% set classes = classes|merge(['bouton--large']) %}{% endif -%}
+    {%- if options.majuscules|default(false) %}{% set classes = classes|merge(['bouton--majuscules']) %}{% endif -%}
+
+    {%- if lien is not null -%}
+        <a href="{{ lien }}" class="{{ classes|join(' ') }}"{{ options.attributs|default('')|raw }}>{{ libelle }}</a>
+    {%- else -%}
+        <button type="{{ options.type|default('submit') }}"
+                class="{{ classes|join(' ') }}"
+                {%- if options.nom is defined %} name="{{ options.nom }}"{% endif %}
+                {%- if options.valeur is defined %} value="{{ options.valeur }}"{% endif %}
+                {{- options.attributs|default('')|raw }}>{{ libelle }}</button>
+    {%- endif -%}
+{% endmacro %}
+
+{#
+    Surtitre : la ligne en capitales espacées au-dessus d'un titre.
+    Purement typographique, donc un <span> et non un titre de niveau.
+#}
+{% macro surtitre(texte) %}
+    <span class="surtitre">{{ texte }}</span>
+{% endmacro %}
+
+{#
+    Signature « Julie & José ».
+    La charte réserve le Cormorant italique à cet usage et aux intitulés de
+    menus : ne pas l'employer ailleurs.
+#}
+{% macro signature(texte = 'Julie & José') %}
+    <p class="signature">{{ texte }}</p>
+{% endmacro %}
+
+{# Séparateur ornemental « · ◆ · » des maquettes. Décoratif, donc masqué
+   aux lecteurs d'écran. #}
+{% macro ornement() %}
+    <div class="ornement" aria-hidden="true"><span>&#9670;</span></div>
+{% endmacro %}
+
+{#
+    Puce posée sur une image (catégorie d'un visuel).
+    Fond blanc opaque : le texte doit rester lisible quelle que soit la photo.
+#}
+{% macro puce(libelle) %}
+    <span class="puce">{{ libelle }}</span>
+{% endmacro %}
+
+{#
+    Étiquette d'état, à contour.
+    variante : defaut | accent | sourde
+#}
+{% macro etiquette(libelle, variante = 'defaut') %}
+    <span class="etiquette{{ variante != 'defaut' ? ' etiquette--' ~ variante : '' }}">{{ libelle }}</span>
+{% endmacro %}
+
+{#
+    État d'une commande, en étiquette. « Livrée » est le seul état accompli :
+    seul lui reçoit l'accent. Les états intermédiaires restent au variant par
+    défaut — les distinguer entre eux ajouterait une couleur à retenir sans
+    aider la lecture. « Annulée » est sourde : elle ne demande plus d'action.
+#}
+{% macro etiquetteCommande(statut) %}
+    {%- if statut == 'livrée' -%}
+        {{ _self.etiquette(statut, 'accent') }}
+    {%- elseif statut == 'annulée' -%}
+        {{ _self.etiquette(statut, 'sourde') }}
+    {%- else -%}
+        {{ _self.etiquette(statut) }}
+    {%- endif -%}
+{% endmacro %}
+
+{#
+    Note moyenne et nombre d'avis.
+    « Vérifiés » signifie que l'avis vient d'un client dont la commande a été
+    livrée : ne pas employer ce mot pour un agrégat qui compterait autre chose.
+#}
+{% macro notation(moyenne, nombre) %}
+    {% if moyenne %}
+        <p class="notation">
+            <span class="notation__valeur">{{ moyenne }}</span>
+            <span class="notation__detail">
+                sur 5 — {{ nombre }} avis vérifié{{ nombre > 1 ? 's' : '' }}
+            </span>
+        </p>
+    {% endif %}
+{% endmacro %}
+
+{#
+    Témoignage.
+    contexte : « Décembre 2024 · 8 convives », tel que Avis::contexte() le rend.
+#}
+{% macro temoignage(texte, auteur, contexte = null) %}
+    <figure class="temoignage">
+        <blockquote class="temoignage__texte">&laquo;&nbsp;{{ texte }}&nbsp;&raquo;</blockquote>
+        <figcaption>
+            <p class="temoignage__auteur">{{ auteur }}</p>
+            {% if contexte %}<p class="temoignage__meta">{{ contexte }}</p>{% endif %}
+        </figcaption>
+    </figure>
+{% endmacro %}
+
+{#
+    Pagination.
+
+    route et parametres servent à reconstruire l'URL : les filtres en cours
+    doivent survivre au changement de page, sinon tourner la page réinitialise
+    la recherche.
+
+    Le compteur « Page X sur Y » est affiché et non réservé aux lecteurs
+    d'écran : sur une liste longue, savoir où l'on en est vaut autant pour
+    tout le monde.
+
+    intitule nomme la zone — une page peut en porter plusieurs, et « Pagination »
+    seul ne dirait pas laquelle.
+#}
+{% macro pagination(page, nbPages, route, parametres = {}, intitule = 'Pagination') %}
+    {% if nbPages > 1 %}
+        <nav class="pagination" aria-label="{{ intitule }}">
+            <p class="pagination__compteur">Page {{ page }} sur {{ nbPages }}</p>
+
+            <ul>
+                {% if page > 1 %}
+                    <li>
+                        <a href="{{ path(route, parametres|merge({page: page - 1})) }}" rel="prev">
+                            <span aria-hidden="true">&larr;</span>
+                            <span class="sr-only">Page précédente</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for n in 1..nbPages %}
+                    <li>
+                        {% if n == page %}
+                            <span aria-current="page">
+                                {{ n }}<span class="sr-only"> (page courante)</span>
+                            </span>
+                        {% else %}
+                            <a href="{{ path(route, parametres|merge({page: n})) }}">
+                                <span class="sr-only">Page </span>{{ n }}
+                            </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+
+                {% if page < nbPages %}
+                    <li>
+                        <a href="{{ path(route, parametres|merge({page: page + 1})) }}" rel="next">
+                            <span aria-hidden="true">&rarr;</span>
+                            <span class="sr-only">Page suivante</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% endmacro %}
+
+{#
+    Bloc chiffré « 01 / 02 / 03 ».
+    Le numéro est décoratif : l'ordre est déjà porté par la liste, l'annoncer
+    une seconde fois n'apporte rien à un lecteur d'écran.
+#}
+{% macro etape(numero, titre, texte) %}
+    <li>
+        <span class="liste-numerotee__numero" aria-hidden="true">{{ numero }}</span>
+        <div>
+            <h3>{{ titre }}</h3>
+            <p>{{ texte }}</p>
+        </div>
+    </li>
+{% endmacro %}
+
+{#
+    Message d'erreur d'un champ de formulaire.
+    Le texte porte le sens : la couleur seule ne suffit pas (RGAA 3.1).
+#}
+{% macro erreurs(champ) %}
+    {% if champ.vars.errors|length %}
+        {% for erreur in champ.vars.errors %}
+            <span class="erreur-champ">{{ erreur.message }}</span>
+        {% endfor %}
+    {% endif %}
+{% endmacro %}

@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Demande envoyée — Vite &amp; Gourmand{% endblock %}
+
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Espace client') }}
+            <h1>Demande envoyée</h1>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="bande conteneur conteneur--etroit centre">
+        {# Formulation volontairement conditionnelle : confirmer l'existence
+           du compte transformerait cette page en annuaire. #}
+        <p class="chapeau" style="margin-inline: auto">
+            Si un compte existe avec cette adresse, un lien de
+            réinitialisation vient de lui être envoyé. Il est valable
+            {{ constant('App\\Security\\ReinitialisationMotDePasse::VALIDITE_MINUTES') }} minutes.
+        </p>
+
+        <p>Pensez à regarder dans vos courriers indésirables.</p>
+
+        <div class="banniere__actions">
+            {{ ui.bouton('Retour à la connexion', path('app_login'), 'principal') }}
+        </div>
+    </div>
+{% endblock %}

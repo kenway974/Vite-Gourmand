@@ -1,0 +1,127 @@
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block title %}Vite &amp; Gourmand — Traiteur à Bordeaux{% endblock %}
+
+{% block banniere %}
+    <div class="banniere">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Traiteur · Bordeaux · 25 ans') }}
+            <h1>Grandes tables,<br>petits soins</h1>
+            {{ ui.signature() }}
+            <p class="chapeau">
+                Du réveillon au buffet de mariage, cuisiné maison et livré dans
+                toute la métropole bordelaise.
+            </p>
+            <div class="banniere__actions">
+                {{ ui.bouton('Découvrir nos menus', path('app_catalogue'), 'laiton') }}
+                {{ ui.bouton('Demander un devis', path('app_contact'), 'contour-clair') }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    {% if themes is not empty %}
+        <section class="bande">
+            <div class="conteneur">
+                <div class="entre-deux">
+                    <div>
+                        {{ ui.signature('Ce qu\'on aime faire') }}
+                        <h2 class="titre-section">Nos plus belles tables</h2>
+                    </div>
+                    <p class="chapeau" style="max-width: 30ch">
+                        Les occasions pour lesquelles Julie et José cuisinent le
+                        plus souvent.
+                    </p>
+                </div>
+
+                <ul class="liste-nue grille grille--4" style="margin-top: 2rem">
+                    {% for ligne in themes %}
+                        {% set theme = ligne.entite %}
+                        <li>
+                            {# La carte entière est cliquable : sur une vignette,
+                               viser un lien de deux mots au doigt est pénible. #}
+                            <a class="carte-photo"
+                               href="{{ path('app_catalogue', {theme: theme.id}) }}">
+                                {{ ui.puce(theme.libelle) }}
+                                <p class="carte-photo__legende">
+                                    {{ ligne.nbMenus }} menu{{ ligne.nbMenus > 1 ? 's' : '' }}
+                                    à composer
+                                </p>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="bande bande--pierre">
+        <div class="conteneur grille grille--2">
+            <div>
+                {{ ui.signature('Notre façon de faire') }}
+                <h2 class="titre-section">Deux mains,<br>vingt-cinq ans de métier</h2>
+
+                <div class="grille grille--paire" style="margin-top: 2rem; max-width: 22rem">
+                    <div>
+                        <p class="stat__valeur">25 ans</p>
+                        <p class="stat__libelle">à cuisiner pour Bordeaux</p>
+                    </div>
+                    <div>
+                        <p class="stat__valeur">100 %</p>
+                        <p class="stat__libelle">fait maison, chaque jour</p>
+                    </div>
+                </div>
+            </div>
+
+            <ol class="liste-numerotee">
+                {{ ui.etape('01', 'Des produits qu\'on choisit',
+                    'Marché des Capucins et producteurs locaux, au rythme des saisons.') }}
+                {{ ui.etape('02', 'Une cuisine sur mesure',
+                    'Chaque menu s\'adapte à votre événement et à vos convives.') }}
+                {{ ui.etape('03', 'Livré, dressé, à l\'heure',
+                    'On s\'occupe de tout jusqu\'à la table, matériel compris.') }}
+            </ol>
+        </div>
+    </section>
+
+    {% if temoignages is not empty %}
+        <section class="bande bande--sombre">
+            <div class="conteneur">
+                <div class="entre-deux">
+                    <div>
+                        {{ ui.signature('Leurs mots') }}
+                        <h2>Ils nous ont fait confiance</h2>
+                    </div>
+                    {# « Vérifiés » : seuls les avis validés par le personnel,
+                       déposés par un client dont la commande a été livrée. #}
+                    {{ ui.notation(notation.moyenne|number_format(1, ','), notation.nombre) }}
+                </div>
+
+                <div class="grille grille--3 temoignages" style="margin-top: 2.5rem">
+                    {% for avis in temoignages %}
+                        {{ ui.temoignage(avis.commentaire, avis.utilisateur.prenom, avis.contexte) }}
+                    {% endfor %}
+                </div>
+
+                <p style="margin-top: 2rem">
+                    <a href="{{ path('app_avis') }}">Lire tous les avis</a>
+                </p>
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="bande centre">
+        <div class="conteneur conteneur--etroit">
+            <h2>Une date en tête ?</h2>
+            <p class="chapeau" style="margin-inline: auto">
+                Dites-nous votre événement et le nombre de convives, on vous
+                répond sous 48 heures.
+            </p>
+            <div class="banniere__actions">
+                {{ ui.bouton('Demander un devis', path('app_contact'), 'principal') }}
+            </div>
+        </div>
+    </section>
+{% endblock %}
