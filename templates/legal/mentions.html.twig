@@ -1,68 +1,90 @@
 {% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Mentions légales — Vite &amp; Gourmand{% endblock %}
 
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Informations') }}
+            <h1>Mentions légales</h1>
+        </div>
+    </div>
+{% endblock %}
+
 {% block body %}
-    <h1>Mentions légales</h1>
+    <div class="bande conteneur conteneur--etroit">
+        {# Les valeurs entre crochets ne peuvent venir que du client : SIRET, RCS,
+           assurance. Elles sont laissées visibles plutôt que remplies au hasard,
+           pour qu'on ne puisse pas les oublier. #}
 
-    {# Les valeurs entre crochets ne peuvent venir que du client : SIRET, RCS,
-       assurance. Elles sont laissées visibles plutôt que remplies au hasard,
-       pour qu'on ne puisse pas les oublier. #}
+        <h2 class="titre-section">Éditeur du site</h2>
+        <dl class="fiche">
+            <div>
+                <dt>Dénomination</dt>
+                <dd>Vite &amp; Gourmand</dd>
+            </div>
+            <div>
+                <dt>Forme juridique</dt>
+                <dd>[à compléter]</dd>
+            </div>
+            <div>
+                <dt>Siège social</dt>
+                <dd>12 rue des Faussets, 33000 Bordeaux</dd>
+            </div>
+            <div>
+                <dt>Téléphone</dt>
+                <dd>05 56 00 00 00</dd>
+            </div>
+            <div>
+                <dt>Adresse électronique</dt>
+                <dd><a href="mailto:contact@vite-et-gourmand.fr">contact@vite-et-gourmand.fr</a></dd>
+            </div>
+            <div>
+                <dt>SIRET</dt>
+                <dd>[à compléter]</dd>
+            </div>
+            <div>
+                <dt>Numéro de TVA intracommunautaire</dt>
+                <dd>[à compléter]</dd>
+            </div>
+            <div>
+                <dt>Directeurs de la publication</dt>
+                <dd>Julie et José [nom de famille à compléter]</dd>
+            </div>
+        </dl>
 
-    <h2>Éditeur du site</h2>
-    <dl>
-        <dt>Dénomination</dt>
-        <dd>Vite &amp; Gourmand</dd>
+        <h2 class="titre-section">Hébergement</h2>
+        <dl class="fiche">
+            <div>
+                <dt>Hébergeur</dt>
+                <dd>Railway Corporation</dd>
+            </div>
+            <div>
+                <dt>Adresse</dt>
+                <dd>[à compléter — voir les mentions de l'hébergeur]</dd>
+            </div>
+        </dl>
 
-        <dt>Forme juridique</dt>
-        <dd>[à compléter]</dd>
+        <h2 class="titre-section">Propriété intellectuelle</h2>
+        <p>
+            L'ensemble du contenu de ce site — textes, photographies, descriptions
+            de menus — est la propriété de Vite &amp; Gourmand. Toute reproduction
+            sans autorisation écrite est interdite.
+        </p>
 
-        <dt>Siège social</dt>
-        <dd>12 rue des Faussets, 33000 Bordeaux</dd>
+        <h2 class="titre-section">Médiation de la consommation</h2>
+        <p>
+            Conformément à l'article L612-1 du code de la consommation, tout
+            consommateur peut recourir gratuitement à un médiateur en vue de la
+            résolution amiable d'un litige.
+        </p>
+        <p>Médiateur désigné : [à compléter].</p>
 
-        <dt>Téléphone</dt>
-        <dd>05 56 00 00 00</dd>
-
-        <dt>Adresse électronique</dt>
-        <dd><a href="mailto:contact@vite-et-gourmand.fr">contact@vite-et-gourmand.fr</a></dd>
-
-        <dt>SIRET</dt>
-        <dd>[à compléter]</dd>
-
-        <dt>Numéro de TVA intracommunautaire</dt>
-        <dd>[à compléter]</dd>
-
-        <dt>Directeurs de la publication</dt>
-        <dd>Julie et José [nom de famille à compléter]</dd>
-    </dl>
-
-    <h2>Hébergement</h2>
-    <dl>
-        <dt>Hébergeur</dt>
-        <dd>Railway Corporation</dd>
-
-        <dt>Adresse</dt>
-        <dd>[à compléter — voir les mentions de l'hébergeur]</dd>
-    </dl>
-
-    <h2>Propriété intellectuelle</h2>
-    <p>
-        L'ensemble du contenu de ce site — textes, photographies, descriptions
-        de menus — est la propriété de Vite &amp; Gourmand. Toute reproduction
-        sans autorisation écrite est interdite.
-    </p>
-
-    <h2>Médiation de la consommation</h2>
-    <p>
-        Conformément à l'article L612-1 du code de la consommation, tout
-        consommateur peut recourir gratuitement à un médiateur en vue de la
-        résolution amiable d'un litige.
-    </p>
-    <p>Médiateur désigné : [à compléter].</p>
-
-    <h2>Signaler un problème</h2>
-    <p>
-        Une erreur sur cette page ou sur le site ?
-        <a href="{{ path('app_contact') }}">Écrivez-nous</a>.
-    </p>
+        <h2 class="titre-section">Signaler un problème</h2>
+        <p>
+            Une erreur sur cette page ou sur le site ?
+            <a href="{{ path('app_contact') }}">Écrivez-nous</a>.
+        </p>
+    </div>
 {% endblock %}

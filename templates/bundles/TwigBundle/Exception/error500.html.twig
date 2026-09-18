@@ -1,13 +1,15 @@
 {% extends 'bundles/TwigBundle/Exception/_socle.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Une erreur est survenue — Vite &amp; Gourmand{% endblock %}
 
 {% block body %}
+    {{ ui.surtitre('Erreur 500') }}
     <h1>Une erreur est survenue de notre côté</h1>
 
     {# Aucun détail technique : un message d'exception peut révéler la
        structure de la base ou des chemins de fichiers. #}
-    <p>
+    <p class="chapeau" style="margin-inline: auto">
         Le problème vient de nous, pas de vous. Il a été enregistré et nous
         allons le regarder.
     </p>
@@ -17,8 +19,8 @@
         enregistrée : reprenez depuis le menu concerné.
     </p>
 
-    <ul>
-        <li><a href="/">Retour à l'accueil</a></li>
-        <li><a href="/contact">Nous décrire ce qui s'est passé</a></li>
-    </ul>
+    <div class="banniere__actions">
+        {{ ui.bouton('Retour à l\'accueil', '/', 'principal') }}
+        {{ ui.bouton('Décrire ce qui s\'est passé', '/contact', 'contour') }}
+    </div>
 {% endblock %}

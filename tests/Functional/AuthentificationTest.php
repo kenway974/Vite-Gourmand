@@ -140,7 +140,7 @@ class AuthentificationTest extends WebTestCase
         // Rejeté par UtilisateurChecker, malgré des identifiants corrects.
         self::assertResponseRedirects('/connexion');
         $crawler = $this->client->followRedirect();
-        self::assertStringContainsString('désactivé', $crawler->filter('.erreur')->text());
+        self::assertStringContainsString('désactivé', $crawler->filter('.encart-alerte')->text());
 
         $this->client->request('GET', '/mon-compte');
         self::assertResponseRedirects();

@@ -1,67 +1,98 @@
 {% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Commander {{ menu.titre }} — Vite &amp; Gourmand{% endblock %}
 
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Nouvelle commande') }}
+            <h1>Commander « {{ menu.titre }} »</h1>
+        </div>
+    </div>
+{% endblock %}
+
 {% block body %}
-    <h1>Commander « {{ menu.titre }} »</h1>
+    <div class="bande conteneur grille grille--contenu-aside">
+        <div>
+            {{ form_errors(form) }}
 
-    <dl>
-        <dt>Prix</dt>
-        <dd>{{ exemplePrix.prixUnitaire }} € par personne</dd>
+            {{ form_start(form) }}
+                {{ form_row(form.datePrestation) }}
+                {{ form_row(form.heureLivraison) }}
+                {{ form_row(form.lieuLivraison) }}
+                {{ form_row(form.codePostalLivraison) }}
+                {{ form_row(form.nbPersonnes) }}
+                {{ form_row(form.pretMateriel) }}
 
-        <dt>À partir de</dt>
-        <dd>{{ menu.nbMinPersonnes }} convives</dd>
+                {{ ui.bouton('Envoyer ma demande', null, 'principal', {large: true, type: 'submit'}) }}
+            {{ form_end(form) }}
+        </div>
 
-        <dt>Remise</dt>
-        <dd>10 % dès {{ exemplePrix.seuilRemise }} convives</dd>
+        <aside class="carte carte--relief encart-prix">
+            <div class="grille grille--paire encart-prix__chiffres">
+                <div>
+                    <span class="surtitre">Convives</span>
+                    <p class="stat__valeur">{{ menu.nbMinPersonnes }}<small> min.</small></p>
+                </div>
+                <div>
+                    <span class="surtitre">Délai</span>
+                    <p class="stat__valeur">{{ menu.delaiCommandeJours }}<small> jour{{ menu.delaiCommandeJours > 1 ? 's' : '' }}</small></p>
+                </div>
+            </div>
 
-        <dt>Délai de préparation</dt>
-        <dd>{{ menu.delaiCommandeJours }} jour(s)</dd>
-    </dl>
+            <p class="stat__valeur encart-prix__montant">{{ exemplePrix.prixUnitaire }} €</p>
+            <p class="stat__libelle">par personne</p>
 
-    <p>Le prix comprend la livraison, le dressage et la reprise du matériel dans Bordeaux intra-muros.</p>
+            <p class="petit texte-doux">
+                Le prix inclut la livraison, le dressage et la reprise du
+                matériel dans un rayon de Bordeaux intra-muros.
+            </p>
 
-    {{ form_errors(form) }}
+            <p class="petit texte-doux">
+                Une remise de 10&nbsp;% s'applique à partir de
+                {{ exemplePrix.seuilRemise }} convives.
+            </p>
 
-    {{ form_start(form) }}
-        {{ form_row(form.datePrestation) }}
-        {{ form_row(form.heureLivraison) }}
-        {{ form_row(form.lieuLivraison) }}
-        {{ form_row(form.codePostalLivraison) }}
-        {{ form_row(form.nbPersonnes) }}
-        {{ form_row(form.pretMateriel) }}
+            <p class="petit texte-doux">
+                Le montant définitif — zone de livraison comprise — est
+                calculé à la validation de votre demande, jamais avant.
+            </p>
+        </aside>
+    </div>
 
-        <button type="submit">Envoyer ma demande</button>
-    {{ form_end(form) }}
+    <div class="bande conteneur">
+        <h2 class="titre-section">Communes desservies</h2>
 
-    <h2>Communes desservies</h2>
+        {% if zones is empty %}
+            <p class="texte-doux">Aucune zone de livraison n'est définie pour le moment.</p>
+        {% else %}
+            <div class="tableau-defilant">
+                <table>
+                    <caption>Zones de livraison et suppléments</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Commune</th>
+                            <th scope="col">Code postal</th>
+                            <th scope="col">Livraison</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for zone in zones %}
+                            <tr>
+                                <th scope="row">{{ zone.commune }}</th>
+                                <td>{{ zone.codePostal }}</td>
+                                <td>{{ zone.livraisonComprise ? 'Comprise' : zone.frais ~ ' €' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-    {% if zones is empty %}
-        <p>Aucune zone de livraison n'est définie pour le moment.</p>
-    {% else %}
-        <table>
-            <caption>Zones de livraison et suppléments</caption>
-            <thead>
-                <tr>
-                    <th scope="col">Commune</th>
-                    <th scope="col">Code postal</th>
-                    <th scope="col">Livraison</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for zone in zones %}
-                    <tr>
-                        <th scope="row">{{ zone.commune }}</th>
-                        <td>{{ zone.codePostal }}</td>
-                        <td>{{ zone.livraisonComprise ? 'Comprise' : zone.frais ~ ' €' }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <p>
-            Votre commune n'apparaît pas ?
-            <a href="{{ path('app_contact') }}">Écrivez-nous</a> pour un devis.
-        </p>
-    {% endif %}
+            <p class="petit texte-doux" style="margin-top: 1rem">
+                Votre commune n'apparaît pas ?
+                <a href="{{ path('app_contact') }}">Écrivez-nous</a> pour un devis.
+            </p>
+        {% endif %}
+    </div>
 {% endblock %}

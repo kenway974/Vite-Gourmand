@@ -1,72 +1,101 @@
 {% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Commande n° {{ commande.id }} — Vite &amp; Gourmand{% endblock %}
 
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Espace client') }}
+            <h1>Commande n° {{ commande.id }}</h1>
+            <p style="margin-top: 0.75rem">{{ ui.etiquetteCommande(commande.statut) }}</p>
+        </div>
+    </div>
+{% endblock %}
+
 {% block body %}
-    <h1>Commande n° {{ commande.id }}</h1>
+    <div class="bande conteneur grille grille--contenu-aside">
+        <div>
+            <div class="carte">
+                <dl class="fiche">
+                    <div>
+                        <dt>Menu</dt>
+                        <dd>{{ commande.menu.titre }} — {{ commande.menu.theme.libelle }}</dd>
+                    </div>
+                    <div>
+                        <dt>Prestation</dt>
+                        <dd>Le {{ commande.datePrestation|date('d/m/Y') }} à {{ commande.heureLivraison|date('H\\hi') }}</dd>
+                    </div>
+                    <div>
+                        <dt>Lieu</dt>
+                        <dd>{{ commande.lieuLivraison }}</dd>
+                    </div>
+                    <div>
+                        <dt>Convives</dt>
+                        <dd>{{ commande.nbPersonnes }}</dd>
+                    </div>
+                    <div>
+                        <dt>Prêt de matériel</dt>
+                        <dd>{{ commande.pretMateriel ? 'Oui — à restituer sous dix jours ouvrés' : 'Non' }}</dd>
+                    </div>
+                </dl>
+            </div>
 
-    <dl>
-        <dt>Menu</dt>
-        <dd>{{ commande.menu.titre }} <span class="tag">{{ commande.menu.theme.libelle }}</span></dd>
+            <h2 class="titre-section" style="margin-top: 2rem">Détail du prix</h2>
+            <ul class="liste-nue">
+                <li>{{ commande.menu.prixMin }} € × {{ commande.nbPersonnes }} convives</li>
+                {% if commande.montantRemise > 0 %}
+                    <li>Remise de {{ commande.tauxRemise|number_format(0) }} % : − {{ commande.montantRemise|number_format(2, ',', ' ') }} €</li>
+                {% endif %}
+                <li><strong>Total : {{ commande.prixTotal|number_format(2, ',', ' ') }} €</strong></li>
+            </ul>
 
-        <dt>Prestation</dt>
-        <dd>Le {{ commande.datePrestation|date('d/m/Y') }} à {{ commande.heureLivraison|date('H\\hi') }}</dd>
+            <h2 class="titre-section" style="margin-top: 2rem">Votre avis</h2>
+            {% if commande.avis %}
+                <p>
+                    Note : {{ commande.avis.note }}/5
+                    — {{ commande.avis.estPublie ? 'publié' : 'en attente de relecture' }}
+                </p>
+                <blockquote class="chapeau">{{ commande.avis.commentaire }}</blockquote>
+            {% elseif commande.statut == 'livrée' %}
+                {{ ui.bouton('Déposer un avis', path('app_client_avis', {id: commande.id}), 'contour') }}
+            {% else %}
+                <p class="texte-doux">Vous pourrez déposer un avis une fois la prestation livrée.</p>
+            {% endif %}
 
-        <dt>Lieu</dt>
-        <dd>{{ commande.lieuLivraison }}</dd>
+            {% if commande.estAnnulableParLeClient %}
+                <h2 class="titre-section" style="margin-top: 2rem">Annulation</h2>
+                <form method="post"
+                      action="{{ path('app_client_commande_annuler', {id: commande.id}) }}"
+                      onsubmit="return confirm('Annuler définitivement cette commande ?')">
+                    <input type="hidden" name="_token" value="{{ csrf_token('annuler-commande-' ~ commande.id) }}">
+                    {{ ui.bouton('Annuler ma commande', null, 'contour', {type: 'submit'}) }}
+                </form>
+            {% endif %}
 
-        <dt>Convives</dt>
-        <dd>{{ commande.nbPersonnes }}</dd>
+            <p style="margin-top: 2rem">
+                <a href="{{ path('app_client_commandes') }}">&larr; Retour à mes commandes</a>
+            </p>
+        </div>
 
-        <dt>Prêt de matériel</dt>
-        <dd>{{ commande.pretMateriel ? 'Oui — à restituer sous dix jours ouvrés' : 'Non' }}</dd>
+        <aside class="carte carte--relief">
+            <h2 class="titre-section">Suivi</h2>
 
-        <dt>Statut</dt>
-        <dd>{{ commande.statut }}</dd>
-    </dl>
-
-    <h2>Détail du prix</h2>
-    <ul>
-        <li>{{ commande.menu.prixMin }} € × {{ commande.nbPersonnes }} convives</li>
-        {% if commande.montantRemise > 0 %}
-            <li>Remise de {{ commande.tauxRemise|number_format(0) }} % : − {{ commande.montantRemise|number_format(2, ',', ' ') }} €</li>
-        {% endif %}
-        <li><strong>Total : {{ commande.prixTotal|number_format(2, ',', ' ') }} €</strong></li>
-    </ul>
-
-    <h2>Suivi</h2>
-    {% if commande.suiviCommandes is empty %}
-        <p>Aucun suivi pour le moment.</p>
-    {% else %}
-        <ol>
-            {% for suivi in commande.suiviCommandes %}
-                <li>
-                    {{ suivi.dateModification|date('d/m/Y') }} — {{ suivi.statut }}
-                    {% if suivi.motif %}<br><em>{{ suivi.motif }}</em>{% endif %}
-                </li>
-            {% endfor %}
-        </ol>
-    {% endif %}
-
-    <h2>Votre avis</h2>
-    {% if commande.avis %}
-        <p>Note : {{ commande.avis.note }}/5 — {{ commande.avis.estPublie ? 'publié' : 'en attente de relecture' }}</p>
-        <blockquote>{{ commande.avis.commentaire }}</blockquote>
-    {% elseif commande.statut == 'livrée' %}
-        <p><a href="{{ path('app_client_avis', {id: commande.id}) }}">Déposer un avis</a></p>
-    {% else %}
-        <p>Vous pourrez déposer un avis une fois la prestation livrée.</p>
-    {% endif %}
-
-    {% if commande.estAnnulableParLeClient %}
-        <h2>Annulation</h2>
-        <form method="post"
-              action="{{ path('app_client_commande_annuler', {id: commande.id}) }}"
-              onsubmit="return confirm('Annuler définitivement cette commande ?')">
-            <input type="hidden" name="_token" value="{{ csrf_token('annuler-commande-' ~ commande.id) }}">
-            <button type="submit">Annuler ma commande</button>
-        </form>
-    {% endif %}
-
-    <p><a href="{{ path('app_client_commandes') }}">Retour à mes commandes</a></p>
+            {% if commande.suiviCommandes is empty %}
+                <p class="petit texte-doux">Aucun suivi pour le moment.</p>
+            {% else %}
+                <ol class="suivi">
+                    {% for suivi in commande.suiviCommandes|reverse %}
+                        <li>
+                            <p class="suivi__statut">{{ suivi.statut }}</p>
+                            <p class="suivi__date">{{ suivi.dateModification|date('d/m/Y') }}</p>
+                            {% if suivi.motif %}
+                                <p class="suivi__motif">{{ suivi.motif }}</p>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% endif %}
+        </aside>
+    </div>
 {% endblock %}

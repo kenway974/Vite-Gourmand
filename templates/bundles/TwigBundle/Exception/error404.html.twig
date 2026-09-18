@@ -1,11 +1,13 @@
 {% extends 'bundles/TwigBundle/Exception/_socle.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Page introuvable — Vite &amp; Gourmand{% endblock %}
 
 {% block body %}
+    {{ ui.surtitre('Erreur 404') }}
     <h1>Cette page n'existe pas</h1>
 
-    <p>
+    <p class="chapeau" style="margin-inline: auto">
         Le lien que vous avez suivi ne mène nulle part, ou la page a été
         retirée. Un menu de saison, par exemple, disparaît du catalogue une
         fois sa période passée.
@@ -13,9 +15,9 @@
 
     {# Adresses en dur et non path() : le routeur peut faire partie de ce qui
        est cassé, et une page d'erreur ne doit dépendre de rien. #}
-    <ul>
-        <li><a href="/menus">Voir nos menus</a></li>
-        <li><a href="/">Retour à l'accueil</a></li>
-        <li><a href="/contact">Nous signaler le problème</a></li>
-    </ul>
+    <div class="banniere__actions">
+        {{ ui.bouton('Voir nos menus', '/menus', 'principal') }}
+        {{ ui.bouton('Retour à l\'accueil', '/', 'contour') }}
+        {{ ui.bouton('Signaler le problème', '/contact', 'contour') }}
+    </div>
 {% endblock %}

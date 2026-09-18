@@ -1,61 +1,74 @@
 {% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Supprimer mon compte — Vite &amp; Gourmand{% endblock %}
 
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Espace client') }}
+            <h1>Supprimer mon compte</h1>
+        </div>
+    </div>
+{% endblock %}
+
 {% block body %}
-    <h1>Supprimer mon compte</h1>
+    <div class="bande conteneur conteneur--etroit">
+        <div class="encart-alerte" role="alert">
+            <p><strong>Cette action est définitive.</strong></p>
 
-    <p role="alert"><strong>Cette action est définitive.</strong></p>
+            {% if dernierAdmin %}
+                <p>
+                    <strong>Suppression impossible :</strong> vous êtes le
+                    dernier administrateur actif. Nommez quelqu'un d'autre
+                    avant, sans quoi plus personne ne pourrait administrer le
+                    site.
+                </p>
+            {% elseif nbEnCours > 0 %}
+                <p>
+                    <strong>Suppression impossible :</strong> vous avez
+                    {{ nbEnCours }} commande{{ nbEnCours > 1 ? 's' : '' }} en
+                    cours. Sans vos coordonnées, nous ne pourrions plus vous
+                    livrer. Attendez la livraison ou annulez-{{ nbEnCours > 1 ? 'les' : 'la' }}.
+                </p>
+            {% endif %}
+        </div>
 
-    {% if dernierAdmin %}
-        <p role="alert">
-            <strong>Suppression impossible :</strong> vous êtes le dernier
-            administrateur actif. Nommez quelqu'un d'autre avant, sans quoi
-            plus personne ne pourrait administrer le site.
+        <h2>Ce qui sera effacé</h2>
+        <ul>
+            <li>Votre nom et votre prénom</li>
+            <li>Votre adresse e-mail</li>
+            <li>Votre téléphone et votre adresse postale</li>
+            <li>Votre mot de passe</li>
+        </ul>
+        <p>Vous ne pourrez plus vous connecter.</p>
+
+        <h2>Ce qui sera conservé</h2>
+        {% if nbCommandes > 0 %}
+            <p>
+                Vos <strong>{{ nbCommandes }} commande{{ nbCommandes > 1 ? 's' : '' }}</strong>,
+                sans votre identité. Le code de commerce impose de garder les
+                pièces comptables dix ans : nous ne pouvons pas les effacer,
+                mais elles ne porteront plus votre nom.
+            </p>
+        {% else %}
+            <p>
+                Vous n'avez passé aucune commande : rien ne sera conservé
+                vous concernant.
+            </p>
+        {% endif %}
+        <p>Vos avis publiés restent visibles, rattachés à un compte anonyme.</p>
+
+        {% if not dernierAdmin and nbEnCours == 0 %}
+            <form method="post"
+                  onsubmit="return confirm('Supprimer définitivement votre compte ?')">
+                <input type="hidden" name="_token" value="{{ csrf_token('supprimer-mon-compte') }}">
+                {{ ui.bouton('Supprimer définitivement mon compte', null, 'contour', {type: 'submit'}) }}
+            </form>
+        {% endif %}
+
+        <p style="margin-top: 1.5rem">
+            <a href="{{ path('app_compte') }}">Annuler et revenir à mon compte</a>
         </p>
-    {% elseif nbEnCours > 0 %}
-        <p role="alert">
-            <strong>Suppression impossible :</strong> vous avez
-            {{ nbEnCours }} commande{{ nbEnCours > 1 ? 's' : '' }} en cours.
-            Sans vos coordonnées, nous ne pourrions plus vous livrer.
-            Attendez la livraison ou annulez-{{ nbEnCours > 1 ? 'les' : 'la' }}.
-        </p>
-    {% endif %}
-
-    <h2>Ce qui sera effacé</h2>
-    <ul>
-        <li>Votre nom et votre prénom</li>
-        <li>Votre adresse e-mail</li>
-        <li>Votre téléphone et votre adresse postale</li>
-        <li>Votre mot de passe</li>
-    </ul>
-    <p>Vous ne pourrez plus vous connecter.</p>
-
-    <h2>Ce qui sera conservé</h2>
-    {% if nbCommandes > 0 %}
-        <p>
-            Vos <strong>{{ nbCommandes }} commande{{ nbCommandes > 1 ? 's' : '' }}</strong>,
-            sans votre identité. Le code de commerce impose de garder les pièces
-            comptables dix ans : nous ne pouvons pas les effacer, mais elles ne
-            porteront plus votre nom.
-        </p>
-    {% else %}
-        <p>
-            Vous n'avez passé aucune commande : rien ne sera conservé vous
-            concernant.
-        </p>
-    {% endif %}
-    <p>
-        Vos avis publiés restent visibles, rattachés à un compte anonyme.
-    </p>
-
-    {% if not dernierAdmin and nbEnCours == 0 %}
-        <form method="post"
-              onsubmit="return confirm('Supprimer définitivement votre compte ?')">
-            <input type="hidden" name="_token" value="{{ csrf_token('supprimer-mon-compte') }}">
-            <button type="submit">Supprimer définitivement mon compte</button>
-        </form>
-    {% endif %}
-
-    <p><a href="{{ path('app_compte') }}">Annuler et revenir à mon compte</a></p>
+    </div>
 {% endblock %}

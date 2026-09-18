@@ -1496,6 +1496,126 @@ textarea[aria-invalid='true'] {
     color: var(--texte-doux);
 }
 
+/* Case seule (CGV, prêt de matériel) : le thème de formulaire l'enveloppe
+   dans .choix, comme les cases de la colonne de filtres. */
+.champ--case {
+    margin-bottom: var(--e-4);
+}
+
+.champ--case .choix {
+    align-items: flex-start;
+    padding-block: 0;
+}
+
+.champ--case .aide-champ,
+.champ--case .erreur-champ {
+    margin-left: calc(1.05rem + var(--e-3));
+}
+
+/*
+ * Encart d'alerte : erreurs de formulaire groupées, avertissement avant une
+ * action destructive. Même rouge que .erreur-champ — c'est le même registre,
+ * porté cette fois par un bloc plutôt qu'un champ.
+ */
+.encart-alerte {
+    margin-bottom: var(--e-5);
+    padding: var(--e-4) var(--e-5);
+    border: 1px solid #9a1d2e;
+    border-left-width: 3px;
+    border-radius: var(--rayon);
+    background: rgb(154 29 46 / 6%);
+    color: var(--texte);
+}
+
+.encart-alerte p {
+    margin: 0;
+}
+
+.encart-alerte p + p {
+    margin-top: var(--e-3);
+}
+
+.encart-alerte ul {
+    margin: var(--e-2) 0 0;
+}
+
+/*
+ * Liste de définitions présentée en fiche : une étiquette discrète au-dessus
+ * de sa valeur, plutôt que le dt/dd en ligne par défaut du navigateur, illisible
+ * dès que les valeurs s'allongent.
+ */
+.fiche {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--e-5) var(--e-6);
+    margin-bottom: var(--e-6);
+}
+
+.fiche dt {
+    margin-bottom: var(--e-1);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--texte-doux);
+}
+
+.fiche dd {
+    margin: 0;
+}
+
+/*
+ * Historique d'une commande : une ligne verticale portée par la bordure de
+ * la liste, un point par étape. Le dernier événement n'a pas besoin de
+ * continuer la ligne en dessous de lui, d'où le retrait sur le dernier
+ * élément.
+ */
+.suivi {
+    position: relative;
+    margin: 0;
+    padding-left: var(--e-6);
+    border-left: 2px solid var(--filet);
+}
+
+.suivi li {
+    position: relative;
+    padding-bottom: var(--e-5);
+}
+
+.suivi li:last-child {
+    padding-bottom: 0;
+}
+
+.suivi li::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--e-6) * -1 - 5px);
+    top: 0.35em;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--laiton);
+}
+
+.suivi li:first-child::before {
+    background: var(--lie-de-vin);
+}
+
+.suivi__statut {
+    font-weight: 600;
+}
+
+.suivi__date {
+    font-size: var(--t-sm);
+    color: var(--texte-doux);
+}
+
+.suivi__motif {
+    margin-top: var(--e-1);
+    font-size: var(--t-sm);
+    color: var(--texte-doux);
+}
+
 /* --- Messages flash --------------------------------------------------- */
 
 /*
