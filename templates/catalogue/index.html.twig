@@ -21,16 +21,16 @@
             script.
         #}
         {#
-            Un seul formulaire pour toute la colonne, soumis par son bouton.
-            Les filtres restent donc utilisables sans JavaScript : c'est la
-            seule porte d'entrée vers un menu, elle ne peut pas dépendre d'un
-            script.
+            Compte les filtres repliés sur petit écran, pour que la bascule
+            annonce ce qu'elle cache. Le tri par défaut n'en fait pas partie :
+            il est renvoyé par le formulaire à chaque recherche, et le compter
+            replierait un panneau que le visiteur n'a jamais restreint.
         #}
         {% set filtresSecondairesActifs =
             (filtres.regime ? 1 : 0)
             + (filtres.nbPersonnes ? 1 : 0)
             + (filtres.seulementCommandables ? 1 : 0)
-            + (filtres.tri ? 1 : 0) %}
+            + (filtres.tri and filtres.tri != triDefaut ? 1 : 0) %}
 
         <form method="get" action="{{ path('app_catalogue') }}"
               class="filtres"
