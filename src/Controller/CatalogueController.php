@@ -32,20 +32,27 @@ class CatalogueController extends AbstractController
         $filtres = [
             'recherche' => trim($request->query->getString('q')) ?: null,
             'tri' => $request->query->getString('tri') ?: null,
+            // getInt() rejette la chaîne vide par une 400, or c'est exactement
+            // ce que le formulaire envoie quand le visiteur laisse « Tous » :
+            // chercher sans filtre tombait sur une page d'erreur. On lit donc
+            // la valeur brute et on la convertit soi-même, où « » vaut 0.
+            //
             // find(0) déclencherait une requête inutile à chaque visite sans
             // filtre : on ne va en base que si un identifiant est réellement
             // passé. Un identifiant inconnu vaut « pas de filtre ».
-            'theme' => ($idTheme = $request->query->getInt('theme')) > 0 ? $themes->find($idTheme) : null,
-            'regime' => ($idRegime = $request->query->getInt('regime')) > 0 ? $regimes->find($idRegime) : null,
+            'theme' => ($idTheme = (int) $request->query->getString('theme')) > 0 ? $themes->find($idTheme) : null,
+            'regime' => ($idRegime = (int) $request->query->getString('regime')) > 0 ? $regimes->find($idRegime) : null,
             // Hors palier, le filtre est ignoré : la valeur vient de l'URL et
             // n'a pas à atteindre la requête telle quelle.
-            'nbPersonnes' => \in_array($convives = $request->query->getInt('convives'), MenuRepository::PALIERS_CONVIVES, true)
+            'nbPersonnes' => \in_array($convives = (int) $request->query->getString('convives'), MenuRepository::PALIERS_CONVIVES, true)
                 ? $convives
                 : null,
             'seulementCommandables' => $request->query->getBoolean('commandables'),
         ];
 
-        $page = max(1, $request->query->getInt('page', 1));
+        // Même raison : la pagination reconduit les paramètres de l'URL, une
+        // page vide ne doit pas casser la navigation.
+        $page = max(1, (int) $request->query->getString('page', '1'));
         $resultats = $menus->findCatalogue($filtres, $page, self::PAR_PAGE);
 
         $total = \count($resultats);
@@ -57,6 +64,7 @@ class CatalogueController extends AbstractController
             'themes' => $themes->findBy([], ['libelle' => 'ASC']),
             'regimes' => $regimes->findBy([], ['libelle' => 'ASC']),
             'tris' => MenuRepository::TRIS,
+            'triDefaut' => MenuRepository::TRI_DEFAUT,
             'paliers' => MenuRepository::PALIERS_CONVIVES,
             'filtres' => $filtres,
             'page' => $page,

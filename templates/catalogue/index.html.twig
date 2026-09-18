@@ -1,116 +1,175 @@
 {% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Nos menus — Vite &amp; Gourmand{% endblock %}
 
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('La carte') }}
+            <h1>Nos menus</h1>
+        </div>
+    </div>
+{% endblock %}
+
 {% block body %}
-    <h1>Nos menus</h1>
+    <div class="bande conteneur grille grille--aside">
+        {#
+            Un seul formulaire pour toute la colonne, soumis par son bouton.
+            Les filtres restent donc utilisables sans JavaScript : c'est la
+            seule porte d'entrée vers un menu, elle ne peut pas dépendre d'un
+            script.
+        #}
+        {#
+            Compte les filtres repliés sur petit écran, pour que la bascule
+            annonce ce qu'elle cache. Le tri par défaut n'en fait pas partie :
+            il est renvoyé par le formulaire à chaque recherche, et le compter
+            replierait un panneau que le visiteur n'a jamais restreint.
+        #}
+        {% set filtresSecondairesActifs =
+            (filtres.regime ? 1 : 0)
+            + (filtres.nbPersonnes ? 1 : 0)
+            + (filtres.seulementCommandables ? 1 : 0)
+            + (filtres.tri and filtres.tri != triDefaut ? 1 : 0) %}
 
-    <form method="get" action="{{ path('app_catalogue') }}">
-        <fieldset>
-            <legend>Rechercher un menu</legend>
+        <form method="get" action="{{ path('app_catalogue') }}"
+              class="filtres"
+              data-controller="filtres"
+              data-filtres-actifs-value="{{ filtresSecondairesActifs }}">
+            <div class="champ-recherche">
+                <span aria-hidden="true">&#9906;</span>
+                <label class="sr-only" for="q">Rechercher un menu</label>
+                <input type="search" id="q" name="q"
+                       value="{{ filtres.recherche|default('') }}"
+                       placeholder="Rechercher un menu…">
+            </div>
 
-            <label for="q">Mot-clé</label>
-            <input type="search" id="q" name="q" value="{{ filtres.recherche|default('') }}"
-                   placeholder="entrecôte, cannelé, végétarien…">
+            {#
+                Les thèmes restent toujours visibles : c'est le tri d'entrée le
+                plus courant. Sur petit écran, le CSS les range en bandeau
+                défilant plutôt qu'en colonne — même balisage, autre mise en
+                page.
+            #}
+            <fieldset class="groupe-filtres groupe-filtres--themes">
+                <legend>Thème</legend>
+                <div class="choix-rail">
+                    <label class="choix">
+                        <input type="radio" name="theme" value="" {{ filtres.theme ? '' : 'checked' }}>
+                        Tous
+                    </label>
+                    {% for theme in themes %}
+                        <label class="choix">
+                            <input type="radio" name="theme" value="{{ theme.id }}"
+                                   {{ filtres.theme and filtres.theme.id == theme.id ? 'checked' : '' }}>
+                            {{ theme.libelle }}
+                        </label>
+                    {% endfor %}
+                </div>
+            </fieldset>
 
-            <label for="theme">Thème</label>
-            <select id="theme" name="theme">
-                <option value="">Tous les thèmes</option>
-                {% for theme in themes %}
-                    <option value="{{ theme.id }}"
-                            {{ filtres.theme and filtres.theme.id == theme.id ? 'selected' : '' }}>
-                        {{ theme.libelle }}
-                    </option>
-                {% endfor %}
-            </select>
+            <button type="button"
+                    class="bascule-filtres"
+                    data-filtres-target="bascule"
+                    data-action="filtres#basculer"
+                    aria-expanded="true"
+                    aria-controls="filtres-secondaires">
+                Filtrer
+                {%- if filtresSecondairesActifs %}
+                    <span class="bascule-filtres__compteur">{{ filtresSecondairesActifs }}</span>
+                {%- endif %}
+            </button>
 
-            <label for="regime">Régime</label>
-            <select id="regime" name="regime">
-                <option value="">Tous les régimes</option>
-                {% for regime in regimes %}
-                    <option value="{{ regime.id }}"
-                            {{ filtres.regime and filtres.regime.id == regime.id ? 'selected' : '' }}>
-                        {{ regime.libelle }}
-                    </option>
-                {% endfor %}
-            </select>
+            <div id="filtres-secondaires"
+                 class="filtres__secondaires"
+                 data-filtres-target="panneau"
+                 data-ouvert="true">
+                <div class="grille grille--paire">
+                    <fieldset class="groupe-filtres">
+                        <legend>Régime</legend>
+                        <label class="choix">
+                            <input type="radio" name="regime" value="" {{ filtres.regime ? '' : 'checked' }}>
+                            Tous
+                        </label>
+                        {% for regime in regimes %}
+                            <label class="choix">
+                                <input type="radio" name="regime" value="{{ regime.id }}"
+                                       {{ filtres.regime and filtres.regime.id == regime.id ? 'checked' : '' }}>
+                                {{ regime.libelle }}
+                            </label>
+                        {% endfor %}
+                    </fieldset>
 
-            <label for="convives">Nombre de convives</label>
-            <select id="convives" name="convives">
-                <option value="">Peu importe</option>
-                {% for palier in paliers %}
-                    <option value="{{ palier }}" {{ filtres.nbPersonnes == palier ? 'selected' : '' }}>
-                        {{ palier }} et plus
-                    </option>
-                {% endfor %}
-            </select>
+                    {#
+                        Le sélecteur garde son id et ses options : c'est un champ
+                        à choix fermé, et les paliers viennent du dépôt. Une valeur
+                        hors palier est ignorée côté contrôleur.
+                    #}
+                    <fieldset class="groupe-filtres">
+                        <legend><label for="convives">Convives</label></legend>
+                        <select id="convives" name="convives">
+                            <option value="">Peu importe</option>
+                            {% for palier in paliers %}
+                                <option value="{{ palier }}" {{ filtres.nbPersonnes == palier ? 'selected' : '' }}>
+                                    {{ palier }} et plus
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </fieldset>
+                </div>
 
-            <label for="tri">Trier par</label>
-            <select id="tri" name="tri">
-                {% for cle, libelle in tris %}
-                    <option value="{{ cle }}" {{ filtres.tri == cle ? 'selected' : '' }}>{{ libelle }}</option>
-                {% endfor %}
-            </select>
+                <label class="choix">
+                    <input type="checkbox" name="commandables" value="1"
+                           {{ filtres.seulementCommandables ? 'checked' : '' }}>
+                    Commandables aujourd'hui
+                </label>
 
-            <label for="commandables">
-                <input type="checkbox" id="commandables" name="commandables" value="1"
-                       {{ filtres.seulementCommandables ? 'checked' : '' }}>
-                Uniquement les menus commandables aujourd'hui
-            </label>
+                <div class="champ">
+                    <label for="tri">Trier par</label>
+                    <select id="tri" name="tri">
+                        {% for cle, libelle in tris %}
+                            <option value="{{ cle }}" {{ filtres.tri == cle ? 'selected' : '' }}>{{ libelle }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
 
-            <button type="submit">Rechercher</button>
-            <a href="{{ path('app_catalogue') }}">Réinitialiser</a>
-        </fieldset>
-    </form>
+            <div class="actions">
+                {{ ui.bouton('Rechercher', null, 'principal', {large: true}) }}
+            </div>
 
-    <p role="status">
-        {{ total }} menu(s) correspondent à votre recherche.
-    </p>
+            <p><a class="lien-discret" href="{{ path('app_catalogue') }}">Réinitialiser les filtres</a></p>
+        </form>
 
-    {% if menus is empty %}
-        <p>Aucun menu ne correspond à ces critères. Essayez d'élargir votre recherche.</p>
-    {% else %}
-        <ul class="catalogue">
-            {% for menu in menus %}
-                {% set note = notes[menu.id]|default(null) %}
-                <li>
-                    <article>
-                        <h2><a href="{{ path('app_catalogue_menu', {id: menu.id}) }}">{{ menu.titre }}</a></h2>
+        <div>
+            <p class="entre-deux" role="status">
+                <span class="surtitre" style="margin: 0">
+                    {{ total }} menu{{ total > 1 ? 's' : '' }}
+                </span>
+            </p>
 
-                        <p>{{ menu.theme.libelle }} — {{ menu.regime.libelle }}</p>
-                        <p>{{ menu.description }}</p>
-
-                        <p>
-                            <strong>{{ menu.prixMin }} € par personne</strong>,
-                            à partir de {{ menu.nbMinPersonnes }} convives.
-                        </p>
-
-                        {% if note %}
-                            <p>Note : {{ note.moyenne }} / 5 ({{ note.nombre }} avis)</p>
-                        {% else %}
-                            <p>Pas encore d'avis.</p>
-                        {% endif %}
-
-                        {{ include('catalogue/_disponibilite.html.twig') }}
-                    </article>
-                </li>
-            {% endfor %}
-        </ul>
-
-        {% if nbPages > 1 %}
-            <nav aria-label="Pagination du catalogue">
-                <p>Page {{ page }} sur {{ nbPages }}</p>
-                <ul>
-                    {% if page > 1 %}
-                        <li><a href="{{ path('app_catalogue', app.request.query.all|merge({page: page - 1})) }}"
-                               rel="prev">Page précédente</a></li>
-                    {% endif %}
-                    {% if page < nbPages %}
-                        <li><a href="{{ path('app_catalogue', app.request.query.all|merge({page: page + 1})) }}"
-                               rel="next">Page suivante</a></li>
-                    {% endif %}
+            {% if menus is empty %}
+                <p class="carte">
+                    Aucun menu ne correspond à ces critères.
+                    <a href="{{ path('app_catalogue') }}">Élargir la recherche</a>.
+                </p>
+            {% else %}
+                <ul class="liste-nue grille grille--2 catalogue">
+                    {% for menu in menus %}
+                        {{ include('catalogue/_carte.html.twig', {
+                            menu: menu,
+                            note: notes[menu.id]|default(null),
+                        }) }}
+                    {% endfor %}
                 </ul>
-            </nav>
-        {% endif %}
-    {% endif %}
+
+                {{ ui.pagination(
+                    page,
+                    nbPages,
+                    'app_catalogue',
+                    app.request.query.all,
+                    'Pagination du catalogue'
+                ) }}
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

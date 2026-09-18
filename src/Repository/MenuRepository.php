@@ -30,6 +30,14 @@ class MenuRepository extends ServiceEntityRepository
      */
     public const PALIERS_CONVIVES = [4, 6, 20];
 
+    /**
+     * Ordre appliqué quand aucun tri n'est demandé — celui sur lequel trier()
+     * retombe. Nommé plutôt que laissé implicite : le catalogue s'en sert pour
+     * savoir qu'un tri sur cette valeur ne restreint rien, et n'a donc pas à
+     * être compté comme un filtre actif.
+     */
+    public const TRI_DEFAUT = 'titre';
+
     public const TRIS = [
         'titre' => 'Ordre alphabétique',
         'prix-croissant' => 'Prix croissant',
@@ -186,6 +194,7 @@ class MenuRepository extends ServiceEntityRepository
                 // menus notés plutôt que devant, d'où le tri secondaire.
                 ->orderBy('noteMoyenne', 'DESC')
                 ->addOrderBy('m.titre', 'ASC'),
+            // Vaut aussi pour self::TRI_DEFAUT, qui désigne cet ordre.
             default => $qb->orderBy('m.titre', 'ASC'),
         };
     }

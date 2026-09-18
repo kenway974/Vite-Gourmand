@@ -196,26 +196,26 @@ class AppFixtures extends Fixture
         $definitions = [
             'huitres' => ['Huîtres du Bassin d\'Arcachon', 'Entrée', "Servies nature, avec pain de seigle et beurre demi-sel.", ['huitre', 'pain', 'beurre', 'vinaigre', 'echalote']],
             'grenier' => ['Grenier médocain', 'Entrée', "Charcuterie girondine traditionnelle, tranchée fin et servie froide.", ['porc', 'moutarde', 'thym']],
-            'foie-gras' => ['Foie gras de canard mi-cuit', 'Entrée', "Mi-cuit maison, accompagné de pruneaux à l\'armagnac.", ['foie-gras', 'pruneau', 'armagnac', 'pain']],
-            'tourin' => ['Tourin blanchi à l\'ail', 'Entrée', "La soupe à l\'ail du Sud-Ouest, liée à l\'œuf.", ['ail', 'oeuf', 'farine', 'vinaigre']],
+            'foie-gras' => ['Foie gras de canard mi-cuit', 'Entrée', "Mi-cuit maison, accompagné de pruneaux à l'armagnac.", ['foie-gras', 'pruneau', 'armagnac', 'pain']],
+            'tourin' => ['Tourin blanchi à l\'ail', 'Entrée', "La soupe à l'ail du Sud-Ouest, liée à l'œuf.", ['ail', 'oeuf', 'farine', 'vinaigre']],
             'asperges' => ['Asperges blanches du Blayais', 'Entrée', "Asperges de saison, sauce mousseline.", ['asperge', 'oeuf', 'beurre', 'moutarde']],
             'salade-landaise' => ['Salade landaise', 'Entrée', "Laitue, gésiers confits et noix du Périgord.", ['laitue', 'gesier', 'noix', 'moutarde', 'vinaigre']],
             'entrecote' => ['Entrecôte à la bordelaise', 'Plat', "Entrecôte grillée, sauce au vin rouge, échalote et moelle.", ['entrecote', 'vin-rouge', 'echalote', 'moelle', 'beurre', 'persil']],
             'lamproie' => ['Lamproie à la bordelaise', 'Plat', "Mijotée au vin rouge et aux poireaux, la recette la plus girondine qui soit.", ['lamproie', 'vin-rouge', 'echalote', 'ail', 'thym']],
             'magret' => ['Magret de canard', 'Plat', "Cuit rosé, déglacé au vin rouge.", ['magret', 'vin-rouge', 'echalote', 'thym']],
             'confit' => ['Confit de canard', 'Plat', "Cuisse confite dans sa graisse, peau croustillante.", ['confit', 'graisse-canard', 'ail', 'thym']],
-            'agneau' => ['Agneau de Pauillac', 'Plat', "Carré d\'agneau rôti, ail et thym.", ['agneau', 'ail', 'thym', 'beurre']],
-            'cepes' => ['Cèpes à la bordelaise', 'Accompagnement', "Cèpes poêlés à l\'échalote et au persil.", ['cepe', 'echalote', 'persil', 'ail']],
+            'agneau' => ['Agneau de Pauillac', 'Plat', "Carré d'agneau rôti, ail et thym.", ['agneau', 'ail', 'thym', 'beurre']],
+            'cepes' => ['Cèpes à la bordelaise', 'Accompagnement', "Cèpes poêlés à l'échalote et au persil.", ['cepe', 'echalote', 'persil', 'ail']],
             'sarladaises' => ['Pommes sarladaises', 'Accompagnement', "Pommes de terre sautées à la graisse de canard, ail et persil.", ['pomme-de-terre', 'graisse-canard', 'ail', 'persil']],
             'haricots' => ['Haricots tarbais', 'Accompagnement', "Mijotés au jambon de Bayonne.", ['haricot-tarbais', 'jambon', 'celeri', 'thym']],
             'gratin' => ['Gratin de légumes', 'Accompagnement', "Légumes de saison gratinés à la crème.", ['pomme-de-terre', 'creme', 'lait', 'beurre', 'ail']],
             'caneles' => ['Canelés de Bordeaux', 'Dessert', "Croûte caramélisée, cœur moelleux au rhum et à la vanille.", ['farine', 'lait', 'oeuf', 'sucre', 'beurre', 'rhum', 'vanille']],
-            'macarons' => ['Macarons de Saint-Émilion', 'Dessert', "La recette des Ursulines, à l\'amande douce.", ['amande', 'sucre', 'oeuf']],
+            'macarons' => ['Macarons de Saint-Émilion', 'Dessert', "La recette des Ursulines, à l'amande douce.", ['amande', 'sucre', 'oeuf']],
             'dunes-blanches' => ['Dunes blanches', 'Dessert', "Petits choux garnis de crème fouettée, spécialité du Cap Ferret.", ['farine', 'oeuf', 'beurre', 'creme', 'sucre', 'lait']],
             'gateau-basque' => ['Gâteau basque', 'Dessert', "Pâte sablée et crème pâtissière à la vanille.", ['farine', 'beurre', 'oeuf', 'lait', 'sucre', 'vanille']],
-            'pruneaux' => ['Pruneaux à l\'armagnac', 'Dessert', "Pruneaux d\'Agen macérés, servis avec une glace vanille.", ['pruneau', 'armagnac', 'creme', 'sucre', 'vanille']],
-            'saumon' => ['Saumon fumé et blinis', 'Entrée', "Saumon fumé, blinis tièdes et crème citronnée à l\'aneth.", ['saumon-fume', 'farine', 'creme', 'citron', 'aneth', 'oeuf']],
-            'saint-jacques' => ['Noix de Saint-Jacques poêlées', 'Entrée', "Saisies au beurre, réduction d\'échalote à la crème.", ['saint-jacques', 'beurre', 'echalote', 'creme']],
+            'pruneaux' => ['Pruneaux à l\'armagnac', 'Dessert', "Pruneaux d'Agen macérés, servis avec une glace vanille.", ['pruneau', 'armagnac', 'creme', 'sucre', 'vanille']],
+            'saumon' => ['Saumon fumé et blinis', 'Entrée', "Saumon fumé, blinis tièdes et crème citronnée à l'aneth.", ['saumon-fume', 'farine', 'creme', 'citron', 'aneth', 'oeuf']],
+            'saint-jacques' => ['Noix de Saint-Jacques poêlées', 'Entrée', "Saisies au beurre, réduction d'échalote à la crème.", ['saint-jacques', 'beurre', 'echalote', 'creme']],
             'chapon' => ['Chapon farci aux cèpes', 'Plat', "Chapon fermier farci aux cèpes et aux marrons.", ['chapon', 'cepe', 'marron', 'pain', 'beurre', 'thym']],
             'gigot-pascal' => ['Gigot d\'agneau pascal', 'Plat', "Gigot rôti sept heures, ail et thym.", ['gigot', 'ail', 'thym', 'beurre']],
             'buche' => ['Bûche de Noël', 'Dessert', "Biscuit roulé, ganache au chocolat noir.", ['farine', 'oeuf', 'sucre', 'chocolat', 'creme', 'beurre']],
@@ -308,12 +308,12 @@ class AppFixtures extends Fixture
         $definitions = [
             'bistrot-bordelais' => [
                 'Bistrot Bordelais', 'bistrot', 'standard', 6, '24.00', 3, 12,
-                "L\'entrecôte est livrée saignante ; précisez la cuisson souhaitée à la commande.",
+                "L'entrecôte est livrée saignante ; précisez la cuisson souhaitée à la commande.",
                 ['grenier', 'entrecote', 'cepes', 'sarladaises', 'caneles'],
             ],
             'table-medoc' => [
                 'Table du Médoc', 'terroir', 'standard', 8, '34.00', 5, 6,
-                "L\'agneau est rôti rosé. Prévoir un four pour la remise en température.",
+                "L'agneau est rôti rosé. Prévoir un four pour la remise en température.",
                 ['foie-gras', 'agneau', 'cepes', 'sarladaises', 'macarons'],
             ],
             'grand-sud-ouest' => [
@@ -343,7 +343,7 @@ class AppFixtures extends Fixture
             ],
             'cocktail-girondin' => [
                 'Cocktail Girondin', 'cocktail', 'standard', 15, '16.00', 5, 10,
-                "Pièces servies froides, à maintenir au frais jusqu\'au service.",
+                "Pièces servies froides, à maintenir au frais jusqu'au service.",
                 ['huitres', 'grenier', 'foie-gras'],
             ],
             'brunch-bordelais' => [
@@ -362,7 +362,7 @@ class AppFixtures extends Fixture
             // site public renvoie une page à une seule entrée.
             'cocktail-vigneron' => [
                 'Cocktail Vigneron', 'cocktail', 'standard', 15, '18.00', 5, 10,
-                "Pièces servies froides, à maintenir au frais jusqu\'au service.",
+                "Pièces servies froides, à maintenir au frais jusqu'au service.",
                 ['grenier', 'foie-gras', 'macarons'],
             ],
             'cocktail-mer' => [
@@ -407,7 +407,7 @@ class AppFixtures extends Fixture
             ],
             'reveillon-prestige' => [
                 'Réveillon Prestige', 'reveillon', 'standard', 8, '58.00', 12, 4,
-                "Commandes closes le 20 décembre. Livraison possible jusqu\'à 19 h le 31.",
+                "Commandes closes le 20 décembre. Livraison possible jusqu'à 19 h le 31.",
                 ['saumon', 'saint-jacques', 'chapon', 'cepes', 'sarladaises', 'buche'],
             ],
             'reveillon-cocktail' => [
@@ -417,7 +417,7 @@ class AppFixtures extends Fixture
             ],
             'paques-tradition' => [
                 'Pâques Tradition', 'paques', 'standard', 6, '34.00', 7, 8,
-                "Le gigot cuit sept heures est livré chaud : à servir dans l\'heure.",
+                "Le gigot cuit sept heures est livré chaud : à servir dans l'heure.",
                 ['asperges', 'gigot-pascal', 'gratin', 'sarladaises', 'gateau-basque'],
             ],
             'paques-vegetal' => [
@@ -488,7 +488,7 @@ class AppFixtures extends Fixture
     {
         // email, prénom, nom, rôles, téléphone, adresse, actif
         $definitions = [
-            'admin' => ['admin@vite-gourmand.fr', 'Kenny', 'Pignolet', ['ROLE_ADMIN'], '05 56 12 34 56', "12 cours de l\'Intendance, 33000 Bordeaux", true],
+            'admin' => ['admin@vite-gourmand.fr', 'Kenny', 'Pignolet', ['ROLE_ADMIN'], '05 56 12 34 56', "12 cours de l'Intendance, 33000 Bordeaux", true],
             'employe' => ['employe@vite-gourmand.fr', 'Marie', 'Lasserre', ['ROLE_EMPLOYE'], '05 56 23 45 67', "8 rue Sainte-Catherine, 33000 Bordeaux", true],
             'client1' => ['sophie.brunet@example.fr', 'Sophie', 'Brunet', [], '06 12 34 56 78', "24 rue Notre-Dame, 33000 Bordeaux", true],
             'client2' => ['david.marchand@example.fr', 'David', 'Marchand', [], '06 23 45 67 89', "5 avenue de la Libération, 33700 Mérignac", true],
@@ -695,10 +695,10 @@ class AppFixtures extends Fixture
         //
         // commande, note, commentaire, statut de validation, jours écoulés
         $definitions = [
-            ['livree1', 5, "Entrecôte parfaitement cuite et la sauce bordelaise était à tomber. Livraison pile à l\'heure, on recommandera.", Avis::VALIDE, -20],
+            ['livree1', 5, "Entrecôte parfaitement cuite et la sauce bordelaise était à tomber. Livraison pile à l'heure, on recommandera.", Avis::VALIDE, -20],
             ['livree2', 4, "Très bon confit, peau bien croustillante. Un peu juste sur les haricots pour huit personnes.", Avis::VALIDE, -12],
             ['livree3', 5, "Enfin un traiteur qui soigne le végétarien. Le tourin était une vraie surprise, et les canelés impeccables.", Avis::VALIDE, -7],
-            ['livree4', 3, "Bon dans l\'ensemble, mais les pruneaux à l\'armagnac sont arrivés écrasés.", Avis::EN_ATTENTE, -2],
+            ['livree4', 3, "Bon dans l'ensemble, mais les pruneaux à l'armagnac sont arrivés écrasés.", Avis::EN_ATTENTE, -2],
         ];
 
         foreach ($definitions as [$cleCommande, $note, $commentaire, $statut, $jours]) {
@@ -721,7 +721,7 @@ class AppFixtures extends Fixture
         $definitions = [
             ["Devis pour un séminaire", "Bonjour, nous organisons un séminaire pour 80 personnes le mois prochain à Bordeaux. Proposez-vous des formules adaptées ?", 'contact@entreprise-gironde.fr', -5],
             ["Question sur les allergènes", "Ma fille est allergique aux fruits à coque. Le menu Bistrot Bordelais lui conviendrait-il ?", 'famille.robert@example.fr', -3],
-            ["Livraison hors agglomération", "Livrez-vous jusqu\'au Cap Ferret ? Merci d\'avance.", 'vacancier@example.fr', -1],
+            ["Livraison hors agglomération", "Livrez-vous jusqu'au Cap Ferret ? Merci d'avance.", 'vacancier@example.fr', -1],
         ];
 
         foreach ($definitions as [$titre, $message, $email, $jours]) {
