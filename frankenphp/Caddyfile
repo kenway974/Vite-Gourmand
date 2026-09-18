@@ -10,7 +10,11 @@
 
 {$CADDY_EXTRA_CONFIG}
 
-{$SERVER_NAME:localhost} {
+# Railway (et la plupart des PaaS) assignent le port via la variable
+# d'environnement PORT, injectée automatiquement dans le conteneur.
+# On l'utilise directement plutôt que de dépendre de SERVER_NAME, dont la
+# résolution via les références Railway (${{PORT}}) s'est révélée peu fiable.
+:{$PORT:8080} {
 	log {
 		{$CADDY_SERVER_LOG_OPTIONS}
 	}
