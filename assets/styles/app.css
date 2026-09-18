@@ -1085,6 +1085,19 @@ main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
     min-inline-size: 0;
 }
 
+/*
+ * h1..h4 n'ont par défaut qu'une marge basse (voir plus haut) : un titre de
+ * section touchait presque le tableau qui le précédait. Le h1 n'est pas
+ * concerné, il ouvre toujours la page.
+ */
+.tableau-de-bord__contenu h2 {
+    margin-top: var(--e-7);
+}
+
+.tableau-de-bord__contenu h2:first-child {
+    margin-top: 0;
+}
+
 .tableau-de-bord__nav a {
     display: block;
     padding-block: 0.4em;
