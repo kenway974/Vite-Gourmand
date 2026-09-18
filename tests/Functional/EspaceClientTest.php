@@ -53,7 +53,9 @@ class EspaceClientTest extends WebTestCase
 
     public function testUnVisiteurAnonymeEstRenvoyeVersLaConnexion(): void
     {
-        $this->client->request('GET', '/mes-commandes');
+        // La liste des commandes s'affiche désormais sur /mon-compte : il n'y
+        // a plus de page /mes-commandes à part entière.
+        $this->client->request('GET', '/mon-compte');
 
         self::assertResponseRedirects();
         self::assertStringContainsString('/connexion', $this->client->getResponse()->headers->get('Location') ?? '');
@@ -67,7 +69,7 @@ class EspaceClientTest extends WebTestCase
         $this->commande($autre, Commande::CONFIRMEE);
 
         $this->connecter('moi@example.com');
-        $crawler = $this->client->request('GET', '/mes-commandes');
+        $crawler = $this->client->request('GET', '/mon-compte');
 
         self::assertResponseIsSuccessful();
         self::assertCount(1, $crawler->filter('tbody tr'));
