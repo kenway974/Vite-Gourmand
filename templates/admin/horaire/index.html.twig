@@ -1,12 +1,13 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_layout.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Horaires — Administration{% endblock %}
 
-{% block body %}
+{% block corps_admin %}
     <h1>Horaires d'ouverture</h1>
 
     {% if joursLibres is not empty %}
-        <p><a href="{{ path('app_admin_horaire_new') }}">Renseigner un jour</a></p>
+        <p>{{ ui.bouton('Renseigner un jour', path('app_admin_horaire_new'), 'principal') }}</p>
         <p role="alert">
             Jour(s) non renseigné(s) : {{ joursLibres|join(', ') }}. Ces jours n'apparaissent pas
             dans les horaires publiés.
@@ -16,7 +17,8 @@
     {% if elements is empty %}
         <p>Aucun horaire renseigné pour le moment.</p>
     {% else %}
-        <table>
+        <div class="tableau-defilant">
+            <table>
             <caption>Semaine type ({{ elements|length }} jour(s) renseigné(s))</caption>
             <thead>
                 <tr>
@@ -44,6 +46,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 
     <p><a href="{{ path('app_admin') }}">Retour à l'administration</a></p>

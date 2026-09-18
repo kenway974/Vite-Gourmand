@@ -1,16 +1,18 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_layout.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Menus — Administration{% endblock %}
 
-{% block body %}
+{% block corps_admin %}
     <h1>Menus</h1>
 
-    <p><a href="{{ path('app_admin_menu_new') }}">Créer un menu</a></p>
+    <p>{{ ui.bouton('Créer un menu', path('app_admin_menu_new'), 'principal') }}</p>
 
     {% if menus is empty %}
         <p>Aucun menu pour le moment.</p>
     {% else %}
-        <table>
+        <div class="tableau-defilant">
+            <table>
             <caption>Liste des menus ({{ menus|length }})</caption>
             <thead>
                 <tr>
@@ -59,5 +61,6 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 {% endblock %}

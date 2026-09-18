@@ -1,16 +1,18 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_layout.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Thèmes — Administration{% endblock %}
 
-{% block body %}
+{% block corps_admin %}
     <h1>Thèmes</h1>
 
-    <p><a href="{{ path('app_admin_theme_new') }}">Ajouter un thème</a></p>
+    <p>{{ ui.bouton('Ajouter un thème', path('app_admin_theme_new'), 'principal') }}</p>
 
     {% if elements is empty %}
         <p>Aucun thème pour le moment.</p>
     {% else %}
-        <table>
+        <div class="tableau-defilant">
+            <table>
             <caption>Liste des thèmes ({{ elements|length }})</caption>
             <thead>
                 <tr>
@@ -41,6 +43,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 
     <p><a href="{{ path('app_admin') }}">Retour à l'administration</a></p>

@@ -1,8 +1,8 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_layout.html.twig' %}
 
 {% block title %}Créer un menu — Administration{% endblock %}
 
-{% block body %}
+{% block corps_admin %}
     <h1>Créer un menu</h1>
 
     {{ include('admin/menu/_form.html.twig', {bouton: 'Créer le menu'}) }}

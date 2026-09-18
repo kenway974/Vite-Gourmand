@@ -1,8 +1,9 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_layout.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Zones de livraison — Administration{% endblock %}
 
-{% block body %}
+{% block corps_admin %}
     <h1>Zones de livraison</h1>
 
     <p>
@@ -10,7 +11,7 @@
         est refusée et le client est invité à demander un devis.
     </p>
 
-    <p><a href="{{ path('app_admin_zone_new') }}">Ajouter une commune</a></p>
+    <p>{{ ui.bouton('Ajouter une commune', path('app_admin_zone_new'), 'principal') }}</p>
 
     {% if elements is empty %}
         <p role="alert">
@@ -18,7 +19,8 @@
             tant qu'au moins une commune n'est pas desservie.
         </p>
     {% else %}
-        <table>
+        <div class="tableau-defilant">
+            <table>
             <caption>Communes desservies ({{ elements|length }})</caption>
             <thead>
                 <tr>
@@ -48,6 +50,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 
     <p><a href="{{ path('app_admin') }}">Retour à l'administration</a></p>

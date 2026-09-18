@@ -1,16 +1,18 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_layout.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Allergènes — Administration{% endblock %}
 
-{% block body %}
+{% block corps_admin %}
     <h1>Allergènes</h1>
 
-    <p><a href="{{ path('app_admin_allergene_new') }}">Ajouter un allergène</a></p>
+    <p>{{ ui.bouton('Ajouter un allergène', path('app_admin_allergene_new'), 'principal') }}</p>
 
     {% if elements is empty %}
         <p>Aucun allergène pour le moment.</p>
     {% else %}
-        <table>
+        <div class="tableau-defilant">
+            <table>
             <caption>Liste des allergènes ({{ elements|length }})</caption>
             <thead>
                 <tr>
@@ -39,6 +41,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 
     <p><a href="{{ path('app_admin') }}">Retour à l'administration</a></p>

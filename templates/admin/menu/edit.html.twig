@@ -1,8 +1,8 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_layout.html.twig' %}
 
 {% block title %}Modifier {{ menu.titre }} — Administration{% endblock %}
 
-{% block body %}
+{% block corps_admin %}
     <h1>Modifier « {{ menu.titre }} »</h1>
 
     {{ include('admin/menu/_form.html.twig', {bouton: 'Enregistrer les modifications'}) }}

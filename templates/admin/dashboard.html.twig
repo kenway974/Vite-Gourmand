@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_layout.html.twig' %}
 
 {# Un seul nom pour une seule page : le titre de l'onglet, le titre de la
    page et le lien de navigation doivent dire la même chose. #}
@@ -6,11 +6,12 @@
 
 {% block title %}{{ intitule }} — Vite &amp; Gourmand{% endblock %}
 
-{% block body %}
+{% block corps_admin %}
     <h1>{{ intitule }}</h1>
 
     <h2>Catalogue</h2>
-    <table>
+    <div class="tableau-defilant">
+        <table>
         <caption>Contenu du catalogue et accès à la gestion</caption>
         <thead>
             <tr>
@@ -52,6 +53,7 @@
             </tr>
         </tbody>
     </table>
+    </div>
 
     {% if nbThemes == 0 or nbRegimes == 0 %}
         <p role="alert">

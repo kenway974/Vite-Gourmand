@@ -1,8 +1,8 @@
-{% extends 'base.html.twig' %}
+{% extends 'employe/_layout.html.twig' %}
 
 {% block title %}Suivi des commandes — Vite &amp; Gourmand{% endblock %}
 
-{% block body %}
+{% block corps_employe %}
     <h1>Suivi des commandes</h1>
 
     <nav aria-label="Filtrer par statut">
@@ -20,7 +20,8 @@
     {% if commandes is empty %}
         <p>Aucune commande{% if statutActif %} au statut « {{ statutActif }} »{% endif %}.</p>
     {% else %}
-        <table>
+        <div class="tableau-defilant">
+            <table>
             <caption>Commandes ({{ commandes|length }})</caption>
             <thead>
                 <tr>
@@ -66,5 +67,6 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 {% endblock %}

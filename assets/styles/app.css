@@ -1061,6 +1061,53 @@ main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
     }
 }
 
+/*
+ * Menu latéral des 42 écrans d'administration et d'espace employé. Même
+ * principe de colonne fixante que .filtres : elle reste visible pendant
+ * qu'on parcourt un long tableau.
+ */
+.tableau-de-bord__nav .surtitre {
+    margin-top: var(--e-6);
+}
+
+.tableau-de-bord__nav .surtitre:first-child {
+    margin-top: 0;
+}
+
+/*
+ * Une colonne de grille garde par défaut la largeur minimale de son contenu
+ * le plus large — ici un tableau de huit colonnes. Sans cette remise à
+ * zéro, .tableau-defilant n'a jamais l'occasion de faire défiler quoi que ce
+ * soit : la colonne s'étire d'abord pour accueillir le tableau en entier, et
+ * c'est toute la page qui déborde.
+ */
+.tableau-de-bord__contenu {
+    min-inline-size: 0;
+}
+
+.tableau-de-bord__nav a {
+    display: block;
+    padding-block: 0.4em;
+    color: var(--texte);
+    border-radius: var(--rayon);
+}
+
+.tableau-de-bord__nav a:hover {
+    color: var(--accent);
+}
+
+.tableau-de-bord__nav a[aria-current='page'] {
+    color: var(--lie-de-vin);
+    font-weight: 600;
+}
+
+@media (min-width: 821px) {
+    .tableau-de-bord__nav {
+        position: sticky;
+        top: var(--e-5);
+    }
+}
+
 /* Sous 330 px de colonne, deux champs côte à côte tronquent leur contenu. */
 @container (max-width: 330px) {
     .filtres .grille--paire {
@@ -1393,6 +1440,29 @@ main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
     font-size: var(--t-sm);
     font-weight: 500;
     color: var(--texte);
+}
+
+/*
+ * Bouton nu, sans classe .bouton : les actions de tableau (Modifier,
+ * Supprimer, Enregistrer) restent de simples <button> dans les 42 écrans
+ * d'administration, jamais habillés un par un. Une classe .bouton posée par
+ * ailleurs l'emporte toujours, le sélecteur d'élément étant moins spécifique.
+ */
+button {
+    padding: 0.5em 1em;
+    background: var(--blanc);
+    border: 1px solid var(--filet);
+    border-radius: var(--rayon);
+    font-family: var(--corps);
+    font-size: var(--t-sm);
+    color: var(--texte);
+    cursor: pointer;
+    transition: border-color var(--transition), background var(--transition);
+}
+
+button:hover {
+    border-color: var(--laiton);
+    background: var(--pierre);
 }
 
 input[type='text'],

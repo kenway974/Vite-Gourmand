@@ -1,11 +1,12 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_layout.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Utilisateurs — Administration{% endblock %}
 
-{% block body %}
+{% block corps_admin %}
     <h1>Utilisateurs</h1>
 
-    <p><a href="{{ path('app_admin_utilisateur_new') }}">Créer un compte employé ou administrateur</a></p>
+    <p>{{ ui.bouton('Créer un compte employé ou administrateur', path('app_admin_utilisateur_new'), 'principal') }}</p>
 
     <form method="get" action="{{ path('app_admin_utilisateur_index') }}">
         <label for="recherche">Rechercher un compte</label>
@@ -16,7 +17,8 @@
     {% if lignes is empty %}
         <p>Aucun compte{% if recherche %} ne correspond à « {{ recherche }} »{% endif %}.</p>
     {% else %}
-        <table>
+        <div class="tableau-defilant">
+            <table>
             <caption>Comptes ({{ lignes|length }})</caption>
             <thead>
                 <tr>
@@ -58,6 +60,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 
     <p><a href="{{ path('app_admin') }}">Retour à l'administration</a></p>

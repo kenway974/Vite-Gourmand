@@ -1,0 +1,35 @@
+{#
+    Gabarit commun des 5 écrans de l'espace employé. Même principe que
+    admin/_layout.html.twig : un menu latéral, le contenu propre à l'écran
+    dans corps_employe.
+#}
+{% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
+
+{% block body %}
+    {% set route = app.request.attributes.get('_route') %}
+
+    <div class="bande conteneur grille grille--aside">
+        <nav class="tableau-de-bord__nav" aria-label="Espace employé">
+            {{ ui.surtitre('Espace employé') }}
+            <ul class="liste-nue pile">
+                <li><a href="{{ path('app_employe') }}"{{ route == 'app_employe' ? ' aria-current="page"' : '' }}>Vue d'ensemble</a></li>
+                <li><a href="{{ path('app_employe_commandes') }}"{{ route == 'app_employe_commandes' ? ' aria-current="page"' : '' }}>Commandes</a></li>
+                <li><a href="{{ path('app_employe_avis') }}"{{ route == 'app_employe_avis' ? ' aria-current="page"' : '' }}>Avis à modérer</a></li>
+                <li><a href="{{ path('app_employe_materiel') }}"{{ route == 'app_employe_materiel' ? ' aria-current="page"' : '' }}>Matériel prêté</a></li>
+                <li><a href="{{ path('app_employe_messages') }}"{{ route == 'app_employe_messages' ? ' aria-current="page"' : '' }}>Messages</a></li>
+            </ul>
+
+            {% if is_granted('ROLE_ADMIN') %}
+                {{ ui.surtitre('Administration') }}
+                <ul class="liste-nue pile">
+                    <li><a href="{{ path('app_admin') }}">Tableau de bord admin</a></li>
+                </ul>
+            {% endif %}
+        </nav>
+
+        <div class="tableau-de-bord__contenu">
+            {% block corps_employe %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}
