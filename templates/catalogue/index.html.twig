@@ -20,7 +20,22 @@
             seule porte d'entrée vers un menu, elle ne peut pas dépendre d'un
             script.
         #}
-        <form method="get" action="{{ path('app_catalogue') }}" class="filtres">
+        {#
+            Un seul formulaire pour toute la colonne, soumis par son bouton.
+            Les filtres restent donc utilisables sans JavaScript : c'est la
+            seule porte d'entrée vers un menu, elle ne peut pas dépendre d'un
+            script.
+        #}
+        {% set filtresSecondairesActifs =
+            (filtres.regime ? 1 : 0)
+            + (filtres.nbPersonnes ? 1 : 0)
+            + (filtres.seulementCommandables ? 1 : 0)
+            + (filtres.tri ? 1 : 0) %}
+
+        <form method="get" action="{{ path('app_catalogue') }}"
+              class="filtres"
+              data-controller="filtres"
+              data-filtres-actifs-value="{{ filtresSecondairesActifs }}">
             <div class="champ-recherche">
                 <span aria-hidden="true">&#9906;</span>
                 <label class="sr-only" for="q">Rechercher un menu</label>
@@ -29,69 +44,93 @@
                        placeholder="Rechercher un menu…">
             </div>
 
-            <fieldset class="groupe-filtres">
+            {#
+                Les thèmes restent toujours visibles : c'est le tri d'entrée le
+                plus courant. Sur petit écran, le CSS les range en bandeau
+                défilant plutôt qu'en colonne — même balisage, autre mise en
+                page.
+            #}
+            <fieldset class="groupe-filtres groupe-filtres--themes">
                 <legend>Thème</legend>
-                <label class="choix">
-                    <input type="radio" name="theme" value="" {{ filtres.theme ? '' : 'checked' }}>
-                    Tous
-                </label>
-                {% for theme in themes %}
+                <div class="choix-rail">
                     <label class="choix">
-                        <input type="radio" name="theme" value="{{ theme.id }}"
-                               {{ filtres.theme and filtres.theme.id == theme.id ? 'checked' : '' }}>
-                        {{ theme.libelle }}
-                    </label>
-                {% endfor %}
-            </fieldset>
-
-            <div class="grille grille--paire">
-                <fieldset class="groupe-filtres">
-                    <legend>Régime</legend>
-                    <label class="choix">
-                        <input type="radio" name="regime" value="" {{ filtres.regime ? '' : 'checked' }}>
+                        <input type="radio" name="theme" value="" {{ filtres.theme ? '' : 'checked' }}>
                         Tous
                     </label>
-                    {% for regime in regimes %}
+                    {% for theme in themes %}
                         <label class="choix">
-                            <input type="radio" name="regime" value="{{ regime.id }}"
-                                   {{ filtres.regime and filtres.regime.id == regime.id ? 'checked' : '' }}>
-                            {{ regime.libelle }}
+                            <input type="radio" name="theme" value="{{ theme.id }}"
+                                   {{ filtres.theme and filtres.theme.id == theme.id ? 'checked' : '' }}>
+                            {{ theme.libelle }}
                         </label>
                     {% endfor %}
-                </fieldset>
+                </div>
+            </fieldset>
 
-                {#
-                    Le sélecteur garde son id et ses options : c'est un champ
-                    à choix fermé, et les paliers viennent du dépôt. Une valeur
-                    hors palier est ignorée côté contrôleur.
-                #}
-                <fieldset class="groupe-filtres">
-                    <legend><label for="convives">Convives</label></legend>
-                    <select id="convives" name="convives">
-                        <option value="">Peu importe</option>
-                        {% for palier in paliers %}
-                            <option value="{{ palier }}" {{ filtres.nbPersonnes == palier ? 'selected' : '' }}>
-                                {{ palier }} et plus
-                            </option>
+            <button type="button"
+                    class="bascule-filtres"
+                    data-filtres-target="bascule"
+                    data-action="filtres#basculer"
+                    aria-expanded="true"
+                    aria-controls="filtres-secondaires">
+                Filtrer
+                {%- if filtresSecondairesActifs %}
+                    <span class="bascule-filtres__compteur">{{ filtresSecondairesActifs }}</span>
+                {%- endif %}
+            </button>
+
+            <div id="filtres-secondaires"
+                 class="filtres__secondaires"
+                 data-filtres-target="panneau"
+                 data-ouvert="true">
+                <div class="grille grille--paire">
+                    <fieldset class="groupe-filtres">
+                        <legend>Régime</legend>
+                        <label class="choix">
+                            <input type="radio" name="regime" value="" {{ filtres.regime ? '' : 'checked' }}>
+                            Tous
+                        </label>
+                        {% for regime in regimes %}
+                            <label class="choix">
+                                <input type="radio" name="regime" value="{{ regime.id }}"
+                                       {{ filtres.regime and filtres.regime.id == regime.id ? 'checked' : '' }}>
+                                {{ regime.libelle }}
+                            </label>
+                        {% endfor %}
+                    </fieldset>
+
+                    {#
+                        Le sélecteur garde son id et ses options : c'est un champ
+                        à choix fermé, et les paliers viennent du dépôt. Une valeur
+                        hors palier est ignorée côté contrôleur.
+                    #}
+                    <fieldset class="groupe-filtres">
+                        <legend><label for="convives">Convives</label></legend>
+                        <select id="convives" name="convives">
+                            <option value="">Peu importe</option>
+                            {% for palier in paliers %}
+                                <option value="{{ palier }}" {{ filtres.nbPersonnes == palier ? 'selected' : '' }}>
+                                    {{ palier }} et plus
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </fieldset>
+                </div>
+
+                <label class="choix">
+                    <input type="checkbox" name="commandables" value="1"
+                           {{ filtres.seulementCommandables ? 'checked' : '' }}>
+                    Commandables aujourd'hui
+                </label>
+
+                <div class="champ">
+                    <label for="tri">Trier par</label>
+                    <select id="tri" name="tri">
+                        {% for cle, libelle in tris %}
+                            <option value="{{ cle }}" {{ filtres.tri == cle ? 'selected' : '' }}>{{ libelle }}</option>
                         {% endfor %}
                     </select>
-
-                </fieldset>
-            </div>
-
-            <label class="choix">
-                <input type="checkbox" name="commandables" value="1"
-                       {{ filtres.seulementCommandables ? 'checked' : '' }}>
-                Commandables aujourd'hui
-            </label>
-
-            <div class="champ">
-                <label for="tri">Trier par</label>
-                <select id="tri" name="tri">
-                    {% for cle, libelle in tris %}
-                        <option value="{{ cle }}" {{ filtres.tri == cle ? 'selected' : '' }}>{{ libelle }}</option>
-                    {% endfor %}
-                </select>
+                </div>
             </div>
 
             <div class="actions">

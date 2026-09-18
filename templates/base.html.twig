@@ -58,6 +58,20 @@
                             <li><a href="{{ path('app_avis') }}"{{ route == 'app_avis' ? ' aria-current="page"' : '' }}>Avis</a></li>
                             <li><a href="{{ path('app_contact') }}"{{ route == 'app_contact' ? ' aria-current="page"' : '' }}>Contact</a></li>
 
+                            {#
+                                Sur petit écran la pilule est masquée — la
+                                maquette ne garde que le logo et la bascule —
+                                donc l'entrée doit exister aussi dans la
+                                navigation, sinon on ne peut plus se connecter.
+                            #}
+                            <li class="nav-principale__compte">
+                                {% if app.user %}
+                                    <a href="{{ path('app_compte') }}">Mon compte</a>
+                                {% else %}
+                                    <a href="{{ path('app_login') }}">Espace client</a>
+                                {% endif %}
+                            </li>
+
                             {% if app.user %}
                                 <li><a href="{{ path('app_client_commandes') }}">Mes commandes</a></li>
                                 {% if is_granted('ROLE_EMPLOYE') %}
