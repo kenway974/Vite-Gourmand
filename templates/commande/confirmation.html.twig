@@ -1,47 +1,73 @@
 {% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Commande n° {{ commande.id }} — Vite &amp; Gourmand{% endblock %}
 
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Commande n° ' ~ commande.id) }}
+            <h1>Demande enregistrée</h1>
+        </div>
+    </div>
+{% endblock %}
+
 {% block body %}
-    <h1>Demande enregistrée</h1>
+    <div class="bande conteneur conteneur--etroit">
+        <p class="chapeau">
+            Votre commande est {{ ui.etiquetteCommande(commande.statut) }}.
+            Nous revenons vers vous sous 48 heures.
+        </p>
 
-    <p>Votre commande n° {{ commande.id }} est <strong>{{ commande.statut }}</strong>. Nous revenons vers vous sous 48 heures.</p>
+        <div class="carte" style="margin-top: 1.5rem">
+            <dl class="fiche">
+                <div>
+                    <dt>Menu</dt>
+                    <dd>{{ commande.menu.titre }}</dd>
+                </div>
+                <div>
+                    <dt>Prestation</dt>
+                    <dd>Le {{ commande.datePrestation|date('d/m/Y') }} à {{ commande.heureLivraison|date('H\\hi') }}</dd>
+                </div>
+                <div>
+                    <dt>Lieu</dt>
+                    <dd>{{ commande.lieuLivraison }}</dd>
+                </div>
+                <div>
+                    <dt>Convives</dt>
+                    <dd>{{ commande.nbPersonnes }}</dd>
+                </div>
+                <div>
+                    <dt>Prêt de matériel</dt>
+                    <dd>{{ commande.pretMateriel ? 'Oui — à restituer sous dix jours ouvrés' : 'Non' }}</dd>
+                </div>
+            </dl>
+        </div>
 
-    <dl>
-        <dt>Menu</dt>
-        <dd>{{ commande.menu.titre }}</dd>
-
-        <dt>Prestation</dt>
-        <dd>Le {{ commande.datePrestation|date('d/m/Y') }} à {{ commande.heureLivraison|date('H\\hi') }}</dd>
-
-        <dt>Lieu</dt>
-        <dd>{{ commande.lieuLivraison }}</dd>
-
-        <dt>Convives</dt>
-        <dd>{{ commande.nbPersonnes }}</dd>
-
-        <dt>Prêt de matériel</dt>
-        <dd>{{ commande.pretMateriel ? 'Oui — à restituer sous dix jours ouvrés' : 'Non' }}</dd>
-    </dl>
-
-    <h2>Détail du prix</h2>
-    <table>
-        <caption>Décomposition du montant</caption>
-        <tbody>
-            <tr>
-                <th scope="row">{{ commande.menu.prixMin }} € × {{ commande.nbPersonnes }} convives</th>
-                <td>{{ (commande.prixTotal + commande.montantRemise)|number_format(2, ',', ' ') }} €</td>
-            </tr>
-            {% if commande.montantRemise > 0 %}
+        <h2 class="titre-section" style="margin-top: 2rem">Détail du prix</h2>
+        <table>
+            <caption>Décomposition du montant</caption>
+            <tbody>
                 <tr>
-                    <th scope="row">Remise de {{ commande.tauxRemise|number_format(0) }} %</th>
-                    <td>− {{ commande.montantRemise|number_format(2, ',', ' ') }} €</td>
+                    <th scope="row">{{ commande.menu.prixMin }} € × {{ commande.nbPersonnes }} convives</th>
+                    <td>{{ (commande.prixTotal + commande.montantRemise)|number_format(2, ',', ' ') }} €</td>
                 </tr>
-            {% endif %}
-            <tr>
-                <th scope="row">Total</th>
-                <td><strong>{{ commande.prixTotal|number_format(2, ',', ' ') }} €</strong></td>
-            </tr>
-        </tbody>
-    </table>
+                {% if commande.montantRemise > 0 %}
+                    <tr>
+                        <th scope="row">Remise de {{ commande.tauxRemise|number_format(0) }} %</th>
+                        <td>− {{ commande.montantRemise|number_format(2, ',', ' ') }} €</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <th scope="row"><strong>Total</strong></th>
+                    <td><strong>{{ commande.prixTotal|number_format(2, ',', ' ') }} €</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="banniere__actions" style="margin-top: 2.5rem">
+            {{ ui.bouton('Voir mes commandes', path('app_client_commandes'), 'principal') }}
+            {{ ui.bouton('Retour à l\'accueil', path('app_home'), 'contour') }}
+        </div>
+    </div>
 {% endblock %}

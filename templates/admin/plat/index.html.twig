@@ -1,16 +1,18 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_layout.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Plats — Administration{% endblock %}
 
-{% block body %}
+{% block corps_admin %}
     <h1>Plats</h1>
 
-    <p><a href="{{ path('app_admin_plat_new') }}">Ajouter un plat</a></p>
+    <p>{{ ui.bouton('Ajouter un plat', path('app_admin_plat_new'), 'principal') }}</p>
 
     {% if elements is empty %}
         <p>Aucun plat pour le moment.</p>
     {% else %}
-        <table>
+        <div class="tableau-defilant">
+            <table>
             <caption>Liste des plats ({{ elements|length }})</caption>
             <thead>
                 <tr>
@@ -43,6 +45,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 
     <p><a href="{{ path('app_admin') }}">Retour à l'administration</a></p>

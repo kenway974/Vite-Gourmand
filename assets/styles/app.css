@@ -840,6 +840,34 @@ main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
 }
 
 /*
+ * Cadre photo générique : même principe que .carte-menu__visuel — un fond de
+ * remplacement tant qu'aucune photo n'est fournie, l'image en <img> par-
+ * dessus dès qu'elle existe. Utilisé partout où une page éditoriale (Notre
+ * histoire, par exemple) prévoit une image sans dépendre d'une entité.
+ */
+.cadre-photo {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--rayon-lg);
+    background: linear-gradient(135deg, #d9c4a8 0%, #cbb193 55%, #e6d6c0 100%);
+}
+
+.cadre-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cadre-photo--large {
+    aspect-ratio: 16 / 9;
+}
+
+.cadre-photo--portrait {
+    aspect-ratio: 3 / 4;
+}
+
+/*
  * La vignette occupe toute la hauteur de sa case et pousse sa ligne de
  * contraintes vers le bas. Sans cela, un titre qui passe sur deux lignes
  * décale tout ce qui suit, et les pieds de vignette d'une même rangée ne
@@ -1028,6 +1056,66 @@ main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
 
 @media (min-width: 821px) {
     .filtres {
+        position: sticky;
+        top: var(--e-5);
+    }
+}
+
+/*
+ * Menu latéral des 42 écrans d'administration et d'espace employé. Même
+ * principe de colonne fixante que .filtres : elle reste visible pendant
+ * qu'on parcourt un long tableau.
+ */
+.tableau-de-bord__nav .surtitre {
+    margin-top: var(--e-6);
+}
+
+.tableau-de-bord__nav .surtitre:first-child {
+    margin-top: 0;
+}
+
+/*
+ * Une colonne de grille garde par défaut la largeur minimale de son contenu
+ * le plus large — ici un tableau de huit colonnes. Sans cette remise à
+ * zéro, .tableau-defilant n'a jamais l'occasion de faire défiler quoi que ce
+ * soit : la colonne s'étire d'abord pour accueillir le tableau en entier, et
+ * c'est toute la page qui déborde.
+ */
+.tableau-de-bord__contenu {
+    min-inline-size: 0;
+}
+
+/*
+ * h1..h4 n'ont par défaut qu'une marge basse (voir plus haut) : un titre de
+ * section touchait presque le tableau qui le précédait. Le h1 n'est pas
+ * concerné, il ouvre toujours la page.
+ */
+.tableau-de-bord__contenu h2 {
+    margin-top: var(--e-7);
+}
+
+.tableau-de-bord__contenu h2:first-child {
+    margin-top: 0;
+}
+
+.tableau-de-bord__nav a {
+    display: block;
+    padding-block: 0.4em;
+    color: var(--texte);
+    border-radius: var(--rayon);
+}
+
+.tableau-de-bord__nav a:hover {
+    color: var(--accent);
+}
+
+.tableau-de-bord__nav a[aria-current='page'] {
+    color: var(--lie-de-vin);
+    font-weight: 600;
+}
+
+@media (min-width: 821px) {
+    .tableau-de-bord__nav {
         position: sticky;
         top: var(--e-5);
     }
@@ -1367,6 +1455,29 @@ main > :not(.bande):not(.conteneur):not(section):not(header):not(footer) {
     color: var(--texte);
 }
 
+/*
+ * Bouton nu, sans classe .bouton : les actions de tableau (Modifier,
+ * Supprimer, Enregistrer) restent de simples <button> dans les 42 écrans
+ * d'administration, jamais habillés un par un. Une classe .bouton posée par
+ * ailleurs l'emporte toujours, le sélecteur d'élément étant moins spécifique.
+ */
+button {
+    padding: 0.5em 1em;
+    background: var(--blanc);
+    border: 1px solid var(--filet);
+    border-radius: var(--rayon);
+    font-family: var(--corps);
+    font-size: var(--t-sm);
+    color: var(--texte);
+    cursor: pointer;
+    transition: border-color var(--transition), background var(--transition);
+}
+
+button:hover {
+    border-color: var(--laiton);
+    background: var(--pierre);
+}
+
 input[type='text'],
 input[type='email'],
 input[type='password'],
@@ -1413,6 +1524,9 @@ textarea {
     gap: var(--e-2);
     border-bottom: 1px solid var(--filet);
     padding-bottom: var(--e-2);
+    /* Sans elle, le filet du champ touchait presque la légende du premier
+       groupe de filtres juste en dessous. */
+    margin-bottom: var(--e-6);
 }
 
 .champ-recherche input[type='search'] {
@@ -1493,6 +1607,126 @@ textarea[aria-invalid='true'] {
     display: block;
     margin-top: var(--e-1);
     font-size: var(--t-xs);
+    color: var(--texte-doux);
+}
+
+/* Case seule (CGV, prêt de matériel) : le thème de formulaire l'enveloppe
+   dans .choix, comme les cases de la colonne de filtres. */
+.champ--case {
+    margin-bottom: var(--e-4);
+}
+
+.champ--case .choix {
+    align-items: flex-start;
+    padding-block: 0;
+}
+
+.champ--case .aide-champ,
+.champ--case .erreur-champ {
+    margin-left: calc(1.05rem + var(--e-3));
+}
+
+/*
+ * Encart d'alerte : erreurs de formulaire groupées, avertissement avant une
+ * action destructive. Même rouge que .erreur-champ — c'est le même registre,
+ * porté cette fois par un bloc plutôt qu'un champ.
+ */
+.encart-alerte {
+    margin-bottom: var(--e-5);
+    padding: var(--e-4) var(--e-5);
+    border: 1px solid #9a1d2e;
+    border-left-width: 3px;
+    border-radius: var(--rayon);
+    background: rgb(154 29 46 / 6%);
+    color: var(--texte);
+}
+
+.encart-alerte p {
+    margin: 0;
+}
+
+.encart-alerte p + p {
+    margin-top: var(--e-3);
+}
+
+.encart-alerte ul {
+    margin: var(--e-2) 0 0;
+}
+
+/*
+ * Liste de définitions présentée en fiche : une étiquette discrète au-dessus
+ * de sa valeur, plutôt que le dt/dd en ligne par défaut du navigateur, illisible
+ * dès que les valeurs s'allongent.
+ */
+.fiche {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--e-5) var(--e-6);
+    margin-bottom: var(--e-6);
+}
+
+.fiche dt {
+    margin-bottom: var(--e-1);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--texte-doux);
+}
+
+.fiche dd {
+    margin: 0;
+}
+
+/*
+ * Historique d'une commande : une ligne verticale portée par la bordure de
+ * la liste, un point par étape. Le dernier événement n'a pas besoin de
+ * continuer la ligne en dessous de lui, d'où le retrait sur le dernier
+ * élément.
+ */
+.suivi {
+    position: relative;
+    margin: 0;
+    padding-left: var(--e-6);
+    border-left: 2px solid var(--filet);
+}
+
+.suivi li {
+    position: relative;
+    padding-bottom: var(--e-5);
+}
+
+.suivi li:last-child {
+    padding-bottom: 0;
+}
+
+.suivi li::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--e-6) * -1 - 5px);
+    top: 0.35em;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--laiton);
+}
+
+.suivi li:first-child::before {
+    background: var(--lie-de-vin);
+}
+
+.suivi__statut {
+    font-weight: 600;
+}
+
+.suivi__date {
+    font-size: var(--t-sm);
+    color: var(--texte-doux);
+}
+
+.suivi__motif {
+    margin-top: var(--e-1);
+    font-size: var(--t-sm);
     color: var(--texte-doux);
 }
 

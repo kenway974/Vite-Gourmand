@@ -1,8 +1,8 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_layout.html.twig' %}
 
 {% block title %}Statistiques — Administration{% endblock %}
 
-{% block body %}
+{% block corps_admin %}
     <h1>Statistiques d'activité</h1>
 
     {% if not depotDisponible %}
@@ -37,7 +37,8 @@
     {% if cumul.parMenu is empty %}
         <p>Aucune commande enregistrée.</p>
     {% else %}
-        <table>
+        <div class="tableau-defilant">
+            <table>
             <caption>Commandes et chiffre d'affaires par menu</caption>
             <thead>
                 <tr>
@@ -56,6 +57,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 
     <h2>Répartition par statut</h2>
@@ -75,7 +77,8 @@
             tourner une fois par nuit.
         </p>
     {% else %}
-        <table>
+        <div class="tableau-defilant">
+            <table>
             <caption>
                 Les {{ historique|length }} derniers relevés. Chaque ligne est un
                 cumul : l'activité d'une période se lit dans l'écart entre deux lignes.
@@ -99,6 +102,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 
     <p><a href="{{ path('app_admin') }}">Retour à l'administration</a></p>

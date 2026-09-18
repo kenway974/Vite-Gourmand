@@ -1,37 +1,52 @@
 {% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Mes commandes — Vite &amp; Gourmand{% endblock %}
 
-{% block body %}
-    <h1>Mes commandes</h1>
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Espace client') }}
+            <h1>Mes commandes</h1>
+        </div>
+    </div>
+{% endblock %}
 
-    {% if commandes is empty %}
-        <p>Vous n'avez pas encore passé de commande.</p>
-    {% else %}
-        <table>
-            <caption>Vos commandes ({{ commandes|length }})</caption>
-            <thead>
-                <tr>
-                    <th scope="col">N°</th>
-                    <th scope="col">Menu</th>
-                    <th scope="col">Prestation</th>
-                    <th scope="col">Convives</th>
-                    <th scope="col">Total</th>
-                    <th scope="col">Statut</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for commande in commandes %}
-                    <tr>
-                        <th scope="row"><a href="{{ path('app_client_commande', {id: commande.id}) }}">{{ commande.id }}</a></th>
-                        <td>{{ commande.menu.titre }}</td>
-                        <td>{{ commande.datePrestation|date('d/m/Y') }}</td>
-                        <td>{{ commande.nbPersonnes }}</td>
-                        <td>{{ commande.prixTotal|number_format(2, ',', ' ') }} €</td>
-                        <td>{{ commande.statut }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+{% block body %}
+    <div class="bande conteneur">
+        {% if commandes is empty %}
+            <p class="carte">
+                Vous n'avez pas encore passé de commande.
+                <a href="{{ path('app_catalogue') }}">Découvrir nos menus</a>.
+            </p>
+        {% else %}
+            <div class="tableau-defilant">
+                <table>
+                    <caption>Vos commandes ({{ commandes|length }})</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">N°</th>
+                            <th scope="col">Menu</th>
+                            <th scope="col">Prestation</th>
+                            <th scope="col">Convives</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for commande in commandes %}
+                            <tr>
+                                <th scope="row"><a href="{{ path('app_client_commande', {id: commande.id}) }}">{{ commande.id }}</a></th>
+                                <td>{{ commande.menu.titre }}</td>
+                                <td>{{ commande.datePrestation|date('d/m/Y') }}</td>
+                                <td>{{ commande.nbPersonnes }}</td>
+                                <td>{{ commande.prixTotal|number_format(2, ',', ' ') }} €</td>
+                                <td>{{ ui.etiquetteCommande(commande.statut) }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

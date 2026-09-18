@@ -1,15 +1,27 @@
 {% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Nouveau mot de passe — Vite &amp; Gourmand{% endblock %}
 
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Espace client') }}
+            <h1>Choisir un nouveau mot de passe</h1>
+        </div>
+    </div>
+{% endblock %}
+
 {% block body %}
-    <h1>Choisir un nouveau mot de passe</h1>
+    <div class="bande conteneur conteneur--etroit">
+        <div class="carte carte--relief">
+            {{ form_errors(form) }}
 
-    {{ form_errors(form) }}
-
-    {{ form_start(form) }}
-        {{ form_row(form.nouveau.first) }}
-        {{ form_row(form.nouveau.second) }}
-        <button type="submit">Enregistrer le nouveau mot de passe</button>
-    {{ form_end(form) }}
+            {{ form_start(form) }}
+                {{ form_row(form.nouveau.first) }}
+                {{ form_row(form.nouveau.second) }}
+                {{ ui.bouton('Enregistrer le nouveau mot de passe', null, 'principal', {large: true, type: 'submit'}) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
 {% endblock %}

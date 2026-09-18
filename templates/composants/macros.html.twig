@@ -78,6 +78,22 @@
 {% endmacro %}
 
 {#
+    État d'une commande, en étiquette. « Livrée » est le seul état accompli :
+    seul lui reçoit l'accent. Les états intermédiaires restent au variant par
+    défaut — les distinguer entre eux ajouterait une couleur à retenir sans
+    aider la lecture. « Annulée » est sourde : elle ne demande plus d'action.
+#}
+{% macro etiquetteCommande(statut) %}
+    {%- if statut == 'livrée' -%}
+        {{ _self.etiquette(statut, 'accent') }}
+    {%- elseif statut == 'annulée' -%}
+        {{ _self.etiquette(statut, 'sourde') }}
+    {%- else -%}
+        {{ _self.etiquette(statut) }}
+    {%- endif -%}
+{% endmacro %}
+
+{#
     Note moyenne et nombre d'avis.
     « Vérifiés » signifie que l'avis vient d'un client dont la commande a été
     livrée : ne pas employer ce mot pour un agrégat qui compterait autre chose.

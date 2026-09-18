@@ -1,0 +1,82 @@
+{#
+    Thème de formulaire du socle.
+
+    Déclaré une fois dans config/packages/twig.yaml (form_themes), il
+    s'applique à tous les formulaires du site sans rien à faire dans leurs
+    gabarits : form_row() suffit. Avant ce thème, chaque page réinventait sa
+    propre mise en page — labels nus, aucune classe, les erreurs de Symfony
+    affichées telles quelles.
+
+    Les classes reprennent volontairement celles déjà posées par la macro
+    ui.erreurs() (.erreur-champ) et par le socle (.aide-champ, .choix), pour
+    que les deux s'accordent visuellement.
+#}
+
+{# Ligne standard : étiquette, champ, erreurs, aide. #}
+{% block form_row %}
+    {%- set invalide = not form.vars.valid -%}
+    <div class="champ">
+        {{- form_label(form) -}}
+        {{- form_widget(form, invalide ? {attr: {'aria-invalid': 'true'}} : {}) -}}
+        {{- form_errors(form) -}}
+        {{- form_help(form) -}}
+    </div>
+{% endblock form_row %}
+
+{#
+    Case seule (CGV, prêt de matériel) : le texte rejoint la case dans le même
+    <label>, comme .choix ailleurs sur le site — c'est ce qui rend toute la
+    ligne cliquable, pas seulement le petit carré. Un <label for> séparé
+    imbriquerait deux labels l'un dans l'autre, invalide en HTML et source de
+    double-bascule au clic selon les navigateurs.
+#}
+{% block checkbox_row %}
+    {%- set invalide = not form.vars.valid -%}
+    <div class="champ champ--case">
+        <label class="choix">
+            {{- form_widget(form, invalide ? {attr: {'aria-invalid': 'true'}} : {}) -}}
+            {{- form.vars.label -}}
+        </label>
+        {{- form_errors(form) -}}
+        {{- form_help(form) -}}
+    </div>
+{% endblock checkbox_row %}
+
+{# .aide-champ existe déjà dans le socle — ce bloc ne fait que le brancher. #}
+{% block form_help %}
+    {%- if help is not empty -%}
+        <span class="aide-champ" id="{{ id }}_help">
+            {%- if help_html|default(false) -%}
+                {{- help|raw -}}
+            {%- else -%}
+                {{- help -}}
+            {%- endif -%}
+        </span>
+    {%- endif -%}
+{% endblock form_help %}
+
+{#
+    Un seul bloc sert les deux appels que fait Symfony : les erreurs d'un
+    champ précis, depuis form_row ci-dessus, et les erreurs qui ne portent sur
+    aucun champ, quand une page appelle {{ form_errors(form) }} sur le
+    formulaire entier. form.parent est nul uniquement dans ce second cas —
+    c'est ce qui distingue les deux sans dupliquer le bloc.
+#}
+{% block form_errors %}
+    {%- if errors|length > 0 -%}
+        {%- if form.parent is null -%}
+            <div class="encart-alerte" role="alert">
+                <p>Corrigez les points suivants avant de continuer&nbsp;:</p>
+                <ul>
+                    {%- for error in errors -%}
+                        <li>{{ error.message }}</li>
+                    {%- endfor -%}
+                </ul>
+            </div>
+        {%- else -%}
+            {%- for error in errors -%}
+                <span class="erreur-champ">{{ error.message }}</span>
+            {%- endfor -%}
+        {%- endif -%}
+    {%- endif -%}
+{% endblock form_errors %}

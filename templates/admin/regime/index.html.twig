@@ -1,16 +1,18 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_layout.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Régimes — Administration{% endblock %}
 
-{% block body %}
+{% block corps_admin %}
     <h1>Régimes</h1>
 
-    <p><a href="{{ path('app_admin_regime_new') }}">Ajouter un régime</a></p>
+    <p>{{ ui.bouton('Ajouter un régime', path('app_admin_regime_new'), 'principal') }}</p>
 
     {% if elements is empty %}
         <p>Aucun régime pour le moment.</p>
     {% else %}
-        <table>
+        <div class="tableau-defilant">
+            <table>
             <caption>Liste des régimes ({{ elements|length }})</caption>
             <thead>
                 <tr>
@@ -41,6 +43,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 
     <p><a href="{{ path('app_admin') }}">Retour à l'administration</a></p>

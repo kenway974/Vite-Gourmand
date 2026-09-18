@@ -158,7 +158,7 @@ class AdminUtilisateurTest extends WebTestCase
 
         self::assertResponseRedirects('/connexion');
         $crawler = $this->client->followRedirect();
-        self::assertStringContainsString('désactivé', $crawler->filter('.erreur')->text());
+        self::assertStringContainsString('désactivé', $crawler->filter('.encart-alerte')->text());
     }
 
     public function testUneActionSansJetonCsrfEstRefusee(): void

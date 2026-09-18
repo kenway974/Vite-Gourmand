@@ -96,11 +96,17 @@ class PagesPubliquesTest extends WebTestCase
         $this->avis($menu, 3, 'Correct.', Avis::VALIDE);
         $this->avis($menu, 1, 'Écarté.', Avis::REFUSE);
 
-        $this->client->request('GET', '/avis');
+        // Texte affiché plutôt que le HTML brut : la valeur et « sur 5 »
+        // sont dans deux <span> séparés, adjacents visuellement mais pas
+        // dans le balisage.
+        $texte = $this->client->request('GET', '/avis')->filter('body')->text();
 
-        $page = $this->client->getResponse()->getContent();
-        self::assertStringContainsString('4 sur 5', $page);
-        self::assertStringContainsString('2 avis vérifiés', $page);
+        // Une décimale, comme partout ailleurs sur le site où une moyenne
+        // est affichée (accueil, fiche menu) : « 4 sur 5 » et « 4,0 sur 5 »
+        // se liraient comme deux conventions différentes sur le même site.
+        self::assertStringContainsString('4,0', $texte);
+        self::assertStringContainsString('sur 5', $texte);
+        self::assertStringContainsString('2 avis vérifiés', $texte);
     }
 
     public function testUnAvisAfficheSonContexteEtSonMenu(): void
@@ -215,13 +221,20 @@ class PagesPubliquesTest extends WebTestCase
         self::assertGreaterThan(0, $crawler->filter('a[href="/menus"]')->count());
     }
 
-    public function testNotreHistoireNInventeAucuneValeurQueSeulLeClientConnait(): void
+    /**
+     * Contrairement aux mentions légales — où une valeur inconnue reste
+     * visiblement à compléter, parce que SIRET et TVA sont des faits qu'on
+     * ne peut pas inventer sans se tromper — « Notre histoire » est un texte
+     * éditorial : la maison peut écrire son propre récit. Le client reste
+     * libre de corriger les détails, mais la page ne doit plus exposer de
+     * crochet en attente au visiteur.
+     */
+    public function testNotreHistoireNExposeAucunCrochetEnAttente(): void
     {
         $this->client->request('GET', '/notre-histoire');
 
-        // Même convention que les mentions légales : ce qu'on ne sait pas
-        // reste visiblement à compléter plutôt que rempli au hasard.
-        self::assertStringContainsString(
+        self::assertResponseIsSuccessful();
+        self::assertStringNotContainsString(
             '[',
             $this->client->getResponse()->getContent(),
         );

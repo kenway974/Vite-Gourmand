@@ -1,125 +1,137 @@
 {% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Conditions générales de vente — Vite &amp; Gourmand{% endblock %}
 
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Informations') }}
+            <h1>Conditions générales de vente</h1>
+        </div>
+    </div>
+{% endblock %}
+
 {% block body %}
-    <h1>Conditions générales de vente</h1>
+    <div class="bande conteneur conteneur--etroit">
+        {# Ces conditions décrivent ce que le code fait réellement : les délais,
+           la remise et l'indemnité cités ici sont ceux appliqués par
+           CalculateurPrix et Commande. Les écrire autrement rendrait le contrat
+           faux. #}
 
-    {# Ces conditions décrivent ce que le code fait réellement : les délais,
-       la remise et l'indemnité cités ici sont ceux appliqués par
-       CalculateurPrix et Commande. Les écrire autrement rendrait le contrat
-       faux. #}
+        <h2 class="titre-section">1. Objet</h2>
+        <p>
+            Les présentes conditions régissent les commandes passées sur ce site
+            auprès de Vite &amp; Gourmand, traiteur à Bordeaux. Toute commande
+            vaut acceptation de ces conditions.
+        </p>
 
-    <h2>1. Objet</h2>
-    <p>
-        Les présentes conditions régissent les commandes passées sur ce site
-        auprès de Vite &amp; Gourmand, traiteur à Bordeaux. Toute commande
-        vaut acceptation de ces conditions.
-    </p>
+        <h2 class="titre-section">2. Commande</h2>
+        <p>
+            La commande se fait depuis un compte client. Chaque menu impose un
+            <strong>nombre minimum de convives</strong> et un <strong>délai de
+            préparation</strong>, indiqués sur sa fiche. Ce délai n'est pas
+            négociable : certaines pièces sont réservées auprès de nos producteurs.
+        </p>
+        <p>
+            Une commande est enregistrée à l'état « en attente ». Elle n'est ferme
+            qu'une fois passée à « confirmée » par nos soins.
+        </p>
 
-    <h2>2. Commande</h2>
-    <p>
-        La commande se fait depuis un compte client. Chaque menu impose un
-        <strong>nombre minimum de convives</strong> et un <strong>délai de
-        préparation</strong>, indiqués sur sa fiche. Ce délai n'est pas
-        négociable : certaines pièces sont réservées auprès de nos producteurs.
-    </p>
-    <p>
-        Une commande est enregistrée à l'état « en attente ». Elle n'est ferme
-        qu'une fois passée à « confirmée » par nos soins.
-    </p>
+        <h2 class="titre-section">3. Prix</h2>
+        <p>
+            Les prix sont indiqués <strong>par personne</strong>, en euros, toutes
+            taxes comprises. Le montant total est calculé au moment de la commande
+            et affiché avant validation.
+        </p>
+        <p>
+            Une <strong>remise de 10 %</strong> est accordée dès que le nombre de
+            convives atteint le minimum du menu majoré de cinq. Pour un menu à six
+            convives minimum, la remise s'applique donc à partir de onze.
+        </p>
 
-    <h2>3. Prix</h2>
-    <p>
-        Les prix sont indiqués <strong>par personne</strong>, en euros, toutes
-        taxes comprises. Le montant total est calculé au moment de la commande
-        et affiché avant validation.
-    </p>
-    <p>
-        Une <strong>remise de 10 %</strong> est accordée dès que le nombre de
-        convives atteint le minimum du menu majoré de cinq. Pour un menu à six
-        convives minimum, la remise s'applique donc à partir de onze.
-    </p>
+        <h2 class="titre-section">4. Livraison</h2>
+        <p>
+            La livraison, le dressage et la reprise du matériel sont
+            <strong>compris dans le prix à Bordeaux intra-muros</strong>.
+        </p>
+        <p>
+            Les communes de la périphérie sont desservies moyennant un supplément,
+            indiqué avant validation de la commande. Une commune non desservie ne
+            peut pas faire l'objet d'une commande en ligne :
+            <a href="{{ path('app_contact') }}">écrivez-nous</a> pour un devis.
+        </p>
+        <p>
+            La remise de 10 % porte sur la prestation et non sur le transport : le
+            supplément de livraison s'ajoute après application de la remise.
+        </p>
 
-    <h2>4. Livraison</h2>
-    <p>
-        La livraison, le dressage et la reprise du matériel sont
-        <strong>compris dans le prix à Bordeaux intra-muros</strong>.
-    </p>
-    <p>
-        Les communes de la périphérie sont desservies moyennant un supplément,
-        indiqué avant validation de la commande. Une commune non desservie ne
-        peut pas faire l'objet d'une commande en ligne :
-        <a href="{{ path('app_contact') }}">écrivez-nous</a> pour un devis.
-    </p>
-    <p>
-        La remise de 10 % porte sur la prestation et non sur le transport : le
-        supplément de livraison s'ajoute après application de la remise.
-    </p>
+        <h2 class="titre-section">5. Matériel prêté</h2>
+        <p>
+            Les plats et présentoirs mis à disposition restent notre propriété. Ils
+            sont à restituer <strong>sous dix jours ouvrés</strong> à compter de la
+            prestation.
+        </p>
+        <p>
+            Passé ce délai, une <strong>indemnité de 600 €</strong> est due, que le
+            matériel soit rendu en retard ou ne le soit pas du tout.
+        </p>
 
-    <h2>5. Matériel prêté</h2>
-    <p>
-        Les plats et présentoirs mis à disposition restent notre propriété. Ils
-        sont à restituer <strong>sous dix jours ouvrés</strong> à compter de la
-        prestation.
-    </p>
-    <p>
-        Passé ce délai, une <strong>indemnité de 600 €</strong> est due, que le
-        matériel soit rendu en retard ou ne le soit pas du tout.
-    </p>
+        <h2 class="titre-section">6. Annulation</h2>
+        <p>
+            Vous pouvez annuler votre commande depuis votre espace client tant
+            qu'elle est « en attente » ou « confirmée ». Une fois passée « en
+            préparation », l'annulation en libre-service n'est plus possible : les
+            achats sont engagés.
+            <a href="{{ path('app_contact') }}">Contactez-nous</a> dans ce cas.
+        </p>
 
-    <h2>6. Annulation</h2>
-    <p>
-        Vous pouvez annuler votre commande depuis votre espace client tant
-        qu'elle est « en attente » ou « confirmée ». Une fois passée « en
-        préparation », l'annulation en libre-service n'est plus possible : les
-        achats sont engagés.
-        <a href="{{ path('app_contact') }}">Contactez-nous</a> dans ce cas.
-    </p>
+        <h2 class="titre-section">7. Conservation des produits</h2>
+        <p>
+            Nos préparations sont à placer au réfrigérateur dès la livraison, entre
+            0 et 4 °C, et à consommer <strong>dans les vingt-quatre heures</strong>.
+            Notre responsabilité ne saurait être engagée en cas de non-respect de
+            ces consignes.
+        </p>
 
-    <h2>7. Conservation des produits</h2>
-    <p>
-        Nos préparations sont à placer au réfrigérateur dès la livraison, entre
-        0 et 4 °C, et à consommer <strong>dans les vingt-quatre heures</strong>.
-        Notre responsabilité ne saurait être engagée en cas de non-respect de
-        ces consignes.
-    </p>
+        <h2 class="titre-section">8. Allergènes</h2>
+        <p>
+            La liste des allergènes est indiquée sur chaque fiche menu. Elle est
+            établie à partir des ingrédients réellement utilisés. Nos préparations
+            étant réalisées dans un atelier commun, des traces d'autres allergènes
+            ne peuvent être exclues. Signalez-nous toute allergie à la commande.
+        </p>
 
-    <h2>8. Allergènes</h2>
-    <p>
-        La liste des allergènes est indiquée sur chaque fiche menu. Elle est
-        établie à partir des ingrédients réellement utilisés. Nos préparations
-        étant réalisées dans un atelier commun, des traces d'autres allergènes
-        ne peuvent être exclues. Signalez-nous toute allergie à la commande.
-    </p>
+        <h2 class="titre-section">9. Horaires</h2>
+        {% if semaine is empty %}
+            <p>Nos horaires sont indiqués en pied de page.</p>
+        {% else %}
+            <dl class="fiche">
+                {% for horaire in semaine %}
+                    <div>
+                        <dt>{{ horaire.jour }}</dt>
+                        <dd>{{ horaire.plage }}</dd>
+                    </div>
+                {% endfor %}
+            </dl>
+        {% endif %}
 
-    <h2>9. Horaires</h2>
-    {% if semaine is empty %}
-        <p>Nos horaires sont indiqués en pied de page.</p>
-    {% else %}
-        <dl>
-            {% for horaire in semaine %}
-                <dt>{{ horaire.jour }}</dt>
-                <dd>{{ horaire.plage }}</dd>
-            {% endfor %}
-        </dl>
-    {% endif %}
+        <h2 class="titre-section">10. Réclamation et médiation</h2>
+        <p>
+            Toute réclamation peut nous être adressée depuis le
+            <a href="{{ path('app_contact') }}">formulaire de contact</a>. Nous nous
+            engageons à répondre <strong>sous 48 heures</strong>.
+        </p>
+        <p>
+            À défaut d'accord amiable, le consommateur peut recourir gratuitement au
+            médiateur indiqué dans nos
+            <a href="{{ path('app_mentions_legales') }}">mentions légales</a>.
+        </p>
 
-    <h2>10. Réclamation et médiation</h2>
-    <p>
-        Toute réclamation peut nous être adressée depuis le
-        <a href="{{ path('app_contact') }}">formulaire de contact</a>. Nous nous
-        engageons à répondre <strong>sous 48 heures</strong>.
-    </p>
-    <p>
-        À défaut d'accord amiable, le consommateur peut recourir gratuitement au
-        médiateur indiqué dans nos
-        <a href="{{ path('app_mentions_legales') }}">mentions légales</a>.
-    </p>
-
-    <h2>11. Données personnelles</h2>
-    <p>
-        Le traitement de vos données est décrit dans notre
-        <a href="{{ path('app_confidentialite') }}">politique de confidentialité</a>.
-    </p>
+        <h2 class="titre-section">11. Données personnelles</h2>
+        <p>
+            Le traitement de vos données est décrit dans notre
+            <a href="{{ path('app_confidentialite') }}">politique de confidentialité</a>.
+        </p>
+    </div>
 {% endblock %}

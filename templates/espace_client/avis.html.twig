@@ -1,20 +1,36 @@
 {% extends 'base.html.twig' %}
+{% import 'composants/macros.html.twig' as ui %}
 
 {% block title %}Déposer un avis — Vite &amp; Gourmand{% endblock %}
 
+{% block banniere %}
+    <div class="banniere banniere--courte">
+        <div class="conteneur banniere__contenu">
+            {{ ui.surtitre('Espace client') }}
+            <h1>Votre avis sur « {{ commande.menu.titre }} »</h1>
+        </div>
+    </div>
+{% endblock %}
+
 {% block body %}
-    <h1>Votre avis sur « {{ commande.menu.titre }} »</h1>
+    <div class="bande conteneur conteneur--etroit">
+        <p class="texte-doux">
+            Prestation du {{ commande.datePrestation|date('d/m/Y') }} pour
+            {{ commande.nbPersonnes }} convives.
+        </p>
 
-    <p>Prestation du {{ commande.datePrestation|date('d/m/Y') }} pour {{ commande.nbPersonnes }} convives.</p>
+        <div class="carte carte--relief" style="margin-top: 1.5rem">
+            {{ form_errors(form) }}
 
-    {{ form_errors(form) }}
+            {{ form_start(form) }}
+                {{ form_row(form.note) }}
+                {{ form_row(form.commentaire) }}
+                {{ ui.bouton('Envoyer mon avis', null, 'principal', {large: true, type: 'submit'}) }}
+            {{ form_end(form) }}
+        </div>
 
-    {{ form_start(form) }}
-        {{ form_row(form.note) }}
-        {{ form_row(form.commentaire) }}
-
-        <button type="submit">Envoyer mon avis</button>
-    {{ form_end(form) }}
-
-    <p><a href="{{ path('app_client_commande', {id: commande.id}) }}">Retour à la commande</a></p>
+        <p class="centre" style="margin-top: 1.5rem">
+            <a href="{{ path('app_client_commande', {id: commande.id}) }}">&larr; Retour à la commande</a>
+        </p>
+    </div>
 {% endblock %}

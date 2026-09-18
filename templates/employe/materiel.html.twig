@@ -1,8 +1,8 @@
-{% extends 'base.html.twig' %}
+{% extends 'employe/_layout.html.twig' %}
 
 {% block title %}Matériel prêté — Espace employé{% endblock %}
 
-{% block body %}
+{% block corps_employe %}
     <h1>Matériel prêté</h1>
 
     <p>
@@ -23,7 +23,8 @@
     {% if commandes is empty %}
         <p>{{ restitue ? 'Aucun retour enregistré pour le moment.' : 'Tout le matériel prêté est revenu.' }}</p>
     {% else %}
-        <table>
+        <div class="tableau-defilant">
+            <table>
             <caption>
                 {{ restitue ? 'Matériel rendu' : 'Matériel en attente de retour' }}
                 ({{ commandes|length }})
@@ -89,6 +90,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 
     <p><a href="{{ path('app_employe') }}">Retour à l'espace employé</a></p>
