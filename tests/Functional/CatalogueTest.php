@@ -112,6 +112,57 @@ class CatalogueTest extends WebTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
+    // --- Filtrage sans rechargement (AJAX) ---------------------------------
+
+    /**
+     * Une requête marquée X-Requested-With ne reçoit que le fragment de
+     * résultats : c'est ce que le contrôleur Stimulus injecte à la place de
+     * la page, il ne doit donc pas recevoir la page entière autour.
+     */
+    public function testUneRequeteAjaxNeRenvoieQueLeFragmentDeResultats(): void
+    {
+        $this->menu('Buffet bordelais');
+
+        $this->client->request('GET', '/menus', server: ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.catalogue', 'Buffet bordelais');
+        self::assertSelectorNotExists('nav.nav-principale');
+        self::assertSelectorNotExists('form.filtres');
+    }
+
+    /**
+     * Même filtre, avec et sans l'en-tête AJAX : le fragment doit refléter
+     * les mêmes résultats que la page complète, pas une vue différente.
+     */
+    public function testLaRequeteAjaxRespecteLesMemesFiltresQueLaPageComplete(): void
+    {
+        $this->menu('Entrecôte à la bordelaise');
+        $this->menu('Plateau de fruits de mer');
+
+        $this->client->request(
+            'GET',
+            '/menus?q=entrecôte',
+            server: ['HTTP_X-Requested-With' => 'XMLHttpRequest'],
+        );
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.catalogue', 'Entrecôte à la bordelaise');
+        self::assertSelectorTextNotContains('.catalogue', 'Plateau de fruits de mer');
+    }
+
+    /** Une requête normale, sans l'en-tête, continue de recevoir la page entière. */
+    public function testUneRequeteSansEnTeteRecoitLaPageComplete(): void
+    {
+        $this->menu('Buffet bordelais');
+
+        $this->client->request('GET', '/menus');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('nav.nav-principale');
+        self::assertSelectorExists('form.filtres');
+    }
+
     // --- Recherche --------------------------------------------------------
 
     public function testLaRechercheTrouveUnMenuParSonTitre(): void
