@@ -58,18 +58,29 @@ class CatalogueController extends AbstractController
         $total = \count($resultats);
         $liste = iterator_to_array($resultats, false);
 
-        return $this->render('catalogue/index.html.twig', [
+        $donneesResultats = [
             'menus' => $liste,
             'notes' => $avis->notesParMenu(array_map(fn (Menu $m) => $m->getId(), $liste)),
+            'page' => $page,
+            'nbPages' => max(1, (int) ceil($total / self::PAR_PAGE)),
+            'total' => $total,
+        ];
+
+        // Le contrôleur Stimulus ne remplace que ce fragment : lui renvoyer la
+        // page entière obligerait à extraire le résultat côté client, pour
+        // rien. Sans JavaScript, cet en-tête n'est jamais envoyé et la page
+        // complète est rendue comme avant.
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('catalogue/_resultats.html.twig', $donneesResultats);
+        }
+
+        return $this->render('catalogue/index.html.twig', $donneesResultats + [
             'themes' => $themes->findBy([], ['libelle' => 'ASC']),
             'regimes' => $regimes->findBy([], ['libelle' => 'ASC']),
             'tris' => MenuRepository::TRIS,
             'triDefaut' => MenuRepository::TRI_DEFAUT,
             'paliers' => MenuRepository::PALIERS_CONVIVES,
             'filtres' => $filtres,
-            'page' => $page,
-            'nbPages' => max(1, (int) ceil($total / self::PAR_PAGE)),
-            'total' => $total,
         ]);
     }
 

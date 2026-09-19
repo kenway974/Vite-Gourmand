@@ -13,12 +13,14 @@
 {% endblock %}
 
 {% block body %}
-    <div class="bande conteneur grille grille--aside">
+    <div class="bande conteneur grille grille--aside" data-controller="catalogue">
         {#
             Un seul formulaire pour toute la colonne, soumis par son bouton.
             Les filtres restent donc utilisables sans JavaScript : c'est la
             seule porte d'entrée vers un menu, elle ne peut pas dépendre d'un
-            script.
+            script. Le contrôleur « catalogue » intercepte cette soumission
+            quand JavaScript est là, pour filtrer sans recharger la page ;
+            sans lui, le formulaire GET fonctionne tel quel.
         #}
         {#
             Compte les filtres repliés sur petit écran, pour que la bascule
@@ -35,7 +37,8 @@
         <form method="get" action="{{ path('app_catalogue') }}"
               class="filtres"
               data-controller="filtres"
-              data-filtres-actifs-value="{{ filtresSecondairesActifs }}">
+              data-filtres-actifs-value="{{ filtresSecondairesActifs }}"
+              data-action="submit->catalogue#filtrer">
             <div class="champ-recherche">
                 <span aria-hidden="true">&#9906;</span>
                 <label class="sr-only" for="q">Rechercher un menu</label>
@@ -140,36 +143,8 @@
             <p><a class="lien-discret" href="{{ path('app_catalogue') }}">Réinitialiser les filtres</a></p>
         </form>
 
-        <div>
-            <p class="entre-deux" role="status">
-                <span class="surtitre" style="margin: 0">
-                    {{ total }} menu{{ total > 1 ? 's' : '' }}
-                </span>
-            </p>
-
-            {% if menus is empty %}
-                <p class="carte">
-                    Aucun menu ne correspond à ces critères.
-                    <a href="{{ path('app_catalogue') }}">Élargir la recherche</a>.
-                </p>
-            {% else %}
-                <ul class="liste-nue grille grille--2 catalogue">
-                    {% for menu in menus %}
-                        {{ include('catalogue/_carte.html.twig', {
-                            menu: menu,
-                            note: notes[menu.id]|default(null),
-                        }) }}
-                    {% endfor %}
-                </ul>
-
-                {{ ui.pagination(
-                    page,
-                    nbPages,
-                    'app_catalogue',
-                    app.request.query.all,
-                    'Pagination du catalogue'
-                ) }}
-            {% endif %}
+        <div data-catalogue-target="resultats">
+            {{ include('catalogue/_resultats.html.twig') }}
         </div>
     </div>
 {% endblock %}

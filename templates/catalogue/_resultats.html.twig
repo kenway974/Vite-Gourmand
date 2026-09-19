@@ -1,0 +1,46 @@
+{#
+    Résultats du catalogue : compteur, grille et pagination.
+
+    Extrait de index.html.twig pour pouvoir être renvoyé seul en réponse à une
+    requête AJAX (CatalogueController détecte X-Requested-With) — le
+    contrôleur Stimulus remplace alors uniquement ce fragment, sans recharger
+    la page ni perdre l'état des filtres à l'écran.
+
+    Attend : menus, notes, total, page, nbPages.
+#}
+{% import 'composants/macros.html.twig' as ui %}
+
+{#
+    tabindex="-1" : ce paragraphe n'est pas dans l'ordre de tabulation, mais
+    le contrôleur catalogue lui donne le focus après un filtrage en AJAX,
+    pour que le lecteur d'écran annonce le nouveau compte de résultats.
+#}
+<p class="entre-deux" role="status" tabindex="-1">
+    <span class="surtitre" style="margin: 0">
+        {{ total }} menu{{ total > 1 ? 's' : '' }}
+    </span>
+</p>
+
+{% if menus is empty %}
+    <p class="carte">
+        Aucun menu ne correspond à ces critères.
+        <a href="{{ path('app_catalogue') }}">Élargir la recherche</a>.
+    </p>
+{% else %}
+    <ul class="liste-nue grille grille--2 catalogue">
+        {% for menu in menus %}
+            {{ include('catalogue/_carte.html.twig', {
+                menu: menu,
+                note: notes[menu.id]|default(null),
+            }) }}
+        {% endfor %}
+    </ul>
+
+    {{ ui.pagination(
+        page,
+        nbPages,
+        'app_catalogue',
+        app.request.query.all,
+        'Pagination du catalogue'
+    ) }}
+{% endif %}
