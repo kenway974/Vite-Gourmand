@@ -200,6 +200,8 @@ avant de la remplir de données de démonstration.
   dans les maquettes, et leur traduction dans le code
 - [`docs/charte-graphique/`](docs/charte-graphique/) — couleurs, typographies,
   contrastes RGAA
+- [`docs/rendu/`](docs/rendu/) — livrables ECF (cahier des charges, doc
+  technique, doc de déploiement, manuel d'utilisation, veille techno...)
 
 ---
 

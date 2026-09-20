@@ -6,7 +6,7 @@ la charte graphique ont déjà leur propre dossier (`docs/maquettes/`,
 
 - [x] Cahier des charges / spécifications fonctionnelles — `cahier-des-charges.md`
 - [x] Résumé du projet (200-250 mots) — `resume-projet.md`
-- [ ] Doc technique (réflexions techno, config d'environnement, MCD, diagramme de classes, cas d'usage, diagramme de séquence) — réflexions techno faites (`reflexion-techno.md`), MCD/diagrammes restants
+- [x] Doc technique (réflexions techno, config d'environnement, MCD, diagramme de classes, cas d'usage, diagramme de séquence) — `reflexion-techno.md`, `MCD_ViteEtGourmand_updated.pdf`, `UML_UseCase.pdf`, `UML_Sequence.pdf`
 - [x] Doc de gestion de projet (démarche, board partagé) — `methodo-travail.md`
 - [x] Doc de déploiement (démarche + étapes) — `deploiement.md`
 - [x] Manuel d'utilisation (PDF), avec les identifiants de test pour chaque parcours — `manuel-utilisation.pdf`
