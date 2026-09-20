@@ -4,14 +4,14 @@ Documents exigés par l'énoncé pour l'ECF, à déposer ici. Les maquettes et
 la charte graphique ont déjà leur propre dossier (`docs/maquettes/`,
 `docs/charte-graphique/`).
 
-- [ ] Cahier des charges / spécifications fonctionnelles
-- [ ] Résumé du projet (200-250 mots)
-- [ ] Doc technique (réflexions techno, config d'environnement, MCD, diagramme de classes, cas d'usage, diagramme de séquence)
-- [ ] Doc de gestion de projet (démarche, board partagé)
-- [ ] Doc de déploiement (démarche + étapes)
-- [ ] Manuel d'utilisation (PDF), avec les identifiants de test pour chaque parcours
-- [ ] Veille techno sur les vulnérabilités de sécurité
-- [ ] Recherche sur un site anglophone + traduction
+- [x] Cahier des charges / spécifications fonctionnelles — `cahier-des-charges.md`
+- [x] Résumé du projet (200-250 mots) — `resume-projet.md`
+- [ ] Doc technique (réflexions techno, config d'environnement, MCD, diagramme de classes, cas d'usage, diagramme de séquence) — réflexions techno faites (`reflexion-techno.md`), MCD/diagrammes restants
+- [x] Doc de gestion de projet (démarche, board partagé) — `methodo-travail.md`
+- [x] Doc de déploiement (démarche + étapes) — `deploiement.md`
+- [x] Manuel d'utilisation (PDF), avec les identifiants de test pour chaque parcours — `manuel-utilisation.pdf`
+- [x] Veille techno sur les vulnérabilités de sécurité — `veille-techno.md`
+- [x] Recherche sur un site anglophone + traduction — `recherche-anglophone.md`
 
 Déjà ailleurs dans le dépôt, pas à dupliquer ici :
 
