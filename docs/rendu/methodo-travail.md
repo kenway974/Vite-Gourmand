@@ -29,27 +29,12 @@ viendra se couler naturellement et de manière fluide.
 
 ## Organisation Git
 
-Le fichier s'intitule « Git — explication méthodo travail », donc pour être
-complet sur ce point précis : le suivi Notion/Trello pilote le *quoi*, Git
-pilote le *comment* c'est intégré au code. Concrètement sur ce dépôt :
-
-- **Une branche par fonctionnalité** (`zone-livraison`, `mot-de-passe-oublie`,
-  `espace-compte`, `retour-materiel`, `catalogue-recherche`,
-  `statistiques-mongodb`, `conformite-legale`, `droits-employe`,
-  `pages-publiques`…), fusionnée dans `develop` via une pull request plutôt
-  qu'en direct. Ça isole chaque sujet, et ça donne un historique lisible par
-  thème plutôt qu'un flux continu de commits mélangés.
-- **Un commit = une intention lisible**, rédigé à l'impératif en français et
-  décrivant ce que le commit change plutôt que « fix » ou « update » :
-  par exemple *« Ajoute les zones de livraison et leur supplément »* ou
-  *« Filtre les convives par paliers plutôt qu'en saisie libre »*. L'historique
-  sert de documentation de second niveau, utile en le relisant plusieurs
-  semaines après.
-- **Relecture systématique après implémentation** : plusieurs branches
-  contiennent un commit dédié du type *« Colmate cinq défauts trouvés en
-  relisant les pages publiques »*. Après avoir codé une fonctionnalité, je
-  reprends le diff à froid avant de la fusionner, ce qui rattrape des bugs
-  qu'on ne voit pas en écrivant le code au fil de l'eau.
-- **Dépôt public** dès le début du projet, comme l'impose le cahier des
-  charges — ce qui pousse à des messages de commit propres et à ne jamais
-  laisser de secret ou de mot de passe en dur dans le code versionné.
+- Une branche par fonctionnalité (`zone-livraison`, `espace-compte`,
+  `statistiques-mongodb`…), fusionnée dans `develop` par pull request plutôt
+  qu'en direct.
+- Commits à l'impératif, décrivant le changement plutôt que « fix » ou
+  « update » (ex. *« Ajoute les zones de livraison et leur supplément »*).
+- Relecture du diff avant fusion, avec un commit dédié si des défauts sont
+  trouvés (ex. *« Colmate cinq défauts trouvés en relisant les pages
+  publiques »*).
+- Dépôt public dès le début, comme l'impose le cahier des charges.

@@ -63,48 +63,20 @@ Une approche hybride (SQL et NoSQL) est retenue pour répondre aux besoins :
 
 ## Choix final retenu
 
-**Option 3 — Monolithe Full Symfony**, avec base hybride **MySQL + MongoDB**,
-déployé sur **Railway**.
+**Option 3 — Monolithe Full Symfony**, base hybride **MySQL + MongoDB**,
+hébergement **Railway**.
 
-### Pourquoi cette option plutôt que les deux autres
-
-- Le projet a quatre profils avec des droits imbriqués (Visiteur → Utilisateur
-  → Employé → Admin) et plusieurs formulaires soumis à des règles métier
-  strictes (calcul du prix, zones de livraison, modération des avis,
-  effacement RGPD). C'est exactement le terrain où Symfony (sécurité par
-  voters/rôles, validation par contraintes, formulaires liés aux entités)
-  évite de réécrire à la main ce qu'un framework front-only ou une API séparée
-  demanderait de faire deux fois (une fois côté API, une fois côté client).
-- Le site n'a pas besoin d'interactivité temps réel poussée : c'est un
-  catalogue avec filtres, un tunnel de commande et un espace de gestion. Le
-  gain de fluidité d'un front découplé (Option 1 ou 2) ne justifiait pas la
-  complexité supplémentaire (CORS, synchronisation des deux déploiements, API
-  à versionner) pour un projet porté par une seule personne.
-- Un monolithe se déploie en un seul service, ce qui correspond à la
-  contrainte de délai du projet : moins de surface à maintenir et à
-  débugger en solo qu'une architecture front/back séparée.
-
-### Où l'hybride SQL/NoSQL a été utilisé concrètement
-
-- **MySQL** porte tout ce qui a besoin d'intégrité relationnelle et de calculs
-  exacts : utilisateurs, menus, plats, ingrédients, allergènes, commandes,
-  zones de livraison, avis.
-- **MongoDB** conserve l'historique des relevés statistiques (chiffre
-  d'affaires, nombre de commandes, panier moyen), produits une fois par nuit
-  par une commande dédiée. C'est un choix pragmatique : ce sont des
-  photographies dans le temps, pas des données relationnelles, et MySQL seul
-  ne permettrait pas de reconstituer l'évolution après coup sans les
-  recalculer.
-- Point de robustesse ajouté en cours de projet : si `MONGODB_URL` est absent
-  ou l'extension indisponible, l'application démarre quand même (les totaux
-  restent calculés depuis MySQL, seul l'historique est indisponible). Ça
-  permet de développer et de lancer les tests sans dépendre d'un serveur
-  NoSQL local.
-
-### Hébergement retenu
-
-**Railway**, en cohérence avec le cas « architecture monolithique » décrit
-plus haut : un service PHP + une base MySQL managée + une base MongoDB
-managée. Un second service (worker Symfony Messenger) est nécessaire en plus
-du service web, pour l'envoi asynchrone des e-mails (réinitialisation de mot
-de passe) — sans lui, les messages s'empilent en base sans jamais partir.
+- Symfony a été choisi car le projet a quatre profils aux droits imbriqués
+  (Visiteur, Utilisateur, Employé, Admin) et des règles métier strictes
+  (tarifs, livraison, modération des avis) : rôles, validation et
+  formulaires sont natifs au framework, pas besoin de les recoder côté API
+  et côté front comme l'auraient demandé les Options 1 et 2.
+- Pas de besoin réel de temps réel/fluidité poussée (catalogue, tunnel de
+  commande, back-office) : un monolithe suffit, et reste plus simple à
+  gérer seul qu'une architecture front/back séparée.
+- **MySQL** porte les données relationnelles (utilisateurs, menus, plats,
+  commandes, avis…). **MongoDB** stocke l'historique des statistiques
+  (CA, nombre de commandes, panier moyen), calculé chaque nuit — ce sont des
+  photos dans le temps, pas des données relationnelles.
+- **Railway** héberge le service PHP + les deux bases managées, plus un
+  worker Messenger pour l'envoi asynchrone des e-mails.
