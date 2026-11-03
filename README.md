@@ -38,7 +38,8 @@ php bin/console doctrine:fixtures:load
 symfony server:start   # ou : php -S localhost:8000 -t public
 ```
 
-`APP_SECRET` doit être renseigné dans `.env.local` :
+Aucun secret n'est versionné : `APP_SECRET` est vide dans `.env` et doit être
+renseigné dans `.env.local` (ignoré par git), y compris en développement :
 
 ```bash
 php -r 'echo "APP_SECRET=" . bin2hex(random_bytes(16)) . PHP_EOL;' >> .env.local
