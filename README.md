@@ -1,5 +1,7 @@
 # Vite & Gourmand
 
+[![CI](https://github.com/kenway974/Vite-Gourmand/actions/workflows/ci.yml/badge.svg)](https://github.com/kenway974/Vite-Gourmand/actions/workflows/ci.yml)
+
 Site de commande en ligne d'un traiteur bordelais.
 
 Projet ECF — Titre professionnel Développeur Web et Web Mobile.
