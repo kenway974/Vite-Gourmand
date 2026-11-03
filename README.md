@@ -158,6 +158,17 @@ lieu de rendre un succès sur un relevé qui n'aura pas survécu au processus.
 
 ---
 
+## Sécurité
+
+- **Mots de passe** : hachés par le PasswordHasher de Symfony (`algorithm: auto`, `config/packages/security.yaml`).
+- **Politique** : 12 caractères minimum avec majuscule, minuscule, chiffre et caractère spécial, appliquée à tous les formulaires et à `app:creer-admin` (`src/Security/PolitiqueMotDePasse.php`).
+- **Connexion** : `login_throttling` à 5 essais ratés par 15 minutes ; comptes désactivés refusés (`UtilisateurChecker`).
+- **Réinitialisation** : jeton aléatoire de 32 octets, stocké haché (SHA-256), valable 60 minutes, réponse identique que l'adresse existe ou non.
+- **CSRF** : protection des formulaires, de la connexion et de la déconnexion (`config/packages/csrf.yaml`).
+- **Rôles** : hiérarchie `ROLE_USER` < `ROLE_EMPLOYE` < `ROLE_ADMIN`, sections protégées par `access_control`.
+- **Tests** : droits d'accès, authentification et réinitialisation couverts par les tests fonctionnels (`tests/Functional`).
+- **CI** : `composer audit` vérifie les dépendances connues vulnérables à chaque push.
+
 ## Déploiement
 
 Cible : **Railway** — un service PHP et une base MySQL managée.
