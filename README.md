@@ -166,8 +166,8 @@ lieu de rendre un succès sur un relevé qui n'aura pas survécu au processus.
 - **Réinitialisation** : jeton aléatoire de 32 octets, stocké haché (SHA-256), valable 60 minutes, réponse identique que l'adresse existe ou non.
 - **CSRF** : protection des formulaires, de la connexion et de la déconnexion (`config/packages/csrf.yaml`).
 - **Rôles** : hiérarchie `ROLE_USER` < `ROLE_EMPLOYE` < `ROLE_ADMIN`, sections protégées par `access_control`.
-- **Tests** : droits d'accès, authentification et réinitialisation couverts par les tests fonctionnels (`tests/Functional`).
-- **CI** : `composer audit` vérifie les dépendances connues vulnérables à chaque push.
+- **En-têtes** : CSP à nonce sans JavaScript en ligne, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, HSTS en HTTPS (`EnTetesSecuriteSubscriber`).
+- **Tests et CI** : droits, authentification, réinitialisation et en-têtes couverts par `tests/Functional` ; `composer audit` à chaque push.
 
 ## Déploiement
 
@@ -226,9 +226,10 @@ avant de la remplir de données de démonstration.
 src/
 ├── Controller/        Admin/ et Employe/ pour les espaces protégés
 ├── Entity/            Le modèle, règles de validation comprises
+├── EventSubscriber/   En-têtes de sécurité et Content-Security-Policy
 ├── Form/
 ├── Repository/        Les requêtes, y compris les jointures d'optimisation
-├── Security/          Politique de mot de passe, réinitialisation, contrôle d'accès
+├── Security/          Politique de mot de passe, réinitialisation, contrôle d'accès, nonce CSP
 ├── Service/           CalculateurPrix — le cœur métier
 ├── Twig/
 └── Validator/         Contraintes métier réutilisables
