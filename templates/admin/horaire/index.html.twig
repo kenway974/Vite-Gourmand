@@ -37,7 +37,9 @@
 
                             <form method="post"
                                   action="{{ path('app_admin_horaire_delete', {id: element.id}) }}"
-                                  onsubmit="return confirm('Retirer « {{ element.jour|e('js') }} » des horaires publiés ?')">
+                                  data-controller="confirmation"
+                                  data-confirmation-message-value="Retirer « {{ element.jour }} » des horaires publiés ?"
+                                  data-action="submit->confirmation#demander">
                                 <input type="hidden" name="_token" value="{{ csrf_token('supprimer-horaire-' ~ element.id) }}">
                                 <button type="submit">Retirer<span class="sr-only"> le {{ element.jour }}</span></button>
                             </form>

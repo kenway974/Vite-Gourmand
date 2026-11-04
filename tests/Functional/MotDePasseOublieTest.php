@@ -79,8 +79,11 @@ class MotDePasseOublieTest extends WebTestCase
         $inconnue = $this->client->getResponse()->getContent();
 
         // Même page, mot pour mot : sans quoi le formulaire deviendrait un
-        // annuaire des comptes existants.
-        self::assertSame($connue, $inconnue);
+        // annuaire des comptes existants. Seul le nonce de la CSP diffère,
+        // puisqu'il est tiré au hasard à chaque requête.
+        $sansNonce = static fn (string $html): string => preg_replace('/(nonce="|name="csp-nonce" content=")[^"]+"/', '$1"', $html);
+        self::assertNotSame($connue, $sansNonce($connue), 'La page devrait porter un nonce.');
+        self::assertSame($sansNonce($connue), $sansNonce($inconnue));
         self::assertQueuedEmailCount(0);
     }
 

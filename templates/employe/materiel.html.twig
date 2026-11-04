@@ -76,7 +76,9 @@
                             {% if enRetard and not commande.indemniteEstFacturee %}
                                 <form method="post"
                                       action="{{ path('app_employe_materiel_indemnite', {id: commande.id}) }}"
-                                      onsubmit="return confirm('Facturer {{ constant('App\\Entity\\Commande::INDEMNITE_MATERIEL') }} € au client ?')">
+                                      data-controller="confirmation"
+                                      data-confirmation-message-value="Facturer {{ constant('App\\Entity\\Commande::INDEMNITE_MATERIEL') }} € au client ?"
+                                      data-action="submit->confirmation#demander">
                                     <input type="hidden" name="_token" value="{{ csrf_token('indemnite-materiel-' ~ commande.id) }}">
                                     {% if restitue %}<input type="hidden" name="rendus" value="1">{% endif %}
                                     <button type="submit">

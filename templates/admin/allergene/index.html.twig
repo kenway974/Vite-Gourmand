@@ -32,7 +32,9 @@
 
                             <form method="post"
                                   action="{{ path('app_admin_allergene_delete', {id: element.id}) }}"
-                                  onsubmit="return confirm('Supprimer définitivement « {{ element.libelle|e('js') }} » ?')">
+                                  data-controller="confirmation"
+                                  data-confirmation-message-value="Supprimer définitivement « {{ element.libelle }} » ?"
+                                  data-action="submit->confirmation#demander">
                                 <input type="hidden" name="_token" value="{{ csrf_token('supprimer-allergene-' ~ element.id) }}">
                                 <button type="submit">Supprimer<span class="sr-only"> allergène {{ element.libelle }}</span></button>
                             </form>
