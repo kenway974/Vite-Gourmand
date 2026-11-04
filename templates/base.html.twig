@@ -5,20 +5,23 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Vite &amp; Gourmand{% endblock %}</title>
         <meta name="theme-color" content="#5E1F2E">
+        {# Lu par Turbo pour les scripts et styles qu'il insère lui-même (CSP). #}
+        <meta name="csp-nonce" content="{{ csp_nonce() }}">
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>&#127859;</text></svg>">
 
         {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('styles/app.css') }}" data-turbo-track="reload">
         {% endblock %}
 
         {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
+            {% block importmap %}{{ importmap('app', {nonce: csp_nonce()}) }}{% endblock %}
         {% endblock %}
 
         {% set frankenphp_hot_reload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
         {% if frankenphp_hot_reload %}
         <meta name="frankenphp-hot-reload:url" content="{{ frankenphp_hot_reload }}">
-        <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
-        <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
+        <script src="https://cdn.jsdelivr.net/npm/idiomorph" nonce="{{ csp_nonce() }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module" nonce="{{ csp_nonce() }}"></script>
         {% endif %}
     </head>
     <body>

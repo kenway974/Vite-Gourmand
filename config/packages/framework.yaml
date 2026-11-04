@@ -1,9 +1,29 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
+parameters:
+    proxies_de_confiance: 'private_ranges'
+
 framework:
     secret: '%env(APP_SECRET)%'
 
     # Note that the session will be started ONLY if you read or write from it.
-    session: true
+    # Valeurs par défaut de Symfony, écrites ici pour être auditables :
+    # cookie illisible en JavaScript, envoyé seulement en HTTPS quand la
+    # requête l'est, et jamais sur une requête intersite de type POST.
+    session:
+        cookie_secure: auto
+        cookie_httponly: true
+        cookie_samesite: lax
+
+    # En production, l'application tourne derrière le proxy de l'hébergeur,
+    # qui termine le HTTPS. Sans ces lignes, Symfony verrait toutes les
+    # requêtes comme venant du proxy, en HTTP : le cookie de session perdrait
+    # son attribut Secure et le login_throttling compterait les échecs de
+    # tous les visiteurs sur une seule adresse IP.
+    # Seuls les réseaux privés sont crus (un visiteur ne peut pas en venir) ;
+    # SYMFONY_TRUSTED_PROXIES permet de restreindre à l'adresse exacte.
+    # X-Forwarded-Host n'est volontairement pas cru (injection d'hôte).
+    trusted_proxies: '%env(default:proxies_de_confiance:SYMFONY_TRUSTED_PROXIES)%'
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-proto', 'x-forwarded-port']
 
     #esi: true
     #fragments: true

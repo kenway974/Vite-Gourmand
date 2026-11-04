@@ -41,7 +41,9 @@
 
                             <form method="post"
                                   action="{{ path('app_admin_zone_delete', {id: element.id}) }}"
-                                  onsubmit="return confirm('Cesser de livrer {{ element.commune|e('js') }} ?')">
+                                  data-controller="confirmation"
+                                  data-confirmation-message-value="Cesser de livrer {{ element.commune }} ?"
+                                  data-action="submit->confirmation#demander">
                                 <input type="hidden" name="_token" value="{{ csrf_token('supprimer-zone-' ~ element.id) }}">
                                 <button type="submit">Retirer<span class="sr-only"> {{ element.commune }}</span></button>
                             </form>

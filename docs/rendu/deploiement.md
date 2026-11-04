@@ -28,6 +28,7 @@ Déploiement en production sur **Railway**, à partir du dépôt Git
    | `COURRIEL_EXPEDITEUR` | adresse d'expédition |
    | `MONGODB_URL` | URL MongoDB fournie par Railway |
    | `MONGODB_BASE` | `vite_gourmand` |
+   | `SYMFONY_TRUSTED_PROXIES` | facultatif — par défaut, les réseaux privés (`private_ranges`) |
 
 5. **Mise en route**, une fois le service démarré :
 

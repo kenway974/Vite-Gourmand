@@ -1,5 +1,7 @@
 # Vite & Gourmand
 
+[![CI](https://github.com/kenway974/Vite-Gourmand/actions/workflows/ci.yml/badge.svg)](https://github.com/kenway974/Vite-Gourmand/actions/workflows/ci.yml)
+
 Site de commande en ligne d'un traiteur bordelais.
 
 Projet ECF — Titre professionnel Développeur Web et Web Mobile.
@@ -38,7 +40,8 @@ php bin/console doctrine:fixtures:load
 symfony server:start   # ou : php -S localhost:8000 -t public
 ```
 
-`APP_SECRET` doit être renseigné dans `.env.local` :
+Aucun secret n'est versionné : `APP_SECRET` est vide dans `.env` et doit être
+renseigné dans `.env.local` (ignoré par git), y compris en développement :
 
 ```bash
 php -r 'echo "APP_SECRET=" . bin2hex(random_bytes(16)) . PHP_EOL;' >> .env.local
@@ -155,6 +158,17 @@ lieu de rendre un succès sur un relevé qui n'aura pas survécu au processus.
 
 ---
 
+## Sécurité
+
+- **Mots de passe** : hachés par le PasswordHasher de Symfony (`algorithm: auto`, `config/packages/security.yaml`).
+- **Politique** : 12 caractères minimum avec majuscule, minuscule, chiffre et caractère spécial, appliquée à tous les formulaires et à `app:creer-admin` (`src/Security/PolitiqueMotDePasse.php`).
+- **Connexion** : `login_throttling` à 5 essais ratés par 15 minutes ; comptes désactivés refusés (`UtilisateurChecker`).
+- **Réinitialisation** : jeton aléatoire de 32 octets, stocké haché (SHA-256), valable 60 minutes, réponse identique que l'adresse existe ou non.
+- **CSRF** : protection des formulaires, de la connexion et de la déconnexion (`config/packages/csrf.yaml`).
+- **Rôles** : hiérarchie `ROLE_USER` < `ROLE_EMPLOYE` < `ROLE_ADMIN`, sections protégées par `access_control`.
+- **En-têtes** : CSP à nonce sans JavaScript en ligne, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, HSTS en HTTPS (`EnTetesSecuriteSubscriber`).
+- **Tests et CI** : droits, authentification, réinitialisation et en-têtes couverts par `tests/Functional` ; `composer audit` à chaque push.
+
 ## Déploiement
 
 Cible : **Railway** — un service PHP et une base MySQL managée.
@@ -171,6 +185,7 @@ faut redéclarer sur l'hébergeur :
 | `COURRIEL_EXPEDITEUR` | l'adresse d'expédition |
 | `MONGODB_URL` | l'URL MongoDB fournie par Railway |
 | `MONGODB_BASE` | `vite_gourmand` |
+| `SYMFONY_TRUSTED_PROXIES` | facultatif — par défaut, les réseaux privés (`private_ranges`) |
 
 Puis, dans l'ordre :
 
@@ -211,9 +226,10 @@ avant de la remplir de données de démonstration.
 src/
 ├── Controller/        Admin/ et Employe/ pour les espaces protégés
 ├── Entity/            Le modèle, règles de validation comprises
+├── EventSubscriber/   En-têtes de sécurité et Content-Security-Policy
 ├── Form/
 ├── Repository/        Les requêtes, y compris les jointures d'optimisation
-├── Security/          Politique de mot de passe, réinitialisation, contrôle d'accès
+├── Security/          Politique de mot de passe, réinitialisation, contrôle d'accès, nonce CSP
 ├── Service/           CalculateurPrix — le cœur métier
 ├── Twig/
 └── Validator/         Contraintes métier réutilisables

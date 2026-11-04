@@ -61,7 +61,9 @@
 
         {% if not dernierAdmin and nbEnCours == 0 %}
             <form method="post"
-                  onsubmit="return confirm('Supprimer définitivement votre compte ?')">
+                  data-controller="confirmation"
+                  data-confirmation-message-value="Supprimer définitivement votre compte ?"
+                  data-action="submit->confirmation#demander">
                 <input type="hidden" name="_token" value="{{ csrf_token('supprimer-mon-compte') }}">
                 {{ ui.bouton('Supprimer définitivement mon compte', null, 'contour', {type: 'submit'}) }}
             </form>

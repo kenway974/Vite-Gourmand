@@ -67,7 +67,9 @@
                 <h2 class="titre-section" style="margin-top: 2rem">Annulation</h2>
                 <form method="post"
                       action="{{ path('app_client_commande_annuler', {id: commande.id}) }}"
-                      onsubmit="return confirm('Annuler définitivement cette commande ?')">
+                      data-controller="confirmation"
+                      data-confirmation-message-value="Annuler définitivement cette commande ?"
+                      data-action="submit->confirmation#demander">
                     <input type="hidden" name="_token" value="{{ csrf_token('annuler-commande-' ~ commande.id) }}">
                     {{ ui.bouton('Annuler ma commande', null, 'contour', {type: 'submit'}) }}
                 </form>
