@@ -13,15 +13,20 @@ concurrency:
 
 jobs:
   tests:
-    name: Composer + PHPUnit (PHP 8.4)
+    name: Composer + lints + PHPUnit (PHP 8.4)
     runs-on: ubuntu-latest
+    env:
+      # Les commandes console utilisent la configuration de test (.env.test,
+      # SQLite) : aucun service MySQL n'est nécessaire.
+      APP_ENV: test
 
     steps:
+      # Actions figées par SHA de commit : un tag peut être déplacé, pas un SHA.
       - name: Récupération du code
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Installation de PHP 8.4
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.4'
           extensions: ctype, iconv, intl, pdo_sqlite
@@ -33,7 +38,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
       - name: Cache Composer
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
@@ -50,7 +55,16 @@ jobs:
       - name: Audit de sécurité des dépendances
         run: composer audit
 
+      - name: Lints (conteneur, Twig, YAML, mapping Doctrine)
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: |
+          php bin/console lint:container
+          php bin/console lint:twig templates
+          php bin/console lint:yaml config --parse-tags
+          php bin/console doctrine:schema:validate --skip-sync
+
       - name: Tests (SQLite, .env.test)
-        # Les tests tournent même si l'audit échoue, pour garder le résultat visible.
+        # Les tests tournent même si une étape précédente échoue, pour garder
+        # leur résultat visible.
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: vendor/bin/phpunit
