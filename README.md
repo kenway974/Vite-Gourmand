@@ -185,6 +185,7 @@ faut redéclarer sur l'hébergeur :
 | `COURRIEL_EXPEDITEUR` | l'adresse d'expédition |
 | `MONGODB_URL` | l'URL MongoDB fournie par Railway |
 | `MONGODB_BASE` | `vite_gourmand` |
+| `SYMFONY_TRUSTED_PROXIES` | facultatif — par défaut, les réseaux privés (`private_ranges`) |
 
 Puis, dans l'ordre :
 

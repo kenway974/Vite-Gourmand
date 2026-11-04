@@ -99,6 +99,38 @@ class EnTetesSecuriteTest extends WebTestCase
         self::assertResponseHeaderSame('Strict-Transport-Security', 'max-age=31536000');
     }
 
+    public function testLeHttpsSignaleParLeProxyDeLHebergeurEstReconnu(): void
+    {
+        // Le proxy de l'hébergeur termine le HTTPS et joint depuis un réseau
+        // privé : son X-Forwarded-Proto doit être cru.
+        $this->client->request('GET', '/', server: [
+            'REMOTE_ADDR' => '10.0.0.5',
+            'HTTP_X_FORWARDED_PROTO' => 'https',
+        ]);
+
+        self::assertResponseHeaderSame('Strict-Transport-Security', 'max-age=31536000');
+    }
+
+    public function testUnVisiteurNePeutPasSeFairePasserPourLeProxy(): void
+    {
+        $this->client->request('GET', '/', server: [
+            'REMOTE_ADDR' => '8.8.8.8',
+            'HTTP_X_FORWARDED_PROTO' => 'https',
+            'HTTP_X_FORWARDED_FOR' => '10.0.0.1',
+        ]);
+
+        self::assertResponseNotHasHeader('Strict-Transport-Security');
+    }
+
+    public function testLeCookieDeSessionEstProtege(): void
+    {
+        $session = static::getContainer()->getParameter('session.storage.options');
+
+        self::assertSame('auto', $session['cookie_secure']);
+        self::assertTrue($session['cookie_httponly']);
+        self::assertSame('lax', $session['cookie_samesite']);
+    }
+
     public function testAucunGabaritNeContientDeJavaScriptEnLigne(): void
     {
         // La CSP bloquerait silencieusement un onclick="…" ou un <script> sans
