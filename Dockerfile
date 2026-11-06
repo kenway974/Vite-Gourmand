@@ -4,7 +4,7 @@
 # (https://github.com/dunglas/symfony-docker), adaptée pour ce projet :
 # ajout de pdo_mysql (base principale) et mongodb (statistiques).
 
-FROM dunglas/frankenphp:1-php8.3 AS frankenphp_base
+FROM dunglas/frankenphp:1-php8.4 AS frankenphp_base
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
