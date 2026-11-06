@@ -13,6 +13,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+// Index créé par la migration Version20260916220000 : la réinitialisation
+// retrouve le compte par l'empreinte de son jeton. Le déclarer ici évite
+// qu'une future migration générée ne le supprime.
+#[ORM\Index(name: 'idx_utilisateur_jeton', columns: ['jeton_reinitialisation'])]
 #[UniqueEntity(fields: ['email'], message: 'Un compte existe déjà avec cette adresse e-mail.')]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
