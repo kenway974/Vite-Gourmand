@@ -74,9 +74,11 @@ class Avis
      */
     public function contexte(): ?string
     {
-        $prestation = $this->commande?->getDatePrestation();
+        // Passe par le getter (?Commande) : un avis tout juste créé n'a pas
+        // encore de commande, même si la colonne est NOT NULL en base.
+        $prestation = $this->getCommande()?->getDatePrestation();
 
-        if (null === $prestation || null === $this->commande?->getNbPersonnes()) {
+        if (null === $prestation || null === $this->getCommande()?->getNbPersonnes()) {
             return null;
         }
 

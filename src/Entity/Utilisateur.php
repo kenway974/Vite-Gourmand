@@ -322,6 +322,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return str_ends_with((string) $this->email, '@invalide.local');
     }
 
+    /**
+     * @return Collection<int, Commande>
+     */
     public function getCommandes(): Collection
     {
         return $this->commandes;

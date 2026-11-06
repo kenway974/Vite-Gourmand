@@ -45,7 +45,7 @@ class CatalogueDemoLoader
     ];
 
     /**
-     * @return array{menus: array<string, Menu>, zones: array<string, ZoneLivraison>}
+     * @return array{menus: array<string, Menu>, zones: array<int, ZoneLivraison>}
      */
     public function charger(ObjectManager $manager): array
     {

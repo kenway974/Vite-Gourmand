@@ -179,7 +179,7 @@ class AdminUtilisateurTest extends WebTestCase
     // --- Fixtures ---------------------------------------------------------
 
     /**
-     * @param array<string, string|bool> $donnees
+     * @param array<string, string> $donnees
      */
     private function soumettre(string $url, string $jeton, array $donnees): void
     {
