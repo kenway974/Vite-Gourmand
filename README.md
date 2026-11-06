@@ -109,7 +109,7 @@ recréée à chaque classe de test.
 SQLite et MySQL ne se comportent pas à l'identique — SQLite rend `600` là où
 MySQL rend `600.00` sur un `NUMERIC`, et son `LIKE` n'ignore la casse que sur
 l'ASCII. Les tests en tiennent compte, mais une vérification sur MySQL avant
-mise en production reste recommandée :
+mise en production reste recommandée (la CI le fait sur MySQL 8) :
 
 ```bash
 # Doctrine ajoute lui-même le suffixe « _test » au nom de la base
@@ -121,6 +121,23 @@ La base `vite_gourmand_test` doit exister et appartenir au même utilisateur :
 
 ```bash
 mysql -u root -p -e "CREATE DATABASE vite_gourmand_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL ON vite_gourmand_test.* TO 'app'@'%';"
+```
+
+### Intégration continue
+
+À chaque push et pull request, et chaque lundi (`.github/workflows/ci.yml`) :
+
+- `composer validate`, `composer audit`, lints (conteneur, Twig, YAML, mapping Doctrine) ;
+- analyse statique PHPStan (`phpstan.dist.neon`, extensions Symfony et Doctrine) ;
+- tests sur SQLite en PHP 8.3 et 8.4, avec couverture en 8.4 (plancher : 80 % des lignes) ;
+- sur MySQL 8 : migrations appliquées comme en production, schéma comparé aux entités, puis tests ;
+- build de l'image Docker de production.
+
+Dependabot propose chaque semaine les correctifs Composer et les mises à jour des actions.
+
+```bash
+vendor/bin/phpstan analyse                                  # analyse statique
+php -d pcov.enabled=1 vendor/bin/phpunit --coverage-text    # couverture (extension pcov)
 ```
 
 ### Statistiques (MongoDB)
