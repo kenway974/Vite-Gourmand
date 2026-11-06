@@ -18,6 +18,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * Le menu n'y figure pas : il vient de l'URL. L'exposer en champ permettrait
  * à un visiteur de commander un autre menu que celui qu'il consulte, à un
  * prix calculé sur le premier.
+ *
+ * @extends AbstractType<Commande>
  */
 class CommandeType extends AbstractType
 {

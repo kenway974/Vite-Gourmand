@@ -220,6 +220,9 @@ class EspaceEmployeTest extends WebTestCase
 
     // --- Fixtures ---------------------------------------------------------
 
+    /**
+     * @param list<string> $roles
+     */
     private function utilisateur(string $email, array $roles): Utilisateur
     {
         $u = new Utilisateur();

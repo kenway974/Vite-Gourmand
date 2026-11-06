@@ -281,6 +281,9 @@ class AdminCatalogueTest extends WebTestCase
         $this->client->submit($crawler->filter('form[action$="/supprimer"] button')->form());
     }
 
+    /**
+     * @param list<string> $roles
+     */
     private function creerUtilisateur(string $email, array $roles): Utilisateur
     {
         $utilisateur = new Utilisateur();

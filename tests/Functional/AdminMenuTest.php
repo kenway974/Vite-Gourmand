@@ -225,6 +225,9 @@ class AdminMenuTest extends WebTestCase
 
     // --- Fixtures ---------------------------------------------------------
 
+    /**
+     * @param list<string> $roles
+     */
     private function creerUtilisateur(string $email, array $roles): Utilisateur
     {
         $utilisateur = new Utilisateur();

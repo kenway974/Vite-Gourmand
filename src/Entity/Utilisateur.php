@@ -237,9 +237,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Commande>
-     */
     public function getJetonReinitialisation(): ?string
     {
         return $this->jetonReinitialisation;
@@ -325,6 +322,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return str_ends_with((string) $this->email, '@invalide.local');
     }
 
+    /**
+     * @return Collection<int, Commande>
+     */
     public function getCommandes(): Collection
     {
         return $this->commandes;

@@ -1,0 +1,23 @@
+includes:
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan-symfony/rules.neon
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+    - vendor/phpstan/phpstan-doctrine/rules.neon
+
+parameters:
+    level: 6
+    paths:
+        - src
+        - tests
+    excludePaths:
+        # Fichier généré par Symfony (référence de configuration).
+        - config/reference.php
+    doctrine:
+        # Les entités suivent le modèle de MakerBundle : propriétés nullables
+        # tant que l'objet n'est pas rempli (formulaires), colonnes NOT NULL
+        # en base. La validation garantit le remplissage avant persistance.
+        allowNullablePropertyForRequiredField: true
+    symfony:
+        # Conteneur compilé de l'environnement de test : la CI le construit
+        # (lint:container) avant d'appeler PHPStan.
+        containerXmlPath: var/cache/test/App_KernelTestDebugContainer.xml

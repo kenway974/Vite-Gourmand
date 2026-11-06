@@ -87,7 +87,7 @@ class AppFixtures extends Fixture
     /**
      * @param array<string, Utilisateur>   $utilisateurs
      * @param array<string, Menu>          $menus
-     * @param array<string, ZoneLivraison> $zones
+     * @param array<int|string, ZoneLivraison> $zones indexées par code postal
      *
      * @return array<string, Commande>
      */

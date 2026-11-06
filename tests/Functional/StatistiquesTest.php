@@ -324,6 +324,9 @@ class StatistiquesTest extends WebTestCase
         return $commande;
     }
 
+    /**
+     * @param list<string> $roles
+     */
     private function connecter(array $roles): void
     {
         $u = new Utilisateur();

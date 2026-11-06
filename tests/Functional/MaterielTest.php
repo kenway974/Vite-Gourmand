@@ -274,6 +274,9 @@ class MaterielTest extends WebTestCase
         return $commande;
     }
 
+    /**
+     * @param list<string> $roles
+     */
     private function utilisateur(string $email, array $roles): Utilisateur
     {
         $u = new Utilisateur();

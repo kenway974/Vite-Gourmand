@@ -15,6 +15,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * Contrairement au changement depuis le compte, l'ancien mot de passe n'est
  * pas redemandé : la personne ne s'en souvient précisément pas. C'est la
  * possession du jeton envoyé à l'adresse du compte qui fait preuve.
+ *
+ * @extends AbstractType<array<string, mixed>>
  */
 class NouveauMotDePasseType extends AbstractType
 {

@@ -74,9 +74,13 @@ class Avis
      */
     public function contexte(): ?string
     {
-        $prestation = $this->commande?->getDatePrestation();
+        // Un avis tout juste créé n'a pas encore de commande, même si la
+        // colonne est NOT NULL en base.
+        $commande = $this->getCommande();
+        $prestation = $commande?->getDatePrestation();
+        $convives = $commande?->getNbPersonnes();
 
-        if (null === $prestation || null === $this->commande?->getNbPersonnes()) {
+        if (null === $prestation || null === $convives) {
             return null;
         }
 
@@ -84,7 +88,7 @@ class Avis
             '%s %s · %d convives',
             ucfirst(self::MOIS[(int) $prestation->format('n')]),
             $prestation->format('Y'),
-            $this->commande->getNbPersonnes(),
+            $convives,
         );
     }
 

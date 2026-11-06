@@ -166,6 +166,9 @@ class DroitsAdministrationTest extends WebTestCase
 
     // --- Jeux de données --------------------------------------------------
 
+    /**
+     * @return iterable<string, array{string}>
+     */
     public static function sectionsDuCatalogue(): iterable
     {
         foreach (self::CATALOGUE as $url) {
@@ -173,6 +176,9 @@ class DroitsAdministrationTest extends WebTestCase
         }
     }
 
+    /**
+     * @return iterable<string, array{string}>
+     */
     public static function sectionsReserveesALAdmin(): iterable
     {
         foreach (self::RESERVE_ADMIN as $url) {
@@ -180,6 +186,9 @@ class DroitsAdministrationTest extends WebTestCase
         }
     }
 
+    /**
+     * @return iterable<string, array{string}>
+     */
     public static function toutesLesSections(): iterable
     {
         foreach ([...self::CATALOGUE, ...self::RESERVE_ADMIN] as $url) {
@@ -189,6 +198,9 @@ class DroitsAdministrationTest extends WebTestCase
 
     // --- Fixtures ---------------------------------------------------------
 
+    /**
+     * @param list<string> $roles
+     */
     private function connecter(array $roles): void
     {
         $u = new Utilisateur();

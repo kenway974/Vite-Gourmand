@@ -295,6 +295,9 @@ class ConformiteLegaleTest extends WebTestCase
 
     // --- Fixtures ---------------------------------------------------------
 
+    /**
+     * @return iterable<string, array{string}>
+     */
     public static function pagesLegales(): iterable
     {
         foreach (self::PAGES_LEGALES as $url) {

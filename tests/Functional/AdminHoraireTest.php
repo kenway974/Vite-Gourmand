@@ -244,6 +244,9 @@ class AdminHoraireTest extends WebTestCase
         return $h;
     }
 
+    /**
+     * @param list<string> $roles
+     */
     private function utilisateur(string $email, array $roles): Utilisateur
     {
         $u = new Utilisateur();

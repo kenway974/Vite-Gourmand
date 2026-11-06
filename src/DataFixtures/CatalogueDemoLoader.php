@@ -45,7 +45,7 @@ class CatalogueDemoLoader
     ];
 
     /**
-     * @return array{menus: array<string, Menu>, zones: array<string, ZoneLivraison>}
+     * @return array{menus: array<string, Menu>, zones: array<int, ZoneLivraison>}
      */
     public function charger(ObjectManager $manager): array
     {
@@ -504,7 +504,8 @@ class CatalogueDemoLoader
      * supplément que le traiteur reste libre de modifier depuis
      * l'administration : les maquettes n'en fixent aucun.
      *
-     * @return array<string, ZoneLivraison>
+     * @return array<int, ZoneLivraison> indexées par code postal (PHP convertit
+     *                                   les clés numériques en entiers)
      */
     private function chargerZones(ObjectManager $manager): array
     {

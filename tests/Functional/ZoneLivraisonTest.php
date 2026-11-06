@@ -10,6 +10,7 @@ use App\Entity\Utilisateur;
 use App\Entity\ZoneLivraison;
 use App\Repository\CommandeRepository;
 use App\Service\CalculateurPrix;
+use App\Service\DetailPrix;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -261,7 +262,7 @@ class ZoneLivraisonTest extends WebTestCase
 
     // --- Fixtures ---------------------------------------------------------
 
-    private function calculer(int $convives, ?string $codePostal)
+    private function calculer(int $convives, ?string $codePostal): DetailPrix
     {
         $menu = $this->em->getRepository(Menu::class)->find($this->menuId);
         $zone = null === $codePostal
@@ -306,6 +307,9 @@ class ZoneLivraisonTest extends WebTestCase
         $this->seConnecter($this->utilisateur('admin@example.com', ['ROLE_ADMIN']));
     }
 
+    /**
+     * @param list<string> $roles
+     */
     private function utilisateur(string $email, array $roles): Utilisateur
     {
         $existant = $this->em->getRepository(Utilisateur::class)->findOneBy(['email' => $email]);
