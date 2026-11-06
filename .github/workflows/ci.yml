@@ -3,6 +3,11 @@ name: CI
 on:
   push:
   pull_request:
+  # Chaque lundi : composer audit signale une faille publiée entre-temps,
+  # même sans nouveau commit.
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,24 +16,29 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Actions figées par SHA de commit : un tag peut être déplacé, pas un SHA.
+
 jobs:
   tests:
-    name: Composer + lints + PHPUnit (PHP 8.4)
+    name: Composer + lints + PHPUnit (PHP ${{ matrix.php }}, SQLite)
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 8.3 : version de l'image de production (Dockerfile). 8.4 : version cible.
+        php: ['8.3', '8.4']
     env:
-      # Les commandes console utilisent la configuration de test (.env.test,
-      # SQLite) : aucun service MySQL n'est nécessaire.
+      # Les commandes console utilisent la configuration de test (.env.test, SQLite).
       APP_ENV: test
 
     steps:
-      # Actions figées par SHA de commit : un tag peut être déplacé, pas un SHA.
       - name: Récupération du code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Installation de PHP 8.4
+      - name: Installation de PHP
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
-          php-version: '8.4'
+          php-version: ${{ matrix.php }}
           extensions: ctype, iconv, intl, pdo_sqlite
           coverage: none
           tools: composer:v2
@@ -41,8 +51,8 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-${{ runner.os }}-
+          key: composer-${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-${{ matrix.php }}-
 
       - name: Validation de composer.json
         # --no-check-publish : name/description ne sont exigés que pour un paquet publié.
@@ -63,8 +73,85 @@ jobs:
           php bin/console lint:yaml config --parse-tags
           php bin/console doctrine:schema:validate --skip-sync
 
-      - name: Tests (SQLite, .env.test)
+      - name: Tests
         # Les tests tournent même si une étape précédente échoue, pour garder
         # leur résultat visible.
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: vendor/bin/phpunit
+
+  mysql:
+    # La production tourne sur MySQL 8 et applique les migrations au démarrage
+    # (frankenphp/docker-entrypoint.sh). Ce job vérifie qu'elles passent, que
+    # le schéma obtenu correspond aux entités, et que les tests restent verts
+    # sur le vrai moteur (SQLite et MySQL ne se comportent pas à l'identique).
+    name: Migrations + PHPUnit (PHP 8.3, MySQL 8)
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: test
+      # Doctrine ajoute le suffixe « _test » au nom de la base (doctrine.yaml).
+      DATABASE_URL: mysql://root:root@127.0.0.1:3306/vite_gourmand?serverVersion=8.0.32&charset=utf8mb4
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Installation de PHP 8.3
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.3'
+          extensions: ctype, iconv, intl, pdo_mysql
+          coverage: none
+          tools: composer:v2
+
+      - name: Répertoire du cache Composer
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-8.3-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-8.3-
+
+      - name: Installation des dépendances
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Création de la base (collation du projet)
+        run: >-
+          mysql -h 127.0.0.1 -uroot -proot -e
+          "CREATE DATABASE vite_gourmand_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+
+      - name: Migrations, comme au démarrage du conteneur de production
+        run: php bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
+
+      - name: Schéma des migrations synchronisé avec les entités
+        run: php bin/console doctrine:schema:validate
+
+      - name: Tests sur MySQL
+        run: vendor/bin/phpunit
+
+  docker:
+    # Construit l'image de production telle que Railway la construit : un
+    # Dockerfile cassé ou une compilation d'assets en échec se voit ici, pas
+    # au déploiement.
+    name: Build de l'image de production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build (cible frankenphp_prod)
+        run: docker build --target frankenphp_prod --tag vite-gourmand:ci .

@@ -1,0 +1,20 @@
+# Propose chaque semaine les mises à jour des dépendances Composer et des
+# actions GitHub (figées par SHA dans les workflows).
+version: 2
+updates:
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+    # Correctifs uniquement : les montées de version mineure ou majeure se
+    # décident à la main.
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+    groups:
+      symfony:
+        patterns: ['symfony/*']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

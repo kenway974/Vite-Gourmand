@@ -122,6 +122,21 @@ class EnTetesSecuriteTest extends WebTestCase
         self::assertResponseNotHasHeader('Strict-Transport-Security');
     }
 
+    public function testUneAdresseIpv6DeguiseeNePassePasPourLeProxy(): void
+    {
+        // GHSA-xg2q-4rrq-657q : avant Symfony 7.4.23, « private_ranges »
+        // acceptait une IP publique présentée sous forme IPv6 (IPv4-mapped,
+        // 6to4…) comme proxy de confiance.
+        foreach (['::ffff:8.8.8.8', '2002:0808:0808::1'] as $adresse) {
+            $this->client->request('GET', '/', server: [
+                'REMOTE_ADDR' => $adresse,
+                'HTTP_X_FORWARDED_PROTO' => 'https',
+            ]);
+
+            self::assertResponseNotHasHeader('Strict-Transport-Security', $adresse);
+        }
+    }
+
     public function testLeCookieDeSessionEstProtege(): void
     {
         $session = static::getContainer()->getParameter('session.storage.options');
