@@ -3,6 +3,11 @@ name: CI
 on:
   push:
   pull_request:
+  # Chaque lundi : composer audit signale une faille publiée entre-temps,
+  # même sans nouveau commit.
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
 
 permissions:
   contents: read
