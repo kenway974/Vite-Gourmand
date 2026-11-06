@@ -4,6 +4,8 @@ version: 2
 updates:
   - package-ecosystem: composer
     directory: /
+    # Le travail passe par develop avant main.
+    target-branch: develop
     schedule:
       interval: weekly
     # Correctifs uniquement : les montées de version mineure ou majeure se
@@ -16,5 +18,6 @@ updates:
         patterns: ['symfony/*']
   - package-ecosystem: github-actions
     directory: /
+    target-branch: develop
     schedule:
       interval: weekly

@@ -6,7 +6,7 @@ Déploiement en production sur **Railway**, à partir du dépôt Git
 ## Démarche
 
 1. **Image Docker** : le projet embarque un `Dockerfile` basé sur le starter
-   officiel Symfony pour **FrankenPHP** (PHP 8.3), avec les extensions
+   officiel Symfony pour **FrankenPHP** (PHP 8.4), avec les extensions
    nécessaires (`pdo_mysql` pour la base relationnelle, `mongodb` pour les
    statistiques). Railway construit cette image directement depuis le dépôt
    à chaque déploiement.

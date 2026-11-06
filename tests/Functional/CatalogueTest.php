@@ -14,6 +14,7 @@ use App\Entity\Utilisateur;
 use App\Repository\MenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Bridge\Doctrine\DataCollector\DoctrineDataCollector;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -431,7 +432,9 @@ class CatalogueTest extends WebTestCase
         $this->client->enableProfiler();
         $this->client->request('GET', '/menus/'.$menu->getId());
 
-        $requetes = $this->client->getProfile()->getCollector('db')->getQueryCount();
+        /** @var DoctrineDataCollector $collecteur */
+        $collecteur = $this->client->getProfile()->getCollector('db');
+        $requetes = $collecteur->getQueryCount();
 
         self::assertLessThanOrEqual(
             8,
@@ -525,7 +528,9 @@ class CatalogueTest extends WebTestCase
         $this->client->request('GET', '/menus');
         self::assertResponseIsSuccessful();
 
-        $requetes = $this->client->getProfile()->getCollector('db')->getQueryCount();
+        /** @var DoctrineDataCollector $collecteur */
+        $collecteur = $this->client->getProfile()->getCollector('db');
+        $requetes = $collecteur->getQueryCount();
 
         // Catalogue + comptage + notes + thèmes + régimes, et rien qui grandisse
         // avec le nombre de menus affichés.

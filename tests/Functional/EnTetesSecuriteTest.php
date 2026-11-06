@@ -68,6 +68,7 @@ class EnTetesSecuriteTest extends WebTestCase
         $scripts = $crawler->filter('script');
         self::assertGreaterThan(0, $scripts->count());
         foreach ($scripts as $script) {
+            self::assertInstanceOf(\DOMElement::class, $script);
             self::assertSame($nonce, $script->getAttribute('nonce'), 'Script sans le nonce de la page : la CSP le bloquerait.');
         }
 

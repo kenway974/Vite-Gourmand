@@ -25,7 +25,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 8.3 : version de l'image de production (Dockerfile). 8.4 : version cible.
+        # 8.4 : version de l'image de production (Dockerfile).
+        # 8.3 : compatibilité avec la contrainte « php >= 8.2 » de composer.json.
         php: ['8.3', '8.4']
     env:
       # Les commandes console utilisent la configuration de test (.env.test, SQLite).
@@ -40,7 +41,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: ctype, iconv, intl, pdo_sqlite
-          coverage: none
+          coverage: ${{ matrix.php == '8.4' && 'pcov' || 'none' }}
           tools: composer:v2
 
       - name: Répertoire du cache Composer
@@ -73,18 +74,33 @@ jobs:
           php bin/console lint:yaml config --parse-tags
           php bin/console doctrine:schema:validate --skip-sync
 
+      - name: Analyse statique (PHPStan)
+        # Après lint:container, qui compile le conteneur de test lu par
+        # l'extension Symfony de PHPStan.
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
       - name: Tests
         # Les tests tournent même si une étape précédente échoue, pour garder
         # leur résultat visible.
-        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && matrix.php != '8.4' }}
         run: vendor/bin/phpunit
+
+      - name: Tests avec couverture (plancher 80 % des lignes)
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && matrix.php == '8.4' }}
+        run: |
+          vendor/bin/phpunit --coverage-text=var/couverture.txt --only-summary-for-coverage-text
+          cat var/couverture.txt
+          { echo '### Couverture de code'; echo '```'; cat var/couverture.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          taux=$(grep -oP 'Lines:\s+\K[0-9.]+' var/couverture.txt)
+          awk -v t="$taux" 'BEGIN { if (t < 80) { print "Couverture " t " % < 80 %"; exit 1 } }'
 
   mysql:
     # La production tourne sur MySQL 8 et applique les migrations au démarrage
     # (frankenphp/docker-entrypoint.sh). Ce job vérifie qu'elles passent, que
     # le schéma obtenu correspond aux entités, et que les tests restent verts
     # sur le vrai moteur (SQLite et MySQL ne se comportent pas à l'identique).
-    name: Migrations + PHPUnit (PHP 8.3, MySQL 8)
+    name: Migrations + PHPUnit (PHP 8.4, MySQL 8)
     runs-on: ubuntu-latest
     env:
       APP_ENV: test
@@ -107,10 +123,10 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Installation de PHP 8.3
+      - name: Installation de PHP 8.4
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
-          php-version: '8.3'
+          php-version: '8.4'
           extensions: ctype, iconv, intl, pdo_mysql
           coverage: none
           tools: composer:v2
@@ -123,8 +139,8 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: composer-${{ runner.os }}-8.3-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-${{ runner.os }}-8.3-
+          key: composer-${{ runner.os }}-8.4-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-8.4-
 
       - name: Installation des dépendances
         run: composer install --no-interaction --no-progress --prefer-dist
