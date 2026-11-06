@@ -41,6 +41,9 @@ class Plat
     #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'plats')]
     private Collection $ingredients;
 
+    /**
+     * @var Collection<int, Menu>
+     */
     #[ORM\ManyToMany(targetEntity: Menu::class, inversedBy: 'plats')]
     #[ORM\JoinTable(name: 'menu_plat')]
     private Collection $menus;

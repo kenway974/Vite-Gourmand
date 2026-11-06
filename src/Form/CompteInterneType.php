@@ -18,6 +18,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * Le formulaire public d'inscription attribue toujours ROLE_USER : personne ne
  * doit pouvoir se promouvoir depuis le site. Créer un compte interne est donc
  * une action d'administration, et c'est ce formulaire-ci qui la porte.
+ *
+ * @extends AbstractType<Utilisateur>
  */
 class CompteInterneType extends AbstractType
 {

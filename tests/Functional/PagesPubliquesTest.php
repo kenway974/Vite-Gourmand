@@ -10,6 +10,7 @@ use App\Entity\Theme;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Bridge\Doctrine\DataCollector\DoctrineDataCollector;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -267,7 +268,9 @@ class PagesPubliquesTest extends WebTestCase
             self::markTestSkipped('Profiler indisponible : impossible de compter les requêtes.');
         }
 
-        $nb = $profil->getCollector('db')->getQueryCount();
+        /** @var DoctrineDataCollector $collecteur */
+        $collecteur = $profil->getCollector('db');
+        $nb = $collecteur->getQueryCount();
 
         self::assertLessThanOrEqual(
             6,

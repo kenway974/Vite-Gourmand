@@ -15,6 +15,8 @@ use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
  *
  * Aucun champ n'est mappé sur l'entité : un mot de passe en clair n'a rien à
  * faire sur Utilisateur, même le temps d'une requête.
+ *
+ * @extends AbstractType<array<string, mixed>>
  */
 class ChangementMotDePasseType extends AbstractType
 {

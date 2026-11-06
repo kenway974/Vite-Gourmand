@@ -178,6 +178,9 @@ class AdminUtilisateurTest extends WebTestCase
 
     // --- Fixtures ---------------------------------------------------------
 
+    /**
+     * @param array<string, string|bool> $donnees
+     */
     private function soumettre(string $url, string $jeton, array $donnees): void
     {
         $crawler = $this->client->request('GET', '/admin/utilisateurs');
@@ -190,6 +193,9 @@ class AdminUtilisateurTest extends WebTestCase
         $this->client->submit($formulaire);
     }
 
+    /**
+     * @param list<string> $roles
+     */
     private function utilisateur(string $email, array $roles): Utilisateur
     {
         $u = new Utilisateur();

@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
@@ -209,7 +210,9 @@ class MotDePasseOublieTest extends WebTestCase
      */
     private function lienRecu(): string
     {
-        $corps = $this->getMailerMessage()->getHtmlBody();
+        $message = $this->getMailerMessage();
+        self::assertInstanceOf(Email::class, $message);
+        $corps = (string) $message->getHtmlBody();
 
         self::assertMatchesRegularExpression('#/mot-de-passe-oublie/[a-f0-9]{64}#', $corps);
         preg_match('#(/mot-de-passe-oublie/[a-f0-9]{64})#', $corps, $trouve);

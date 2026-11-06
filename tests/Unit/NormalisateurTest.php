@@ -14,6 +14,9 @@ class NormalisateurTest extends TestCase
         self::assertSame($attendu, Normalisateur::pourRecherche($entree));
     }
 
+    /**
+     * @return iterable<string, array{string, string}>
+     */
     public static function textes(): iterable
     {
         yield 'accents' => ['Pâté de foie', 'pate de foie'];

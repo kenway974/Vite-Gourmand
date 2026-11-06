@@ -237,9 +237,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Commande>
-     */
     public function getJetonReinitialisation(): ?string
     {
         return $this->jetonReinitialisation;

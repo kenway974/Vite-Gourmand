@@ -15,6 +15,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * Ni le rôle ni l'activation n'y figurent : ce sont des décisions
  * d'administration, un client ne se promeut pas lui-même.
+ *
+ * @extends AbstractType<Utilisateur>
  */
 class ProfilType extends AbstractType
 {
